@@ -1,0 +1,24 @@
+parameters:
+  json_request_replacer: HttpHelperBundle\Listener\JsonRequestListener
+  csrf_protection_listener: HttpHelperBundle\Listener\CsrfHeaderProtectionListener
+  csrf_protection_token_intention: 'csrf_protection'
+  csrf_protection_token_header: 'X-CSRF-Token'
+
+services:
+  # Замена POST-данных из тела JSON-запроса
+  json_request_replacer:
+      class: "%json_request_replacer%"
+      tags:
+          - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 1 }
+
+  # прослушивание CSRF-токена для защиты от кросдоменных запросов
+  csrf_protection_listener:
+      class: "%csrf_protection_listener%"
+      arguments:
+          - "@request_stack"
+          - "@security.csrf.token_manager"
+          - "@annotation_reader"
+          - "%csrf_protection_token_intention%"
+          - "%csrf_protection_token_header%"
+      tags:
+          - { name: kernel.event_subscriber }

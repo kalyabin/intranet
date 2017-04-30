@@ -42,7 +42,7 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver: pdo_mysql
+        driver: pdo_pgsql
         host: '%database_host%'
         port: '%database_port%'
         dbname: '%database_name%'
@@ -60,6 +60,13 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+# database migrations
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/migrations"
+    namespace: Application\Migrations
+    table_name: database_migrations
+    name: Database Migrations
 
 # Swiftmailer Configuration
 swiftmailer:
