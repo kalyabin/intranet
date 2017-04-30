@@ -2,10 +2,13 @@
 # http://symfony.com/doc/current/security.html
 security:
 
-    # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory:
-            memory: ~
+        user_provider:
+            id: user.provider
+
+    encoders:
+        UserBundle\Entity\UserEntity: sha512
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -14,11 +17,15 @@ security:
             security: false
 
         main:
+            pattern: ^/
             anonymous: ~
-            # activate different ways to authenticate
-
-            # http://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-            #http_basic: ~
-
-            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
-            #form_login: ~
+            logout:
+                path: /logout
+                target: /
+            simple_form:
+                provider: user_provider
+                authenticator: user.simple_authenticator
+                login_path: login.simple_form
+                check_path: login.simple_check
+                success_handler: authentication_listener
+                failure_handler: authentication_listener

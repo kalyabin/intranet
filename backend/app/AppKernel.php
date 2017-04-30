@@ -1,9 +1,12 @@
 <?php
 
+use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use HttpHelperBundle\HttpHelperBundle;
+use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use UserBundle\UserBundle;
 
 class AppKernel extends Kernel
 {
@@ -18,6 +21,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new DoctrineMigrationsBundle(),
+            new UserBundle(),
             new HttpHelperBundle(),
             new AppBundle\AppBundle(),
         ];
@@ -27,6 +31,11 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+        }
+
+        if ($this->getEnvironment() == 'test') {
+            $bundles[] = new DoctrineFixturesBundle();
+            $bundles[] = new LiipFunctionalTestBundle();
         }
 
         return $bundles;

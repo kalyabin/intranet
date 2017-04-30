@@ -1,10 +1,16 @@
 imports:
     - { resource: config_dev.yml }
 
+parameters:
+    # в тестах отключить проверку на CSRF-заголовки
+    csrf_protection_listener: HttpHelperBundle\Listener\IgnoreCsrfHeaderProtectionListener
+
 framework:
     test: ~
     session:
+        handler_id: ~
         storage_id: session.storage.mock_file
+        name: MOCKSESSID
     profiler:
         collect: false
 
@@ -14,3 +20,14 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+doctrine:
+    dbal:
+        driver: pdo_pgsql
+        host: '%database_test_host%'
+        port: '%database_test_port%'
+        dbname: '%database_test_name%'
+        user: '%database_test_user%'
+        password: '%database_test_password%'
+
+liip_functional_test: ~

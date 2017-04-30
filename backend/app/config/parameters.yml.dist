@@ -10,6 +10,13 @@ parameters:
     # You should uncomment this if you want to use pdo_sqlite
     #database_path: '%kernel.root_dir%/../var/data/data.sqlite'
 
+    # подключение к БД для тестов
+    database_test_host: 127.0.0.1
+    database_test_port: ~
+    database_test_name: intranet
+    database_test_user: root
+    database_test_password: ~
+
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: ~
@@ -17,3 +24,6 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    # e-mail отправителя писем авторизации
+    user.default_from_email: 'mail@domain.ltd'
