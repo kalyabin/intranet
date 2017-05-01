@@ -28,6 +28,7 @@ class JsonErrorResponseListener
                     'message' => $exception->getMessage()
                 ]
             ]);
+            $response->setStatusCode($exception->getStatusCode());
         } else {
             $response = new JsonResponse([
                 'error' => [
@@ -35,9 +36,8 @@ class JsonErrorResponseListener
                     'message' => $exception->getMessage()
                 ]
             ]);
+            $response->setStatusCode(500);
         }
-
-        $response->setStatusCode($exception->getStatusCode());
 
         $event->setResponse($response);
 
