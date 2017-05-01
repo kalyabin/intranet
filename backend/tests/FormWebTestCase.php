@@ -76,10 +76,7 @@ abstract class FormWebTestCase extends WebTestCase
 
         $this->assertChildrensHasKey($this->form, $data);
 
-        if (!$this->form->isValid()) {
-            echo $this->form->getErrors()->current()->getMessage();exit();
-        }
-//        $this->assertTrue($this->form->isValid());
+        $this->assertTrue($this->form->isValid());
     }
 
     /**
