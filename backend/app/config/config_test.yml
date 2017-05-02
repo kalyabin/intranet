@@ -4,6 +4,9 @@ imports:
 parameters:
     # в тестах отключить проверку на CSRF-заголовки
     csrf_protection_listener: HttpHelperBundle\Listener\IgnoreCsrfHeaderProtectionListener
+    # разрешить регистрацию в тестах
+    user.registration_enabled: true
+    user.change_email_enabled: true
 
 framework:
     test: ~
