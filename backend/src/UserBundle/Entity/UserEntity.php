@@ -3,6 +3,7 @@
 namespace UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
@@ -102,11 +103,11 @@ class UserEntity implements UserInterface
     private $checker;
 
     /**
-     * @ORM\Column(type="text", nullable=true, name="role_code")
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserRoleEntity", mappedBy="user", cascade={"persist", "remove"})
      *
-     * @var string JSON-массив ролей пользователя (по умолчанию - без ролей)
+     * @var UserRoleEntity[] Привязка к ролям пользователя
      */
-    private $roleCode = '[]';
+    private $role;
 
     /**
      * Конструктор
@@ -114,6 +115,7 @@ class UserEntity implements UserInterface
     public function __construct()
     {
         $this->checker = new ArrayCollection();
+        $this->role = new ArrayCollection();
     }
 
     /**
@@ -121,7 +123,7 @@ class UserEntity implements UserInterface
      *
      * @return integer[]
      */
-    public static function getStatusesList()
+    public static function getStatusesList(): array
     {
         return [self::STATUS_ACTIVE, self::STATUS_LOCKED, self::STATUS_NEED_ACTIVATION];
     }
@@ -143,7 +145,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function setName($name)
+    public function setName($name): self
     {
         $this->name = $name;
 
@@ -167,7 +169,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function setEmail($email)
+    public function setEmail($email): self
     {
         $this->email = $email;
 
@@ -191,7 +193,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function setPassword($password)
+    public function setPassword($password): self
     {
         $this->password = $password;
 
@@ -213,7 +215,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function generateSalt()
+    public function generateSalt(): self
     {
         if (empty($this->salt)) {
             $charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -247,7 +249,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function setSalt($salt)
+    public function setSalt($salt): self
     {
         $this->salt = $salt;
 
@@ -261,7 +263,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function setStatus($status)
+    public function setStatus($status): self
     {
         $this->status = $status;
 
@@ -281,9 +283,9 @@ class UserEntity implements UserInterface
     /**
      * Get checker
      *
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getChecker()
+    public function getChecker(): Collection
     {
         return $this->checker;
     }
@@ -310,12 +312,13 @@ class UserEntity implements UserInterface
      */
     public function getRoles(): array
     {
-        $decoder = new JsonDecode();
-        try {
-            return $decoder->decode($this->roleCode, JsonEncoder::FORMAT);
-        } catch (\Throwable $ex) {
-            return [];
+        $result = [];
+
+        foreach ($this->role as $roleEntity) {
+            $result[] = $roleEntity->getCode();
         }
+
+        return $result;
     }
 
     /**
@@ -323,7 +326,7 @@ class UserEntity implements UserInterface
      *
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
     }
@@ -333,7 +336,7 @@ class UserEntity implements UserInterface
      *
      * @return bool
      */
-    public function isNeedActivation()
+    public function isNeedActivation(): bool
     {
         return $this->status == self::STATUS_NEED_ACTIVATION;
     }
@@ -343,7 +346,7 @@ class UserEntity implements UserInterface
      *
      * @return bool
      */
-    public function isLocked()
+    public function isLocked(): bool
     {
         return $this->status == self::STATUS_LOCKED;
     }
@@ -355,7 +358,7 @@ class UserEntity implements UserInterface
      *
      * @return UserEntity
      */
-    public function addChecker(\UserBundle\Entity\UserCheckerEntity $checker)
+    public function addChecker(\UserBundle\Entity\UserCheckerEntity $checker): self
     {
         $this->checker[] = $checker;
 
@@ -370,37 +373,6 @@ class UserEntity implements UserInterface
     public function removeChecker(\UserBundle\Entity\UserCheckerEntity $checker)
     {
         $this->checker->removeElement($checker);
-    }
-
-    /**
-     * Получить коды ролей в виде строки
-     *
-     * @return string
-     */
-    public function getRoleCode(): string
-    {
-        return $this->roleCode;
-    }
-
-    /**
-     * Установить коды ролей в виде строки
-     *
-     * @param string $roleCode
-     */
-    public function setRole(string $roleCode)
-    {
-        $this->roleCode = $roleCode;
-    }
-
-    /**
-     * Установить коды ролей в виде массива
-     *
-     * @param array $roleCode
-     */
-    public function setRoleArray(array $roleCode)
-    {
-        $encoder = new JsonEncoder();
-        $this->roleCode = $encoder->encode($roleCode, JsonEncoder::FORMAT);
     }
 
     /**
@@ -432,5 +404,52 @@ class UserEntity implements UserInterface
                 $this->removeChecker($checker);
             }
         }
+    }
+
+    /**
+     * Очистка всех ролей
+     *
+     * @return UserEntity
+     */
+    public function clearRoles(): self
+    {
+        $this->role->clear();
+
+        return $this;
+    }
+
+    /**
+     * Add role
+     *
+     * @param \UserBundle\Entity\UserRoleEntity $role
+     *
+     * @return UserEntity
+     */
+    public function addRole(\UserBundle\Entity\UserRoleEntity $role): self
+    {
+        $role->setUser($this);
+        $this->role[] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param \UserBundle\Entity\UserRoleEntity $role
+     */
+    public function removeRole(\UserBundle\Entity\UserRoleEntity $role)
+    {
+        $this->role->removeElement($role);
+    }
+
+    /**
+     * Get role
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRole(): Collection
+    {
+        return $this->role;
     }
 }
