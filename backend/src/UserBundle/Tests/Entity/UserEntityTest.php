@@ -58,6 +58,21 @@ class UserEntityTest extends WebTestCase
             ->setPassword($password)
             ->setStatus($status);
 
+        $this->assertInternalType('array', $model->getRoles());
+        $this->assertEmpty($model->getRoles());
+
+        // установка фальшивого JSON в ролях не приведет к ошибке
+        $model->setRole('wrong json array');
+        $this->assertInternalType('array', $model->getRoles());
+        $this->assertEmpty($model->getRoles());
+
+        // установка нормального массива ролей
+        $model->setRoleArray(['TEST1', 'TEST2']);
+        $this->assertInternalType('array', $model->getRoles());
+        $this->assertCount(2, $model->getRoles());
+        $this->assertContains('TEST1', $model->getRoles());
+        $this->assertContains('TEST2', $model->getRoles());
+
         $this->assertEquals($email, $model->getEmail());
         $this->assertEquals($name, $model->getName());
         $this->assertEquals($password, $model->getPassword());

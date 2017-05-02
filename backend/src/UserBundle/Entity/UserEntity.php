@@ -5,6 +5,8 @@ namespace UserBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Validator\Constraints as Assert;
 use UserBundle\Validator\Constraints\UserEmail;
 
@@ -98,6 +100,13 @@ class UserEntity implements UserInterface
      * @var UserCheckerEntity[] Привязка к модели проверки пользователя
      */
     private $checker;
+
+    /**
+     * @ORM\Column(type="text", nullable=true, name="role_code")
+     *
+     * @var string JSON-массив ролей пользователя (по умолчанию - без ролей)
+     */
+    private $roleCode = '[]';
 
     /**
      * Конструктор
@@ -297,11 +306,16 @@ class UserEntity implements UserInterface
     /**
      * Роли пользователя
      *
-     * @return array
+     * @return string[]
      */
-    public function getRoles()
+    public function getRoles(): array
     {
-        return [];
+        $decoder = new JsonDecode();
+        try {
+            return $decoder->decode($this->roleCode, JsonEncoder::FORMAT);
+        } catch (\Throwable $ex) {
+            return [];
+        }
     }
 
     /**
@@ -356,6 +370,37 @@ class UserEntity implements UserInterface
     public function removeChecker(\UserBundle\Entity\UserCheckerEntity $checker)
     {
         $this->checker->removeElement($checker);
+    }
+
+    /**
+     * Получить коды ролей в виде строки
+     *
+     * @return string
+     */
+    public function getRoleCode(): string
+    {
+        return $this->roleCode;
+    }
+
+    /**
+     * Установить коды ролей в виде строки
+     *
+     * @param string $roleCode
+     */
+    public function setRole(string $roleCode)
+    {
+        $this->roleCode = $roleCode;
+    }
+
+    /**
+     * Установить коды ролей в виде массива
+     *
+     * @param array $roleCode
+     */
+    public function setRoleArray(array $roleCode)
+    {
+        $encoder = new JsonEncoder();
+        $this->roleCode = $encoder->encode($roleCode, JsonEncoder::FORMAT);
     }
 
     /**
