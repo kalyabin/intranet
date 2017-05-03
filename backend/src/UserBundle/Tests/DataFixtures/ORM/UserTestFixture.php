@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use UserBundle\Entity\UserRoleEntity;
 use UserBundle\Utils\UserManager;
 
 /**
@@ -44,6 +45,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setName('Testing user')
             ->setEmail('testing@test.ru')
             ->setPassword('testpassword')
+            ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->generateSalt();
 
         $userService->encodeUserPassword($activeUser, $activeUser->getPassword());
@@ -56,6 +58,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setName('Need activation user')
             ->setEmail('inactive@test.ru')
             ->setPassword('testpassword')
+            ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->generateSalt();
 
         $userService->encodeUserPassword($inactiveUser, $inactiveUser->getPassword());
@@ -78,17 +81,38 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setName('Locked user')
             ->setEmail('locked@test.ru')
             ->setPassword('testpassword')
+            ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->generateSalt();
 
         $userService->encodeUserPassword($lockedUser, $lockedUser->getPassword());
 
+        // создать супер-админа
+        $superadmin = new UserEntity();
+
+        $superadmin
+            ->setStatus(UserEntity::STATUS_ACTIVE)
+            ->setName('superadmin')
+            ->setEmail('superadmin@test.ru')
+            ->setPassword('testpassword')
+            ->setUserType(UserEntity::TYPE_MANAGER)
+            ->generateSalt();
+
+        $role = new UserRoleEntity();
+        $role->setCode('SUPERADMIN');
+
+        $superadmin->addRole($role);
+
+        $userService->encodeUserPassword($superadmin, $superadmin->getPassword());
+
         $manager->persist($lockedUser);
         $manager->persist($activeUser);
         $manager->persist($inactiveUser);
+        $manager->persist($superadmin);
         $manager->flush();
 
         $this->addReference('locked-user', $lockedUser);
         $this->addReference('inactive-user', $inactiveUser);
         $this->addReference('active-user', $activeUser);
+        $this->addReference('superadmin-user', $superadmin);
     }
 }

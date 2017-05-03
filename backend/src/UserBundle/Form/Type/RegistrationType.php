@@ -7,6 +7,8 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use UserBundle\Entity\UserEntity;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,6 +35,14 @@ class RegistrationType extends AbstractType
                 'first_options' => ['label' => 'Пароль'],
                 'second_options' => ['label' => 'Повторите пароль'],
             ]);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
+            // регистрируемый тип пользователей - только арендаторы
+            // менеджеры регистрироваться не могут
+            /** @var UserEntity $entity */
+            $entity = $event->getForm()->getData();
+            $entity->setUserType(UserEntity::TYPE_CUSTOMER);
+        });
     }
 
     /**

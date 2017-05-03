@@ -35,14 +35,15 @@ class UserEntityTest extends WebTestCase
      * @covers UserEntity::setPassword()
      * @covers UserEntity::setStatus()
      * @covers UserEntity::setSalt()
+     * @covers UserEntity::setUserType()
      * @covers UserEntity::generateSalt()
-     * @covers UserEntity::getRoles()
      *
      * @covers UserEntity::getEmail()
      * @covers UserEntity::getName()
      * @covers UserEntity::getPassword()
      * @covers UserEntity::getStatus()
      * @covers UserEntity::getSalt()
+     * @covers UserEntity::getUserType()
      */
     public function testMe()
     {
@@ -52,18 +53,21 @@ class UserEntityTest extends WebTestCase
         $name = 'Test name';
         $password = 'test password';
         $status = UserEntity::STATUS_ACTIVE;
+        $type = UserEntity::TYPE_CUSTOMER;
 
         $model
             ->setEmail($email)
             ->setName($name)
             ->setPassword($password)
-            ->setStatus($status);
+            ->setStatus($status)
+            ->setUserType($type);
 
         $this->assertEmpty($model->getRoles());
         $this->assertEquals($email, $model->getEmail());
         $this->assertEquals($name, $model->getName());
         $this->assertEquals($password, $model->getPassword());
         $this->assertEquals($status, $model->getStatus());
+        $this->assertEquals($type, $model->getUserType());
 
         $model->setSalt('test salt');
         $this->assertEquals('test salt', $model->getSalt());

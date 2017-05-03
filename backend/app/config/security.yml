@@ -29,7 +29,6 @@ security:
             - FINANCE_MANAGEMENT
             - MAINTAINCE_MANAGEMENT
             - BOOKER_MANAGEMENT
-            - MANAGEMENT
 
         CUSTOMER_ADMIN:
             - USER_CUSTOMER

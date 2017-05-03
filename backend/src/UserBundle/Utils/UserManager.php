@@ -11,6 +11,7 @@ use UserBundle\Entity\UserEntity;
 use UserBundle\Event\UserActivationEvent;
 use UserBundle\Event\UserChangedPasswordEvent;
 use UserBundle\Event\UserChangeEmailEvent;
+use UserBundle\Event\UserCreationEvent;
 use UserBundle\Event\UserRegistrationEvent;
 use UserBundle\Event\UserRememberPasswordEvent;
 
@@ -96,7 +97,7 @@ class UserManager
      *
      * @return UserEntity
      */
-    public function registerUser(UserEntity $user)
+    public function registerUser(UserEntity $user): UserEntity
     {
         if (!empty($user->getId())) {
             throw new InvalidArgumentException('User already registered');
@@ -147,7 +148,7 @@ class UserManager
      *
      * @return UserEntity
      */
-    public function activateUser(UserEntity $user)
+    public function activateUser(UserEntity $user): UserEntity
     {
         $user->setStatus(UserEntity::STATUS_ACTIVE);
         $this->removeCheckerByType($user, UserCheckerEntity::TYPE_ACTIVATION_CODE);
@@ -169,7 +170,7 @@ class UserManager
      *
      * @return UserEntity
      */
-    public function rememberPassword(UserEntity $user)
+    public function rememberPassword(UserEntity $user): UserEntity
     {
         $checker = $this->createCheckerByType(UserCheckerEntity::TYPE_REMEMBER_PASSWORD, $user);
 
@@ -273,7 +274,7 @@ class UserManager
      *
      * @return bool
      */
-    public function changeUserEmail(UserEntity $user, $newEmail)
+    public function changeUserEmail(UserEntity $user, $newEmail): bool
     {
         if ($user->getEmail() != $newEmail) {
             $this->removeCheckerByType($user, UserCheckerEntity::TYPE_CHANGE_EMAIL);
@@ -318,7 +319,7 @@ class UserManager
      *
      * @return bool
      */
-    public function updateUserEmailFromChecker(UserEntity $user)
+    public function updateUserEmailFromChecker(UserEntity $user): bool
     {
         $checker = $user->getCheckerByType(UserCheckerEntity::TYPE_CHANGE_EMAIL);
 
@@ -339,5 +340,75 @@ class UserManager
         $this->entityManager->flush();
 
         return true;
+    }
+
+    /**
+     * Создать пользователя через админку.
+     *
+     * У пользователя должен быть установлен пароль, который будет задиспачен в событии.
+     * Если пользователь уже существует (установлен идентификатор) - генерирует исключение.
+     *
+     * @param UserEntity $user
+     *
+     * @return UserEntity
+     */
+    public function createUserByAdmin(UserEntity $user): UserEntity
+    {
+        if (!empty($user->getId())) {
+            throw new InvalidArgumentException('User already exists');
+        }
+
+        $user->setStatus(UserEntity::STATUS_ACTIVE);
+
+        $user->generateSalt();
+
+        // закодировать пароль
+        // но запомнить исходную версию для отправки в e-mail
+        $password = $user->getPassword();
+        $this->encodeUserPassword($user, $password);
+
+        $this->entityManager->persist($user);
+
+        $this->entityManager->flush();
+
+        // триггер
+        $event = new UserCreationEvent($user, $password);
+        $this->eventDispatcher->dispatch(UserCreationEvent::NAME, $event);
+
+        return $user;
+    }
+
+    /**
+     * Редактирование аккаунта администратором
+     *
+     * @param UserEntity $user
+     * @param bool $setNewPassword
+     *
+     * @return UserEntity
+     */
+    public function updateUserByAdmin(UserEntity $user, $setNewPassword = false): UserEntity
+    {
+        if (empty($user->getId())) {
+            throw new InvalidArgumentException('User is not exists');
+        }
+
+        $password = null;
+
+        // если был установлен новый пароль - запомнить его для отправки в письме
+        if ($setNewPassword) {
+            $password = $user->getPassword();
+            $this->encodeUserPassword($user, $password);
+        }
+
+        $this->entityManager->persist($user);
+
+        $this->entityManager->flush();
+
+        if ($setNewPassword && $password) {
+            $event = new UserChangedPasswordEvent($user, $password);
+            $this->eventDispatcher->dispatch(UserChangedPasswordEvent::NAME, $event);
+        }
+
+        return $user;
     }
 }

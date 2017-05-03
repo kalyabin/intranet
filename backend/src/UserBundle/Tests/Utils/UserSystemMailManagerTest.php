@@ -175,6 +175,27 @@ class UserSystemMailManagerTest extends WebTestCase
     }
 
     /**
+     * @covers UserSystemMailManager::sendWelcomeEmail()
+     */
+    public function testUserCreation()
+    {
+        /** @var UserEntity $user */
+        $user = $this->fixtures->getReference('active-user');
+
+        $password = 'testinguserpassword';
+
+        $result = $this->manager->sendWelcomeEmail($user, $password);
+
+        $this->assertInternalType('integer', $result);
+        $this->assertGreaterThan(0, $result);
+
+        $this->assertLastMessageEmails($user->getEmail(), 'testing@test.ru');
+
+        $this->assertLastMessageContains($user->getEmail());
+        $this->assertLastMessageContains($password);
+    }
+
+    /**
      * Тестирование отправки письма пользователю о регистрации
      *
      * @covers UserSystemMailManager::sendActivationEmail()

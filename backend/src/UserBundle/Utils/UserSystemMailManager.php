@@ -7,6 +7,7 @@ use UserBundle\Entity\UserEntity;
 use Symfony\Component\Templating\EngineInterface;
 use UserBundle\Event\UserChangedPasswordEvent;
 use UserBundle\Event\UserChangeEmailEvent;
+use UserBundle\Event\UserCreationEvent;
 use UserBundle\Event\UserRegistrationEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use UserBundle\Event\UserRememberPasswordEvent;
@@ -75,6 +76,7 @@ class UserSystemMailManager implements EventSubscriberInterface
             UserRememberPasswordEvent::NAME => 'onUserRememberPassword',
             UserChangedPasswordEvent::NAME => 'onUserChangePassword',
             UserChangeEmailEvent::NAME => 'onUserChangeEmail',
+            UserCreationEvent::NAME => 'onUserCreation'
         ];
     }
 
@@ -95,6 +97,29 @@ class UserSystemMailManager implements EventSubscriberInterface
         $this->lastMessage = $message;
 
         return $this->mailer->send($message);
+    }
+
+    /**
+     * Отправить пользователю приветственное письмо после создания аккаунта
+     *
+     * @param UserEntity $user Модель зарегистрированного пользователя
+     * @param string $password Пользовательский пароль
+     *
+     * @return integer
+     */
+    public function sendWelcomeEmail(UserEntity $user, string $password)
+    {
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Создан аккаунт')
+            ->setBody(
+                $this->templating->render('@user_emails/welcome.html.twig', [
+                    'user' => $user,
+                    'password' => $password
+                ]),
+                'text/html'
+            );
+
+        return $this->sendMessage($message, $user->getEmail());
     }
 
     /**
@@ -207,6 +232,16 @@ class UserSystemMailManager implements EventSubscriberInterface
     public function clearLastMessage()
     {
         $this->lastMessage = null;
+    }
+
+    /**
+     * Подписка на событие при создании пользователя через админку
+     *
+     * @param UserCreationEvent $event
+     */
+    public function onUserCreation(UserCreationEvent $event)
+    {
+        $this->sendWelcomeEmail($event->getUser(), $event->getPassword());
     }
 
     /**

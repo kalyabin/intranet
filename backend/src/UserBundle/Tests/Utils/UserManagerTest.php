@@ -6,6 +6,8 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use UserBundle\Entity\UserRoleEntity;
+use UserBundle\Event\UserCreationEvent;
 use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
@@ -72,6 +74,95 @@ class UserManagerTest extends WebTestCase
     }
 
     /**
+     * @covers UserManager::createUserByAdmin()
+     *
+     * @depends testEncodeUserPassword
+     */
+    public function testCreateUserByAdmin()
+    {
+        $user = new UserEntity();
+
+        $password = 'testpassword';
+        $email = 'test@test.ru';
+        $roleCode = 'CUSTOMER_ADMIN';
+
+        $user
+            ->setName('Tester')
+            ->setEmail($email)
+            ->setPassword($password)
+            ->setUserType(UserEntity::TYPE_CUSTOMER);
+
+        // добавление роли
+        $role = new UserRoleEntity();
+        $role->setCode($roleCode);
+
+        $user->addRole($role);
+
+        // должно создаться событие
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = $this->getContainer()->get('event_dispatcher');
+        $testCase = $this;
+        $dispatcher->addListener(UserCreationEvent::NAME, function(UserCreationEvent $event) use ($user, $password, $roleCode, $testCase, &$eventTriggered) {
+            $testCase->assertInstanceOf(UserEntity::class, $event->getUser());
+            $testCase->assertInternalType('string', $event->getPassword());
+            $testCase->assertNotEmpty($event->getUser()->getRoles());
+            $testCase->assertContains($roleCode, $event->getUser()->getRoles());
+            $testCase->assertEquals($password, $event->getPassword());
+            $testCase->assertEquals($user->getId(), $event->getUser()->getId());
+            $eventTriggered = true;
+        });
+
+        $this->assertInstanceOf(UserEntity::class, $this->manager->createUserByAdmin($user));
+        $this->assertGreaterThan(0, $user->getId());
+
+        // событие было создано
+        $this->assertTrue($eventTriggered);
+
+        $this->assertTrue($user->isActive());
+        $this->assertFalse($user->isLocked());
+        $this->assertFalse($user->isNeedActivation());
+    }
+
+    /**
+     * @covers UserManager::updateUserByAdmin()
+     *
+     * @depends testEncodeUserPassword
+     */
+    public function testUpdateUserByAdmin()
+    {
+        /** @var UserEntity $user */
+        $user = $this->fixtures->getReference('active-user');
+
+        // подписка на диспатчер, чтобы понимать был ли изменен пароль или нет
+        $eventPassword = null;
+        $eventTriggered = false;
+
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = $this->getContainer()->get('event_dispatcher');
+        $dispatcher->addListener(UserChangedPasswordEvent::NAME, function(UserChangedPasswordEvent $event) use ($user, &$eventPassword, &$eventTriggered) {
+            if ($user->getId() == $event->getUser()->getId()) {
+                $eventTriggered = true;
+                $eventPassword = $event->getNewPassword();
+            }
+        });
+
+        // сначала просто меняем роли, при этом событие на изменение пароля не должно прийти
+        $role = new UserRoleEntity();
+        $role->setCode('CUSTOMER_ADMIN');
+
+        $this->assertInstanceOf(UserEntity::class, $this->manager->updateUserByAdmin($user));
+        $this->assertFalse($eventTriggered);
+        $this->assertNull($eventPassword);
+
+        // меняем пароль должно стригериться событие на изменение
+        $password = 'newpassworduser';
+        $user->setPassword($password);
+        $this->assertInstanceOf(UserEntity::class, $this->manager->updateUserByAdmin($user, true));
+        $this->assertTrue($eventTriggered);
+        $this->assertEquals($eventPassword, $password);
+    }
+
+    /**
      * Проверка метода registerUser
      *
      * @covers UserManager::registerUser()
@@ -89,6 +180,7 @@ class UserManagerTest extends WebTestCase
             ->setName('Tester')
             ->setEmail('test@test.ru')
             ->setPassword('testpassword')
+            ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->setStatus(UserEntity::STATUS_ACTIVE);
 
         $this->assertTrue($user->isActive());

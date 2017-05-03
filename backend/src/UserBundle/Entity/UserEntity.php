@@ -6,8 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Validator\Constraints as Assert;
 use UserBundle\Validator\Constraints\UserEmail;
 
@@ -19,7 +17,7 @@ use UserBundle\Validator\Constraints\UserEmail;
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  */
-class UserEntity implements UserInterface
+class UserEntity implements UserInterface, \JsonSerializable
 {
     /**
      * Статус пользователя - активен
@@ -37,6 +35,16 @@ class UserEntity implements UserInterface
     const STATUS_LOCKED = -1;
 
     /**
+     * Тип пользователя - сотрудник
+     */
+    const TYPE_MANAGER = 'manager';
+
+    /**
+     * Тип пользователя - арендатор
+     */
+    const TYPE_CUSTOMER = 'customer';
+
+    /**
      * @ORM\Column(type="bigint", nullable=false)
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -44,6 +52,17 @@ class UserEntity implements UserInterface
      * @var integer Идентификатор пользователя
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=50, name="user_type", nullable=false)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(max=50)
+     * @Assert\Choice(callback="getUserTypes")
+     *
+     * @var string Тип пользователя
+     */
+    private $userType;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=false)
@@ -136,6 +155,30 @@ class UserEntity implements UserInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Установить тип пользователя
+     *
+     * @param string $type
+     *
+     * @return UserEntity
+     */
+    public function setUserType($type): self
+    {
+        $this->userType = $type;
+
+        return $this;
+    }
+
+    /**
+     * Получить тип пользователя
+     *
+     * @return string
+     */
+    public function getUserType()
+    {
+        return $this->userType;
     }
 
     /**
@@ -306,7 +349,7 @@ class UserEntity implements UserInterface
     }
 
     /**
-     * Роли пользователя
+     * Коды ролей пользователя
      *
      * @return string[]
      */
@@ -451,5 +494,30 @@ class UserEntity implements UserInterface
     public function getRole(): Collection
     {
         return $this->role;
+    }
+
+    /**
+     * Получить типы пользователей
+     *
+     * @return string[]
+     */
+    public function getUserTypes(): array
+    {
+        return [self::TYPE_CUSTOMER, self::TYPE_MANAGER];
+    }
+
+    /**
+     * Сериализация объекта для вывода в REST
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'status' => $this->getStatus(),
+            'name' => $this->getName(),
+            'email' => $this->getEmail(),
+            'type' => $this->getUserType(),
+            'roles' => $this->getRoles()
+        ];
     }
 }

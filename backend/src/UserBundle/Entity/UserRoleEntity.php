@@ -10,6 +10,7 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use UserBundle\Validator\Constraints\UserRole;
 
 /**
  * Роли пользователя
@@ -26,8 +27,6 @@ class UserRoleEntity
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\UserEntity", inversedBy="role")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      *
-     * @Assert\NotBlank()
-     *
      * @var UserEntity Привязка к пользователю
      */
     private $user;
@@ -38,6 +37,7 @@ class UserRoleEntity
      *
      * @Assert\NotBlank()
      * @Assert\Length(max="50")
+     * @UserRole(message="Несуществующая роль для данного типа пользователей", userTypeCallback="getUserType")
      *
      * @var string Код роли
      */
@@ -62,7 +62,7 @@ class UserRoleEntity
      *
      * @return string
      */
-    public function getCode(): string
+    public function getCode()
     {
         return $this->code;
     }
@@ -86,8 +86,18 @@ class UserRoleEntity
      *
      * @return \UserBundle\Entity\UserEntity
      */
-    public function getUser(): UserEntity
+    public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Получить тип пользователя для валидации роли
+     *
+     * @return string
+     */
+    public function getUserType()
+    {
+        return $this->getUser() ? $this->getUser()->getUserType() : '';
     }
 }

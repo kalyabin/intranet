@@ -1,14 +1,17 @@
 parameters:
     authentication_listener: UserBundle\Listener\AuthenticationListener
     validator.user_email_validator: UserBundle\Validator\Constraints\UserEmailValidator
+    validator.user_role_validator: UserBundle\Validator\Constraints\UserRoleValidator
     user.mailer: UserBundle\Utils\UserSystemMailManager
     user.manager: UserBundle\Utils\UserManager
+    user.roles_manager: UserBundle\Utils\RolesManager
     user.provider: UserBundle\Security\UserProvider
     user.simple_authenticator: UserBundle\Security\SimpleAuthenticator
     user.registration_controller: UserBundle\Controller\RegistrationController
     user.login_controller: UserBundle\Controller\LoginController
     user.remember_password_controller: UserBundle\Controller\RememberPasswordController
     user.dashboard_controller: UserBundle\Controller\DashboardController
+    user.manager_controller: UserBundle\Controller\ManagerController
     user.default_from_email: 'mail@domain.ltd'
     user.registration_enabled: true
     user.change_email_enabled: true
@@ -28,12 +31,23 @@ services:
         tags:
             - { name: validator.constraint_validator }
 
+    # Валидатор ролей пользователей
+    validator.user_role_validator:
+        class: '%validator.user_role_validator%'
+        arguments: ['@user.roles_manager']
+        tags:
+            - { name: validator.constraint_validator }
+
     # Мейлер для системных уведомлений пользователю
     user.mailer:
         class: '%user.mailer%'
         arguments: ['@mailer', '@templating', '%user.default_from_email%']
         tags:
             - { name: kernel.event_subscriber }
+
+    # Менеджер ролей
+    user.roles_manager:
+        class: '%user.roles_manager%'
 
     # Менеджер пользователей
     user.manager:
@@ -59,6 +73,12 @@ services:
         arguments: ['@user.manager', '@user.mailer', '%user.registration_enabled%']
         calls:
             - [ setContainer, [ '@service_container' ] ]
+
+    user.manager_controller:
+        class: '%user.manager_controller%'
+        arguments: ['@user.manager']
+        calls:
+            - [ setContainer, ['@service_container'] ]
 
     # Контроллер авторизации
     user.login_controller:
