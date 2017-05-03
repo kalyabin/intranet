@@ -6,38 +6,38 @@ security:
         # Описание ролей:
         # USER_MANAGEMENT - управление пользователями
         # RENT_MANAGEMENT - управление службой аренды
-        # TICKET_IT_MANAGEMENT - управление тикетной системой IT-поддержки
-        # TICKET_FINANCE_MANAGEMENT - управление тикетной системы Финансовой службы
-        # TICKET_MAINTAINCE_MANAGEMENT - управление тикетной системы службы эксплуатации
-        # TICKET_BOOKER_MANAGEMENT - управление тикетной системы SMART-бухгалтера
+        # IT_MANAGEMENT - управление тикетной системой IT-поддержки
+        # FINANCE_MANAGEMENT - управление тикетной системы Финансовой службы
+        # MAINTAINCE_MANAGEMENT - управление тикетной системы службы эксплуатации
+        # BOOKER_MANAGEMENT - управление тикетной системы SMART-бухгалтера
         # STORAGE_MANAGEMENT - управление складом
         # DOCUMENT_MANAGEMENT - управление документами
-        # USERS - управление собственными пользователями
-        # IT_TICKETS - пользование IT-аутсорсингом (доступ опциональный по договору)
-        # FINANCE_TICKETS - пользование тикетной системой финансовой службы
-        # BOOKER_TICKETS - пользование услугой SMART-бухгалтер (доступ опциональный по договору)
-        # MAINTAINCE_TICKETS - пользование тикетной системой службы эксплуатации
-        # DOCUMENTS - просмотр собственных документов
-        # RENT - заказ в службе аренды
-        # STORAGE - заказ на складе
+        # USER_CUSTOMER - управление собственными пользователями
+        # IT_CUSTOMER - пользование IT-аутсорсингом (доступ опциональный по договору)
+        # FINANCE_CUSTOMER - пользование тикетной системой финансовой службы
+        # BOOKER_CUSTOMER - пользование услугой SMART-бухгалтер (доступ опциональный по договору)
+        # MAINTAINCE_CUSTOMER - пользование тикетной системой службы эксплуатации
+        # DOCUMENT_CUSTOMER - просмотр собственных документов
+        # RENT_CUSTOMER - заказ в службе аренды
+        # STORAGE_CUSTOMER - заказ на складе
         SUPERADMIN:
             - USER_MANAGEMENT
             - RENT_MANAGEMENT
             - STORAGE_MANAGEMENT
             - DOCUMENT_MANAGEMENT
-            - TICKET_IT_MANAGEMENT
-            - TICKET_FINANCE_MANAGEMENT
-            - TICKET_MAINTAINCE_MANAGEMENT
-            - TICKET_BOOKER_MANAGEMENT
-            - TICKET_MANAGEMENT
+            - IT_MANAGEMENT
+            - FINANCE_MANAGEMENT
+            - MAINTAINCE_MANAGEMENT
+            - BOOKER_MANAGEMENT
+            - MANAGEMENT
 
         CUSTOMER_ADMIN:
-            - USERS
-            - FINANCE_TICKETS
-            - MAINTAINCE_TICKETS
-            - DOCUMENTS
-            - RENT
-            - STORAGE
+            - USER_CUSTOMER
+            - FINANCE_CUSTOMER
+            - MAINTAINCE_CUSTOMER
+            - DOCUMENT_CUSTOMER
+            - RENT_CUSTOMER
+            - STORAGE_CUSTOMER
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
