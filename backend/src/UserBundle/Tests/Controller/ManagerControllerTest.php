@@ -3,6 +3,7 @@
 namespace UserBundle\Tests\Controller;
 
 
+use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\JsonResponseTestTrait;
@@ -25,11 +26,35 @@ class ManagerControllerTest extends WebTestCase
      */
     protected $em;
 
+    /**
+     * @var ReferenceRepository
+     */
+    protected $fixtures;
+
     protected function setUp()
     {
         parent::setUp();
 
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+    }
+
+    protected function assertNonAuthenticatedUsers($method, $url, $postData = [])
+    {
+        $nonAdminUser = $this->fixtures->getReference('active-user');
+
+        $client = $this->createClient();
+
+        // неавторизованный пользователь должен видеть 401 ошибку
+        $client->request($method, $url, $postData);
+        $this->assertStatusCode(401, $client);
+
+        // авторизованный пользователь но не админ должен получить 403-ю ошибку
+        $this->loginAs($nonAdminUser, 'main');
+
+        $client = static::makeClient();
+        $client->request($method, $url, $postData);
+        $this->assertStatusCode(403, $client);
     }
 
     /**
@@ -39,14 +64,10 @@ class ManagerControllerTest extends WebTestCase
      */
     public function testCreateAction()
     {
-        $fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $url = $this->getUrl('user.manager.create');
 
-        /** @var UserEntity $nonAdminUser */
-        $nonAdminUser = $fixtures->getReference('active-user');
         /** @var UserEntity $superAdminUser */
-        $superAdminUser = $fixtures->getReference('superadmin-user');
-
-        $client = $this->createClient();
+        $superAdminUser = $this->fixtures->getReference('superadmin-user');
 
         $invalidPostData = [
             'user' => [],
@@ -66,29 +87,20 @@ class ManagerControllerTest extends WebTestCase
             ]
         ];
 
-        // неавторизованный пользователь должен видеть 401 ошибку
-        $client->request('POST', $this->getUrl('user.manager.create'), $validPostData);
-        $this->assertStatusCode(401, $client);
-
-        // авторизованный пользователь но не админ должен получить 403-ю ошибку
-        $this->loginAs($nonAdminUser, 'main');
-
-        $client = static::makeClient();
-        $client->request('POST', $this->getUrl('user.manager.create'), $validPostData);
-        $this->assertStatusCode(403, $client);
+        $this->assertNonAuthenticatedUsers('POST', $url, $validPostData);
 
         // от супер-админа попробовать пробросить ошибочный запрос
         $this->loginAs($superAdminUser, 'main');
 
         $client = static::makeClient();
-        $client->request('POST', $this->getUrl('user.manager.create'), $invalidPostData);
+        $client->request('POST', $url, $invalidPostData);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
         $this->assertArrayHasKey('user', $jsonData);
         $this->assertNull($jsonData['user']);
 
         // от супер-админа пробросить нормальный запрос
-        $client->request('POST', $this->getUrl('user.manager.create'), $validPostData);
+        $client->request('POST', $url, $validPostData);
         $this->assertStatusCode(200, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
         $this->assertArrayHasKey('user', $jsonData);
@@ -108,16 +120,10 @@ class ManagerControllerTest extends WebTestCase
      */
     public function testUpdateAction()
     {
-        $fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
-
         /** @var UserEntity $user */
-        $user = $fixtures->getReference('inactive-user');
-        /** @var UserEntity $nonAdminUser */
-        $nonAdminUser = $fixtures->getReference('active-user');
+        $user = $this->fixtures->getReference('inactive-user');
         /** @var UserEntity $superAdminUser */
-        $superAdminUser = $fixtures->getReference('superadmin-user');
-
-        $client = $this->createClient();
+        $superAdminUser = $this->fixtures->getReference('superadmin-user');
 
         $invalidPostData = [
             'user' => [],
@@ -142,16 +148,7 @@ class ManagerControllerTest extends WebTestCase
             'id' => $user->getId()
         ]);
 
-        // неавторизованный пользователь должен видеть 401 ошибку
-        $client->request('POST', $url, $validPostData);
-        $this->assertStatusCode(401, $client);
-
-        // авторизованный пользователь но не админ должен получить 403-ю ошибку
-        $this->loginAs($nonAdminUser, 'main');
-
-        $client = static::makeClient();
-        $client->request('POST', $url, $validPostData);
-        $this->assertStatusCode(403, $client);
+        $this->assertNonAuthenticatedUsers('POST', $url, $validPostData);
 
         // от супер-админа попробовать пробросить ошибочный запрос
         $this->loginAs($superAdminUser, 'main');
@@ -182,5 +179,87 @@ class ManagerControllerTest extends WebTestCase
         $expectedUser = $repository->findOneById($user->getId());
         $this->assertInstanceOf(UserEntity::class, $expectedUser);
         $this->assertTrue($expectedUser->isActive());
+    }
+
+    /**
+     * @covers ManagerController::listAction()
+     */
+    public function testListAction()
+    {
+        $pageNum = 2;
+        $pageSize = 1;
+
+        $url = $this->getUrl('user.manager.list', [
+            'pageNum' => $pageNum,
+            'pageSize' => $pageSize
+        ]);
+
+        $allUsers = $this->fixtures->getReferences();
+        $expectedCount = count($allUsers);
+
+        /** @var UserEntity $superAdminUser */
+        $superAdminUser = $this->fixtures->getReference('superadmin-user');
+
+        $this->assertNonAuthenticatedUsers('GET', $url);
+
+        // от супер-админа пробросить нормальный запрос
+        $this->loginAs($superAdminUser, 'main');
+
+        $client = static::makeClient();
+        $client->request('GET', $url);
+        $this->assertStatusCode(200, $client);
+
+        $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
+        $this->assertArrayHasKey('list', $jsonData);
+        $this->assertArrayHasKey('pageSize', $jsonData);
+        $this->assertArrayHasKey('pageNum', $jsonData);
+        $this->assertArrayHasKey('totalCount', $jsonData);
+        $this->assertInternalType('array', $jsonData['list']);
+        $this->assertInternalType('integer', $jsonData['pageSize']);
+        $this->assertInternalType('integer', $jsonData['pageNum']);
+        $this->assertInternalType('integer', $jsonData['totalCount']);
+        $this->assertCount($pageSize, $jsonData['list']);
+        $this->assertEquals($pageSize, $jsonData['pageSize']);
+        $this->assertEquals($pageNum, $jsonData['pageNum']);
+        $this->assertEquals($expectedCount, $jsonData['totalCount']);
+
+        foreach ($jsonData['list'] as $item) {
+            $this->assertInternalType('array', $item);
+            $this->assertArrayHasKey('id', $item);
+            $this->assertArrayHasKey('email', $item);
+        }
+    }
+
+    /**
+     * @covers ManagerController::detailsAction()
+     */
+    public function testDetailsAction()
+    {
+        /** @var UserEntity $user */
+        $user = $this->fixtures->getReference('active-user');
+        /** @var UserEntity $superAdminUser */
+        $superAdminUser = $this->fixtures->getReference('superadmin-user');
+
+        $url = $this->getUrl('user.manager.details', [
+            'id' => $user->getId()
+        ]);
+
+        $this->assertNonAuthenticatedUsers('GET', $url);
+
+        // от супер-админа
+        $this->loginAs($superAdminUser, 'main');
+
+        $client = static::makeClient();
+        $client->request('GET', $url);
+        $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
+        $this->assertArrayHasKey('user', $jsonData);
+        $this->assertArrayHasKey('roles', $jsonData);
+        $this->assertArrayHasKey('status', $jsonData);
+        $this->assertInternalType('array', $jsonData['user']);
+        $this->assertInternalType('array', $jsonData['roles']);
+        $this->assertInternalType('integer', $jsonData['status']);
+        $this->assertArrayHasKey('id', $jsonData['user']);
+        $this->assertEquals($user->getId(), $jsonData['user']['id']);
+        $this->assertEquals($user->getStatus(), $jsonData['status']);
     }
 }

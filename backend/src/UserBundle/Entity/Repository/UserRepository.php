@@ -13,6 +13,20 @@ use UserBundle\Entity\UserEntity;
 class UserRepository extends EntityRepository
 {
     /**
+     * Получить общее количество элементов
+     *
+     * @return integer
+     */
+    public function getTotalCount()
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        return (int) $queryBuilder->select($queryBuilder->expr()->count('u.id'))
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Получить пользователя по идентификатору
      *
      * Возвращает null если пользователь не найден

@@ -88,4 +88,23 @@ class UserRepositoryTest extends WebTestCase
         $this->assertFalse($this->repository->userIsExistsByEmail('non-existent@email.ru'));
         $this->assertFalse($this->repository->userIsExistsByEmail($user->getEmail(), $user->getId()));
     }
+
+    /**
+     * Тестирование получения общего количества пользователей
+     *
+     * @covers UserRepository::getTotalCount()
+     */
+    public function testGetTotalCount()
+    {
+        /** @var UserEntity[] $users */
+        $users = $this->loadFixtures([
+            UserTestFixture::class,
+        ])->getReferenceRepository()->getReferences();
+
+        $expectedCount = count($users);
+        $count = $this->repository->getTotalCount();
+
+        $this->assertGreaterThan(0, $expectedCount);
+        $this->assertEquals($expectedCount, $count);
+    }
 }

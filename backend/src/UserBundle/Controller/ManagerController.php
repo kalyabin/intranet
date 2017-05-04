@@ -152,6 +152,46 @@ class ManagerController extends Controller
     }
 
     /**
+     * Получить список пользователей с постраничной навигацией.
+     *
+     * В $_GET нужно передать:
+     * - pageSize - размер одной страницы (не более 500 штук);
+     * - pageNum - номер текущей страницы начиная с 1;
+     *
+     * Все параметры опциональные.
+     *
+     * @Method({"GET"})
+     * @Route("/user/manager/list", options={"expose": true}, name="user.manager.list")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function listAction(Request $request): JsonResponse
+    {
+        $pageSize = (int) $request->get('pageSize', 500);
+        $pageSize = min(100, $pageSize);
+
+        $pageNum = (int) $request->get('pageNum', 1);
+        $offset = $pageNum - 1;
+        $offset = max(0, $offset);
+
+        /** @var UserRepository $repository */
+        $repository = $this->userManager->getEntityManager()->getRepository(UserEntity::class);
+
+        $totalCount = $repository->getTotalCount();
+        /** @var UserEntity[] $list */
+        $list = $repository->findBy([], [], $pageSize, $offset * $pageNum);
+
+        return new JsonResponse([
+            'list' => $list,
+            'pageSize' => $pageSize,
+            'pageNum' => $pageNum,
+            'totalCount' => $totalCount,
+        ]);
+    }
+
+    /**
      * Получить карточку пользователя.
      *
      * @Method({"GET"})
@@ -165,6 +205,10 @@ class ManagerController extends Controller
     {
         $user = $this->getUserById($id);
 
-        return new JsonResponse(['user' => $user]);
+        return new JsonResponse([
+            'user' => $user,
+            'roles' => $user->getRoles(),
+            'status' => $user->getStatus(),
+        ]);
     }
 }
