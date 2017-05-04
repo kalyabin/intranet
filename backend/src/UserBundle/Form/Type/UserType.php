@@ -4,6 +4,7 @@ namespace UserBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -49,22 +50,53 @@ class UserType extends AbstractType
                 'allow_extra_fields' => true,
                 'constraints' => [new Valid()]
             ])
+            ->add('isTemporaryPassword', CheckboxType::class, [
+                'label' => 'Сгенерировать временный пароль'
+            ])
             ->add('password', PasswordType::class, [
                 'label' => 'Пароль пользователя'
             ]);
 
-        // добавить статус пользователя в форму, если пользователь уже существует
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) {
             /** @var UserEntity $entity */
             $entity = $event->getData();
 
             if ($entity->getId()) {
+                // добавить статус пользователя в форму, если пользователь уже существует
                 $event->getForm()->add('status', ChoiceType::class, [
                     'choices' => [
                         'Активен' => UserEntity::STATUS_ACTIVE,
                         'Заблокирован' => UserEntity::STATUS_LOCKED
                     ]
                 ]);
+
+                // удалить флаг временного пароля, если пользователь уже существует
+                $event->getForm()->remove('isTemporaryPassword');
+            }
+        });
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
+            /** @var array $data */
+            $data = $event->getData();
+            /** @var UserEntity $entity */
+            $entity = $event->getForm()->getData();
+
+            if (!$entity->getId() && !empty($data['isTemporaryPassword'])) {
+                // удалить поле с паролем, если устанавливается временный пароль для нового пользователя
+                $event->getForm()->remove('password');
+
+                // сгенерировать временный пароль
+                $generateRandomString = function() {
+                    $length = 10;
+                    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $charactersLength = strlen($characters);
+                    $randomString = '';
+                    for ($i = 0; $i < $length; $i++) {
+                        $randomString .= $characters[rand(0, $charactersLength - 1)];
+                    }
+                    return $randomString;
+                };
+                $entity->setPassword($generateRandomString());
             }
         });
     }

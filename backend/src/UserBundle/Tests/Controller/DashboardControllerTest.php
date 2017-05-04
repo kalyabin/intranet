@@ -76,6 +76,7 @@ class DashboardControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
         $this->assertTrue($jsonData['auth']);
         $this->assertInternalType('array', $jsonData['user']);
+        $this->assertInternalType('boolean', $jsonData['isTemporaryPassword']);
         $this->assertEquals($jsonData['user']['id'], $user->getId());
         $this->assertEquals($jsonData['user']['email'], $user->getEmail());
         $this->assertEquals($jsonData['user']['name'], $user->getName());

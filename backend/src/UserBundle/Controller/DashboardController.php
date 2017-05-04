@@ -94,12 +94,8 @@ class DashboardController extends Controller
         if ($user instanceof UserEntity) {
             $response->setData([
                 'auth' => true,
-                'user' => [
-                    'id' => $user->getId(),
-                    'name' => $user->getName(),
-                    'email' => $user->getEmail(),
-                    'status' => $user->getStatus(),
-                ]
+                'user' => $user,
+                'isTemporaryPassword' => $user->getIsTemporaryPassword(),
             ]);
         }
 

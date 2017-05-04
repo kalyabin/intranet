@@ -87,6 +87,13 @@ class UserEntity implements UserInterface, \JsonSerializable
     private $email;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     *
+     * @var boolean Флаг указывающий на временный пароль
+     */
+    private $isTemporaryPassword = false;
+
+    /**
      * @ORM\Column(type="string", length=100, nullable=false)
      *
      * @Assert\NotBlank()
@@ -227,6 +234,25 @@ class UserEntity implements UserInterface, \JsonSerializable
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsTemporaryPassword()
+    {
+        return $this->isTemporaryPassword;
+    }
+
+    /**
+     * @param boolean $isTemporaryPassword
+     *
+     * @return UserEntity
+     */
+    public function setIsTemporaryPassword($isTemporaryPassword): UserEntity
+    {
+        $this->isTemporaryPassword = (bool) $isTemporaryPassword;
+        return $this;
     }
 
     /**

@@ -53,6 +53,22 @@ class UserTypeTest extends FormWebTestCase
                         ]
                     ],
                 ],
+            ],
+            [
+                'data' => [
+                    'name' => 'testing',
+                    'email' => 'testusertype@test.ru',
+                    'isTemporaryPassword' => true,
+                    'userType' => UserEntity::TYPE_CUSTOMER,
+                    'role' => [
+                        [
+                            'code' => 'USER_CUSTOMER'
+                        ],
+                        [
+                            'code' => 'FINANCE_CUSTOMER'
+                        ]
+                    ],
+                ],
             ]
         ];
     }

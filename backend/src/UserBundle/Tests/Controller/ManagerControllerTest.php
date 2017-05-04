@@ -77,7 +77,8 @@ class ManagerControllerTest extends WebTestCase
             'user' => [
                 'name' => 'testing',
                 'email' => 'testcreateaction@test.ru',
-                'password' => 'userpassword',
+                // пароль как правило будет генерироваться автоматически
+                'isTemporaryPassword' => true,
                 'userType' => UserEntity::TYPE_CUSTOMER,
                 'role' => [
                     [
