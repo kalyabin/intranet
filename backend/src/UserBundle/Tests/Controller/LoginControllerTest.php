@@ -49,16 +49,13 @@ class LoginControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(401, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertArrayHasKey('loggedIn', $jsonData);
-        $this->assertArrayHasKey('isLocked', $jsonData);
-        $this->assertArrayHasKey('isNeedActivation', $jsonData);
-        $this->assertArrayHasKey('errorMessage', $jsonData);
-        $this->assertArrayHasKey('userId', $jsonData);
-        $this->assertFalse($jsonData['loggedIn']);
-        $this->assertFalse($jsonData['isLocked']);
-        $this->assertFalse($jsonData['isNeedActivation']);
-        $this->assertEquals('Неверный логин или пароль', $jsonData['errorMessage']);
-        $this->assertNull($jsonData['userId']);
+        $this->assertArraySubset([
+            'loggedIn' => false,
+            'isLocked' => false,
+            'isNeedActivation' => false,
+            'userId' => null,
+            'errorMessage' => 'Неверный логин или пароль'
+        ], $jsonData);
 
         // отправить неверный логин или пароль
         $client->request('POST', $url, [
@@ -67,11 +64,13 @@ class LoginControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(401, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['loggedIn']);
-        $this->assertFalse($jsonData['isLocked']);
-        $this->assertFalse($jsonData['isNeedActivation']);
-        $this->assertEquals('Неверный логин или пароль', $jsonData['errorMessage']);
-        $this->assertNull($jsonData['userId']);
+        $this->assertArraySubset([
+            'loggedIn' => false,
+            'isLocked' => false,
+            'isNeedActivation' => false,
+            'userId' => null,
+            'errorMessage' => 'Неверный логин или пароль'
+        ], $jsonData);
 
         // авторизоваться под неактивным пользователем
         $client->request('POST', $url, [
@@ -79,11 +78,13 @@ class LoginControllerTest extends WebTestCase
             '_password' => $password,
         ]);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['loggedIn']);
-        $this->assertFalse($jsonData['isLocked']);
-        $this->assertTrue($jsonData['isNeedActivation']);
-        $this->assertEquals('Требуется активация', $jsonData['errorMessage']);
-        $this->assertEquals($inactiveUser->getId(), $jsonData['userId']);
+        $this->assertArraySubset([
+            'loggedIn' => false,
+            'isLocked' => false,
+            'isNeedActivation' => true,
+            'userId' => $inactiveUser->getId(),
+            'errorMessage' => 'Требуется активация'
+        ], $jsonData);
 
         // авторизоваться под заблокированным пользователем
         $client->request('POST', $url, [
@@ -91,11 +92,13 @@ class LoginControllerTest extends WebTestCase
             '_password' => $password,
         ]);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['loggedIn']);
-        $this->assertTrue($jsonData['isLocked']);
-        $this->assertFalse($jsonData['isNeedActivation']);
-        $this->assertEquals('Ваш аккаунт заблокирован', $jsonData['errorMessage']);
-        $this->assertNull($jsonData['userId']);
+        $this->assertArraySubset([
+            'loggedIn' => false,
+            'isLocked' => true,
+            'isNeedActivation' => false,
+            'userId' => null,
+            'errorMessage' => 'Ваш аккаунт заблокирован'
+        ], $jsonData);
 
         // авторизоваться под активным пользователем
         $client->request('POST', $url, [
@@ -103,10 +106,12 @@ class LoginControllerTest extends WebTestCase
             '_password' => $password,
         ]);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertTrue($jsonData['loggedIn']);
-        $this->assertFalse($jsonData['isLocked']);
-        $this->assertFalse($jsonData['isNeedActivation']);
-        $this->assertEquals('', $jsonData['errorMessage']);
-        $this->assertEquals($activeUser->getId(), $jsonData['userId']);
+        $this->assertArraySubset([
+            'loggedIn' => true,
+            'isLocked' => false,
+            'isNeedActivation' => false,
+            'userId' => $activeUser->getId(),
+            'errorMessage' => ''
+        ], $jsonData);
     }
 }

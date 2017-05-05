@@ -97,8 +97,9 @@ class ManagerControllerTest extends WebTestCase
         $client->request('POST', $url, $invalidPostData);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertArrayHasKey('user', $jsonData);
-        $this->assertNull($jsonData['user']);
+        $this->assertArraySubset([
+            'user' => null,
+        ], $jsonData);
 
         // от супер-админа пробросить нормальный запрос
         $client->request('POST', $url, $validPostData);

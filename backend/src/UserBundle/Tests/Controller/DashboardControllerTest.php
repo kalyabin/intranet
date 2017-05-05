@@ -74,12 +74,11 @@ class DashboardControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(200, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertTrue($jsonData['auth']);
-        $this->assertInternalType('array', $jsonData['user']);
-        $this->assertInternalType('boolean', $jsonData['isTemporaryPassword']);
-        $this->assertEquals($jsonData['user']['id'], $user->getId());
-        $this->assertEquals($jsonData['user']['email'], $user->getEmail());
-        $this->assertEquals($jsonData['user']['name'], $user->getName());
+        $this->assertArraySubset([
+            'auth' => true,
+            'user' => $user->jsonSerialize(),
+            'isTemporaryPassword' => false
+        ], $jsonData);
 
         // проверить, что был получен CSRF-токен
         $token = $client->getResponse()->headers->get('X-CSRF-Token');
@@ -112,10 +111,12 @@ class DashboardControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertFalse($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => false,
+            'valid' => false,
+            'validationErrors' => []
+        ], $jsonData);
 
         // отправляем невалидный запрос
         $client->request('POST', $url, [
@@ -125,9 +126,12 @@ class DashboardControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
+
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('change_email[newEmail]', $jsonData['validationErrors']);
 
@@ -138,10 +142,12 @@ class DashboardControllerTest extends WebTestCase
             ],
         ]);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertTrue($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertTrue($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => []
+        ], $jsonData);
     }
 
     /**
@@ -169,10 +175,12 @@ class DashboardControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertFalse($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => false,
+            'valid' => false,
+            'validationErrors' => []
+        ], $jsonData);
 
         // отправляем невалидный запрос
         $client->request('POST', $url, [
@@ -185,9 +193,11 @@ class DashboardControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('change_password[password][first]', $jsonData['validationErrors']);
 
@@ -202,10 +212,12 @@ class DashboardControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(200, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertTrue($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertTrue($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => []
+        ], $jsonData);
 
         // проверяем, что пароль действительно сменился
         $oldPassword = $user->getPassword();
@@ -239,10 +251,12 @@ class DashboardControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertFalse($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => false,
+            'valid' => false,
+            'validationErrors' => []
+        ], $jsonData);
 
         // отправляем невалидный запрос
         $client->request('POST', $url, [
@@ -252,9 +266,11 @@ class DashboardControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(400, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('profile[name]', $jsonData['validationErrors']);
 
@@ -266,10 +282,12 @@ class DashboardControllerTest extends WebTestCase
         ]);
         $this->assertStatusCode(200, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertTrue($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertTrue($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => []
+        ], $jsonData);
 
         // проверяем, что имя действительно сменилось
         $this->em->clear();

@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class JsonErrorResponseListener
 {
-    public function onKernelException(GetResponseForExceptionEvent $event): void
+    public function onKernelException(GetResponseForExceptionEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;

@@ -70,10 +70,12 @@ class RememberPasswordControllerTest extends WebTestCase
 
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
-        $this->assertFalse($jsonData['success']);
-        $this->assertFalse($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => false,
+            'valid' => false,
+            'validationErrors' => []
+        ], $jsonData);
 
         $client->request('POST', $url, [
             'change_password' => [
@@ -87,9 +89,11 @@ class RememberPasswordControllerTest extends WebTestCase
 
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
-        $this->assertFalse($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('change_password[password][first]', $jsonData['validationErrors']);
 
@@ -105,9 +109,11 @@ class RememberPasswordControllerTest extends WebTestCase
 
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
-        $this->assertFalse($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
+        $this->assertArraySubset([
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('change_password[password][first]', $jsonData['validationErrors']);
 
@@ -125,10 +131,12 @@ class RememberPasswordControllerTest extends WebTestCase
 
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
-        $this->assertTrue($jsonData['success']);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertTrue($jsonData['valid']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => []
+        ], $jsonData);
 
         // проверить, что пароль действительно изменился
         $this->em->clear();
@@ -219,11 +227,13 @@ class RememberPasswordControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($response);
 
         $this->assertStatusCode(400, $client);
-        $this->assertFalse($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertFalse($jsonData['success']);
-        $this->assertNull($jsonData['email']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'email' => null,
+            'success' => false,
+            'submitted' => false,
+            'valid' => false,
+            'validationErrors' => []
+        ], $jsonData);
 
         // POST от несуществующего пользователя
         $client->request('POST', $url, [
@@ -236,10 +246,12 @@ class RememberPasswordControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($response);
 
         $this->assertStatusCode(400, $client);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertFalse($jsonData['valid']);
-        $this->assertFalse($jsonData['success']);
-        $this->assertNull($jsonData['email']);
+        $this->assertArraySubset([
+            'email' => null,
+            'success' => false,
+            'submitted' => true,
+            'valid' => false,
+        ], $jsonData);
         $this->assertNotEmpty($jsonData['validationErrors']);
         $this->assertArrayHasKey('remember_password[email]', $jsonData['validationErrors']);
 
@@ -254,11 +266,13 @@ class RememberPasswordControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($response);
 
         $this->assertStatusCode(200, $client);
-        $this->assertTrue($jsonData['submitted']);
-        $this->assertTrue($jsonData['valid']);
-        $this->assertTrue($jsonData['success']);
-        $this->assertEquals($user->getEmail(), $jsonData['email']);
-        $this->assertEmpty($jsonData['validationErrors']);
+        $this->assertArraySubset([
+            'email' => $user->getEmail(),
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => []
+        ], $jsonData);
 
         // проверить, что создался чекер
         $this->em->clear();
