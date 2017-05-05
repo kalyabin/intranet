@@ -43,7 +43,7 @@ abstract class UserCheckerEvent extends Event
      *
      * @return UserEntity
      */
-    public function getUser()
+    public function getUser(): UserEntity
     {
         return $this->user;
     }
@@ -53,7 +53,7 @@ abstract class UserCheckerEvent extends Event
      *
      * @return UserCheckerEntity
      */
-    public function getChecker()
+    public function getChecker(): UserCheckerEntity
     {
         return $this->checker;
     }

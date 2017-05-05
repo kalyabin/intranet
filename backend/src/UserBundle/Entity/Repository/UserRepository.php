@@ -17,7 +17,7 @@ class UserRepository extends EntityRepository
      *
      * @return integer
      */
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         $queryBuilder = $this->createQueryBuilder('u');
 
@@ -35,7 +35,7 @@ class UserRepository extends EntityRepository
      *
      * @return UserEntity|null
      */
-    public function findOneById($id)
+    public function findOneById(int $id): ?UserEntity
     {
         return $this->createQueryBuilder('u')
             ->where('u.id = :id')
@@ -53,7 +53,7 @@ class UserRepository extends EntityRepository
      *
      * @return UserEntity|null
      */
-    public function findOneByEmail($email)
+    public function findOneByEmail(string $email): ?UserEntity
     {
         return $this->createQueryBuilder('u')
             ->where('u.email = :email')
@@ -70,7 +70,7 @@ class UserRepository extends EntityRepository
      *
      * @return boolean
      */
-    public function userIsExistsByEmail($email, $excludedId = null)
+    public function userIsExistsByEmail(?string $email, ?int $excludedId = null): bool
     {
         $query = $this->createQueryBuilder('u')
             ->select('COUNT(u)')

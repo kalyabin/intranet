@@ -47,7 +47,7 @@ class SimpleAuthenticatorMessageException extends CustomUserMessageAuthenticatio
      *
      * @param integer $userId
      */
-    public function setUserId($userId)
+    public function setUserId(int $userId)
     {
         $this->userId = $userId;
     }
@@ -57,7 +57,7 @@ class SimpleAuthenticatorMessageException extends CustomUserMessageAuthenticatio
      *
      * @return bool
      */
-    public function getIsLocked()
+    public function getIsLocked(): ?bool
     {
         return $this->isLocked;
     }
@@ -67,7 +67,7 @@ class SimpleAuthenticatorMessageException extends CustomUserMessageAuthenticatio
      *
      * @return bool
      */
-    public function getIsNeedActivation()
+    public function getIsNeedActivation(): ?bool
     {
         return $this->isNeedActivation;
     }
@@ -77,7 +77,7 @@ class SimpleAuthenticatorMessageException extends CustomUserMessageAuthenticatio
      *
      * @return int
      */
-    public function getUserId()
+    public function getUserId(): ?int
     {
         return $this->userId;
     }

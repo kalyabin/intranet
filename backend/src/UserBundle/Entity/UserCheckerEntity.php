@@ -120,7 +120,7 @@ class UserCheckerEntity
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -132,7 +132,7 @@ class UserCheckerEntity
      *
      * @return UserCheckerEntity
      */
-    public function setCode($code): self
+    public function setCode(string $code): self
     {
         $this->code = $code;
 
@@ -144,7 +144,7 @@ class UserCheckerEntity
      *
      * @return string
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -156,7 +156,7 @@ class UserCheckerEntity
      *
      * @return self
      */
-    public function setJsonData($data): self
+    public function setJsonData(array $data): self
     {
         $encoder = new JsonEncoder();
         $this->setData($encoder->encode($data, JsonEncoder::FORMAT));
@@ -169,7 +169,7 @@ class UserCheckerEntity
      *
      * @return mixed
      */
-    public function getJsonData()
+    public function getJsonData(): array
     {
         $decoder = new JsonDecode(true);
         return $decoder->decode($this->getData(), JsonEncoder::FORMAT);
@@ -182,7 +182,7 @@ class UserCheckerEntity
      *
      * @return self
      */
-    public function setData($data): self
+    public function setData(string $data): self
     {
         $this->data = $data;
         return $this;
@@ -193,7 +193,7 @@ class UserCheckerEntity
      *
      * @return string
      */
-    public function getData()
+    public function getData(): ?string
     {
         return $this->data;
     }
@@ -205,7 +205,7 @@ class UserCheckerEntity
      *
      * @return UserCheckerEntity
      */
-    public function setAttempts($attempts): self
+    public function setAttempts(int $attempts): self
     {
         $this->attempts = $attempts;
 
@@ -217,7 +217,7 @@ class UserCheckerEntity
      *
      * @return integer
      */
-    public function getAttempts()
+    public function getAttempts(): ?int
     {
         return $this->attempts;
     }
@@ -237,7 +237,7 @@ class UserCheckerEntity
      *
      * @return UserCheckerEntity
      */
-    public function setType($type): self
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -249,7 +249,7 @@ class UserCheckerEntity
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }

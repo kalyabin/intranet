@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
@@ -52,7 +53,7 @@ class RememberPasswordController extends Controller
      *
      * @return null|UserEntity
      */
-    protected function confirmRememberCode($checkerId, $code)
+    protected function confirmRememberCode(int $checkerId, string $code)
     {
         /** @var \UserBundle\Entity\Repository\UserCheckerRepository $repository */
         $repository = $this->userManager->getEntityManager()->getRepository(UserCheckerEntity::class);
@@ -88,7 +89,7 @@ class RememberPasswordController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function changePasswordAction($checkerId, $code, Request $request)
+    public function changePasswordAction(int $checkerId, string $code, Request $request): FormValidationJsonResponse
     {
         $user = $this->confirmRememberCode($checkerId, $code);
 
@@ -128,7 +129,7 @@ class RememberPasswordController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function changePasswordFormAction($checkerId, $code)
+    public function changePasswordFormAction(int $checkerId, string $code): Response
     {
         $this->confirmRememberCode($checkerId, $code);
         return $this->redirect('/#/change-password/' . $checkerId . '/' . $code);
@@ -144,7 +145,7 @@ class RememberPasswordController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function rememberAction(Request $request)
+    public function rememberAction(Request $request): FormValidationJsonResponse
     {
         $response = new FormValidationJsonResponse();
         $response->jsonData['success'] = false;

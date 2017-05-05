@@ -65,7 +65,7 @@ class RegistrationController extends Controller
      *
      * @return JsonResponse
      */
-    public function resendActivationCodeAction($userId)
+    public function resendActivationCodeAction(int $userId)
     {
         if (!$this->registrationEnabled) {
             throw $this->createAccessDeniedException();
@@ -117,7 +117,7 @@ class RegistrationController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function activationAction($checkerId, $code)
+    public function activationAction(int $checkerId, string $code): Response
     {
         if (!$this->registrationEnabled) {
             throw $this->createAccessDeniedException();
@@ -152,7 +152,7 @@ class RegistrationController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function registerAction(Request $request)
+    public function registerAction(Request $request): FormValidationJsonResponse
     {
         if (!$this->registrationEnabled) {
             throw $this->createAccessDeniedException();
@@ -184,7 +184,7 @@ class RegistrationController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
         return $this->redirect('/#/sign-in');
     }

@@ -46,7 +46,7 @@ class UserProvider implements UserProviderInterface
      *
      * @return null|\UserBundle\Entity\UserEntity
      */
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($username): ?UserEntity
     {
         $user = null;
 
@@ -70,7 +70,7 @@ class UserProvider implements UserProviderInterface
      *
      * @return bool
      */
-    public function supportsClass($class)
+    public function supportsClass($class): bool
     {
         return $class === UserEntity::class;
     }
@@ -82,7 +82,7 @@ class UserProvider implements UserProviderInterface
      *
      * @return UserInterface
      */
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): ?UserInterface
     {
         if (!$user instanceof UserEntity) {
             throw new UnsupportedUserException('Данный вид аккаунтов не поддерживается');

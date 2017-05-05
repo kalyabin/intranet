@@ -20,7 +20,7 @@ class UserCheckerRepository extends EntityRepository
      *
      * @return UserCheckerEntity
      */
-    public function findOneById($id)
+    public function findOneById($id): ?UserCheckerEntity
     {
         return $this->createQueryBuilder('c')
             ->where('c.id = :id')

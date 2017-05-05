@@ -95,7 +95,7 @@ class SimpleAuthenticator implements SimpleFormAuthenticatorInterface
      *
      * @return bool
      */
-    public function supportsToken(TokenInterface $token, $providerKey)
+    public function supportsToken(TokenInterface $token, $providerKey): bool
     {
         return $token instanceof SimpleAuthenticatorToken && $token->getProviderKey() == $providerKey;
     }
@@ -110,7 +110,7 @@ class SimpleAuthenticator implements SimpleFormAuthenticatorInterface
      *
      * @return SimpleAuthenticatorToken
      */
-    public function createToken(Request $request, $username, $password, $providerKey)
+    public function createToken(Request $request, $username, $password, $providerKey): SimpleAuthenticatorToken
     {
         // если пришел JSON-запрос и пустые username и password,
         // то нужно их получить из тела запроса,

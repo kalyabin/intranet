@@ -46,7 +46,7 @@ class ManagerController extends Controller
      *
      * @param UserEntity $user
      */
-    protected function checkIsUserIsNotCurrent(UserEntity $user)
+    protected function checkIsUserIsNotCurrent(UserEntity $user): void
     {
         /** @var UserEntity $currentUser */
         $currentUser = $this->getUser();
@@ -122,7 +122,7 @@ class ManagerController extends Controller
      *
      * @return JsonResponse
      */
-    public function updateAction($id, Request $request): JsonResponse
+    public function updateAction(int $id, Request $request): JsonResponse
     {
         $user = $this->getUserById($id);
 
@@ -201,7 +201,7 @@ class ManagerController extends Controller
      *
      * @return JsonResponse
      */
-    public function detailsAction($id): JsonResponse
+    public function detailsAction(int $id): JsonResponse
     {
         $user = $this->getUserById($id);
 

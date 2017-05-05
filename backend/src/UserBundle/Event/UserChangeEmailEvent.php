@@ -27,7 +27,7 @@ class UserChangeEmailEvent extends UserCheckerEvent
      *
      * @param string $newEmail
      */
-    public function setNewEmail($newEmail)
+    public function setNewEmail(string $newEmail): void
     {
         $this->newEmail = $newEmail;
     }
@@ -37,7 +37,7 @@ class UserChangeEmailEvent extends UserCheckerEvent
      *
      * @return string
      */
-    public function getNewEmail()
+    public function getNewEmail(): string
     {
         return $this->newEmail;
     }

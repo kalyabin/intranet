@@ -62,7 +62,7 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      *
      * @return SimpleAuthenticationJsonResponse|null
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): SimpleAuthenticationJsonResponse
     {
         $response = new SimpleAuthenticationJsonResponse();
 
@@ -85,7 +85,7 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      *
      * @return SimpleAuthenticationJsonResponse
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): SimpleAuthenticationJsonResponse
     {
         $response = new SimpleAuthenticationJsonResponse();
 

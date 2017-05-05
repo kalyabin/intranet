@@ -50,7 +50,7 @@ class UserRoleEntity
      *
      * @return UserRoleEntity
      */
-    public function setCode($code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
@@ -62,7 +62,7 @@ class UserRoleEntity
      *
      * @return string
      */
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -86,7 +86,7 @@ class UserRoleEntity
      *
      * @return \UserBundle\Entity\UserEntity
      */
-    public function getUser()
+    public function getUser(): ?UserEntity
     {
         return $this->user;
     }
@@ -96,7 +96,7 @@ class UserRoleEntity
      *
      * @return string
      */
-    public function getUserType()
+    public function getUserType(): string
     {
         return $this->getUser() ? $this->getUser()->getUserType() : '';
     }

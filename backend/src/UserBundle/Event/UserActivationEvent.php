@@ -41,7 +41,7 @@ class UserActivationEvent extends Event
      *
      * @return UserEntity
      */
-    public function getUser()
+    public function getUser(): UserEntity
     {
         return $this->user;
     }

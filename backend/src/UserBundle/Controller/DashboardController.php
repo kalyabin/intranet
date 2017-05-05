@@ -117,7 +117,7 @@ class DashboardController extends Controller
      *
      * @return Response
      */
-    public function confirmChangeEmailAction($checkerId, $code)
+    public function confirmChangeEmailAction(int $checkerId, string $code): Response
     {
         if (!$this->changeEmailEnabled) {
             throw $this->createAccessDeniedException();
@@ -158,7 +158,7 @@ class DashboardController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function changeEmailAction(Request $request)
+    public function changeEmailAction(Request $request): Response
     {
         if (!$this->changeEmailEnabled) {
             throw $this->createAccessDeniedException();
@@ -199,7 +199,7 @@ class DashboardController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function changePasswordAction(Request $request)
+    public function changePasswordAction(Request $request): Response
     {
         $success = false;
 
@@ -235,7 +235,7 @@ class DashboardController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function profileUpdateAction(Request $request)
+    public function profileUpdateAction(Request $request): FormValidationJsonResponse
     {
         $success = false;
 
@@ -284,7 +284,7 @@ class DashboardController extends Controller
      *
      * @return Response
      */
-    public function generateTokenAction()
+    public function generateTokenAction(): Response
     {
         // удалить старый токен и получить новый
         $this->csrfManager->removeToken($this->restTokenIntention);

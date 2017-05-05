@@ -40,7 +40,7 @@ class ChangeEmailType extends AbstractType
      *
      * @return self
      */
-    public function setCurrentUserId($userId)
+    public function setCurrentUserId(int $userId): self
     {
         $this->currentUserId = $userId;
         return $this;
@@ -51,7 +51,7 @@ class ChangeEmailType extends AbstractType
      *
      * @return int
      */
-    public function getCurrentUserId()
+    public function getCurrentUserId(): ?int
     {
         return $this->currentUserId;
     }

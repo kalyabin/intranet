@@ -159,7 +159,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -171,7 +171,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setUserType($type): self
+    public function setUserType(?string $type): self
     {
         $this->userType = $type;
 
@@ -183,7 +183,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return string
      */
-    public function getUserType()
+    public function getUserType(): ?string
     {
         return $this->userType;
     }
@@ -195,7 +195,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setName($name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -207,7 +207,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -219,7 +219,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setEmail($email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
@@ -231,7 +231,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -239,7 +239,7 @@ class UserEntity implements UserInterface, \JsonSerializable
     /**
      * @return boolean
      */
-    public function getIsTemporaryPassword()
+    public function getIsTemporaryPassword(): ?bool
     {
         return $this->isTemporaryPassword;
     }
@@ -249,7 +249,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setIsTemporaryPassword($isTemporaryPassword): UserEntity
+    public function setIsTemporaryPassword(?bool $isTemporaryPassword): UserEntity
     {
         $this->isTemporaryPassword = (bool) $isTemporaryPassword;
         return $this;
@@ -262,7 +262,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setPassword($password): self
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
 
@@ -318,7 +318,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setSalt($salt): self
+    public function setSalt(?string $salt): self
     {
         $this->salt = $salt;
 
@@ -332,7 +332,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return UserEntity
      */
-    public function setStatus($status): self
+    public function setStatus(?int $status): self
     {
         $this->status = $status;
 
@@ -344,7 +344,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return integer
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         return $this->status;
     }
@@ -364,7 +364,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->getEmail();
     }
@@ -451,7 +451,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @return null|UserCheckerEntity
      */
-    public function getCheckerByType($type)
+    public function getCheckerByType(string $type): ?UserCheckerEntity
     {
         foreach ($this->checker as $checker) {
             if ($checker->getType() == $type) {
@@ -466,7 +466,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @param string $type Тип кода проверки
      */
-    public function removeCheckerByType($type)
+    public function removeCheckerByType(string $type)
     {
         foreach ($this->checker as $checker) {
             if ($checker->getType() == $type) {

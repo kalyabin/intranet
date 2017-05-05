@@ -6,6 +6,7 @@ namespace UserBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use UserBundle\Controller\Response\SimpleAuthenticationJsonResponse;
 use UserBundle\Entity\UserEntity;
@@ -30,7 +31,7 @@ class LoginController extends Controller
      *
      * @return SimpleAuthenticationJsonResponse
      */
-    public function simpleLoginCheckAction()
+    public function simpleLoginCheckAction(): SimpleAuthenticationJsonResponse
     {
         $response = new SimpleAuthenticationJsonResponse();
 
@@ -57,7 +58,7 @@ class LoginController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function simpleLoginAction()
+    public function simpleLoginAction(): Response
     {
         return $this->redirect('/#/sign-in');
     }
