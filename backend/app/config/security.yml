@@ -37,6 +37,8 @@ security:
             - DOCUMENT_CUSTOMER
             - RENT_CUSTOMER
             - STORAGE_CUSTOMER
+            - IT_CUSTOMER
+            - BOOKER_CUSTOMER
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:

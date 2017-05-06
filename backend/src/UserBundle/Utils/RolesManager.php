@@ -28,6 +28,8 @@ class RolesManager
                 'DOCUMENT_CUSTOMER',
                 'RENT_CUSTOMER',
                 'STORAGE_CUSTOMER',
+                'IT_CUSTOMER',
+                'BOOKER_CUSTOMER',
             ],
             UserEntity::TYPE_MANAGER => [
                 'SUPERADMIN',
@@ -60,6 +62,8 @@ class RolesManager
             'DOCUMENT_CUSTOMER' => 'Просмотр документов арендатора',
             'RENT_CUSTOMER' => 'Отправка заявок в службу аренды',
             'STORAGE_CUSTOMER' => 'Заказ товаров на складе',
+            'IT_CUSTOMER' => 'Отправка заявок "IT аутсорсинг"',
+            'BOOKER_CUSTOMER' => 'Пользование услугами SMART-бухгалтера',
 
             'USER_MANAGEMENT' => 'Управление всеми пользователями',
             'RENT_MANAGEMENT' => 'Сотрудник службы аренды',
