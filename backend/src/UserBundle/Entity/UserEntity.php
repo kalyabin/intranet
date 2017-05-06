@@ -2,11 +2,13 @@
 
 namespace UserBundle\Entity;
 
+use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use UserBundle\Validator\Constraints\UserEmail;
 
 /**
@@ -134,6 +136,14 @@ class UserEntity implements UserInterface, \JsonSerializable
      * @var UserRoleEntity[] Привязка к ролям пользователя
      */
     private $role;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CustomerBundle\Entity\CustomerEntity", inversedBy="user")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     *
+     * @var CustomerEntity Привязка к контрагенту, если тип пользователя - контрагент
+     */
+    private $customer;
 
     /**
      * Конструктор
@@ -520,6 +530,48 @@ class UserEntity implements UserInterface, \JsonSerializable
     public function getRole(): Collection
     {
         return $this->role;
+    }
+
+    /**
+     * Установить контрагента
+     *
+     * @param CustomerEntity $customer
+     *
+     * @return UserEntity
+     */
+    public function setCustomer(?CustomerEntity $customer): self
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    /**
+     * Получить контрагента
+     *
+     * @return CustomerEntity|null
+     */
+    public function getCustomer(): ?CustomerEntity
+    {
+        return $this->customer;
+    }
+
+    /**
+     * Проверка поля "контрагент".
+     *
+     * Пользователи типа "арендатор" должны быть привязаны к контрагенту.
+     * Пользователи типа "сотрудник" не должны быть привязаны к контрагенту.
+     *
+     * @Assert\Callback()
+     *
+     * @param ExecutionContextInterface $context
+     */
+    public function checkCustomer(ExecutionContextInterface $context)
+    {
+        if ($this->userType == self::TYPE_CUSTOMER && !$this->customer instanceof CustomerEntity) {
+            $context->addViolation('Привязка к контрагенту обязательна для типа пользователя "Арендатор"');
+        } elseif ($this->userType != self::TYPE_CUSTOMER && $this->customer) {
+            $context->addViolation('Пользователи с типом "Сотрудник" не должны быть привязаны к контрагенту');
+        }
     }
 
     /**

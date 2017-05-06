@@ -1,5 +1,6 @@
 <?php
 
+use CustomerBundle\CustomerBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use HttpHelperBundle\HttpHelperBundle;
@@ -21,8 +22,9 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new DoctrineMigrationsBundle(),
-            new UserBundle(),
             new HttpHelperBundle(),
+            new CustomerBundle(),
+            new UserBundle(),
             new AppBundle\AppBundle(),
         ];
 

@@ -3,6 +3,8 @@
 namespace UserBundle\Tests\Controller;
 
 
+use CustomerBundle\Entity\CustomerEntity;
+use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -36,7 +38,10 @@ class ManagerControllerTest extends WebTestCase
         parent::setUp();
 
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            UserTestFixture::class,
+            CustomerTestFixture::class
+        ])->getReferenceRepository();
     }
 
     protected function assertNonAuthenticatedUsers($method, $url, $postData = [])
@@ -64,6 +69,9 @@ class ManagerControllerTest extends WebTestCase
      */
     public function testCreateAction()
     {
+        /** @var CustomerEntity $customer */
+        $customer = $this->fixtures->getReference('all-customer');
+
         $url = $this->getUrl('user.manager.create');
 
         /** @var UserEntity $superAdminUser */
@@ -84,7 +92,8 @@ class ManagerControllerTest extends WebTestCase
                     [
                         'code' => 'CUSTOMER_ADMIN'
                     ]
-                ]
+                ],
+                'customer' => $customer->getId()
             ]
         ];
 
@@ -142,7 +151,8 @@ class ManagerControllerTest extends WebTestCase
                     [
                         'code' => 'CUSTOMER_ADMIN'
                     ]
-                ]
+                ],
+                'customer' => $user->getCustomer()->getId(),
             ]
         ];
 
@@ -176,6 +186,7 @@ class ManagerControllerTest extends WebTestCase
         $this->assertTrue($jsonData['success']);
 
         // проверить, что пользователь был успешно активирован
+        $this->em->clear();
         /** @var UserRepository $repository */
         $repository = $this->em->getRepository(UserEntity::class);
         $expectedUser = $repository->findOneById($user->getId());
@@ -196,8 +207,13 @@ class ManagerControllerTest extends WebTestCase
             'pageSize' => $pageSize
         ]);
 
-        $allUsers = $this->fixtures->getReferences();
-        $expectedCount = count($allUsers);
+        // подсчитать общее количество пользователей
+        $expectedCount = 0;
+        foreach ($this->fixtures->getReferences() as $reference) {
+            if ($reference instanceof UserEntity) {
+                $expectedCount++;
+            }
+        }
 
         /** @var UserEntity $superAdminUser */
         $superAdminUser = $this->fixtures->getReference('superadmin-user');

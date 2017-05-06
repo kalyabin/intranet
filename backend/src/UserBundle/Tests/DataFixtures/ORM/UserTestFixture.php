@@ -2,6 +2,7 @@
 
 namespace UserBundle\Tests\DataFixtures\ORM;
 
+use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -37,6 +38,16 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         /** @var UserManager $userService */
         $userService = $this->container->get('user.manager');
 
+        // пользователи типа "арендатор" должны быть привязаны к контрагенту
+        $customer = new CustomerEntity();
+
+        $customer
+            ->setName('testing customer')
+            ->setCurrentAgreement('testing agreement');
+
+        $manager->persist($customer);
+        $manager->flush();
+
         // создать активного пользователя
         $activeUser = new UserEntity();
 
@@ -46,6 +57,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setEmail('testing@test.ru')
             ->setPassword('testpassword')
             ->setUserType(UserEntity::TYPE_CUSTOMER)
+            ->setCustomer($customer)
             ->generateSalt();
 
         $userService->encodeUserPassword($activeUser, $activeUser->getPassword());
@@ -59,6 +71,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setEmail('inactive@test.ru')
             ->setPassword('testpassword')
             ->setUserType(UserEntity::TYPE_CUSTOMER)
+            ->setCustomer($customer)
             ->generateSalt();
 
         $userService->encodeUserPassword($inactiveUser, $inactiveUser->getPassword());
@@ -82,6 +95,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setEmail('locked@test.ru')
             ->setPassword('testpassword')
             ->setUserType(UserEntity::TYPE_CUSTOMER)
+            ->setCustomer($customer)
             ->generateSalt();
 
         $userService->encodeUserPassword($lockedUser, $lockedUser->getPassword());

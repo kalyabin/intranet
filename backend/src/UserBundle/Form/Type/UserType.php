@@ -3,6 +3,8 @@
 namespace UserBundle\Form\Type;
 
 
+use CustomerBundle\Entity\CustomerEntity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -37,6 +39,12 @@ class UserType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'E-mail пользователя'
             ])
+            ->add('status', ChoiceType::class, [
+                'choices' => [
+                    'Активен' => UserEntity::STATUS_ACTIVE,
+                    'Заблокирован' => UserEntity::STATUS_LOCKED
+                ],
+            ])
             ->add('userType', ChoiceType::class, [
                 'choices' => [
                     'Сотрудник' => UserEntity::TYPE_MANAGER,
@@ -50,26 +58,27 @@ class UserType extends AbstractType
                 'allow_extra_fields' => true,
                 'constraints' => [new Valid()]
             ])
+            ->add('customer', EntityType::class, [
+                'class' => CustomerEntity::class,
+                'choice_label' => 'name',
+                'multiple' => false
+            ])
             ->add('isTemporaryPassword', CheckboxType::class, [
                 'label' => 'Сгенерировать временный пароль'
             ])
             ->add('password', PasswordType::class, [
-                'label' => 'Пароль пользователя'
+                'label' => 'Пароль пользователя',
+                'required' => false,
             ]);
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) {
             /** @var UserEntity $entity */
             $entity = $event->getData();
 
-            if ($entity->getId()) {
-                // добавить статус пользователя в форму, если пользователь уже существует
-                $event->getForm()->add('status', ChoiceType::class, [
-                    'choices' => [
-                        'Активен' => UserEntity::STATUS_ACTIVE,
-                        'Заблокирован' => UserEntity::STATUS_LOCKED
-                    ]
-                ]);
-
+            if (!$entity->getId()) {
+                // статус доступен только для старых пользователей
+                $event->getForm()->remove('status');
+            } else {
                 // удалить флаг временного пароля, если пользователь уже существует
                 $event->getForm()->remove('isTemporaryPassword');
             }
@@ -97,6 +106,11 @@ class UserType extends AbstractType
                     return $randomString;
                 };
                 $entity->setPassword($generateRandomString());
+            }
+
+            if ($entity->getUserType() == UserEntity::TYPE_MANAGER) {
+                // удалить поле с выбором контрагента, если редактируемый пользователь - менеджер
+                $event->getForm()->remove('customer');
             }
         });
     }

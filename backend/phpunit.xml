@@ -16,6 +16,9 @@
         <testsuite name="UserBundle tests">
             <directory>src/UserBundle/Tests</directory>
         </testsuite>
+        <testsuite name="CustomerBundle tests">
+            <directory>src/CustomerBundle/Tests</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

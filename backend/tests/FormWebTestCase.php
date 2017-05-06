@@ -4,6 +4,7 @@ namespace Tests;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormFactory;
 
 /**
  * Модульное тестирование форм
@@ -13,9 +14,9 @@ use Symfony\Component\Form\Form;
 abstract class FormWebTestCase extends WebTestCase
 {
     /**
-     * @var Form
+     * @var FormFactory
      */
-    protected $form;
+    protected $factory;
 
     /**
      * Получить валидные данные для формы
@@ -49,59 +50,52 @@ abstract class FormWebTestCase extends WebTestCase
     {
         static::bootKernel();
 
-        $container = static::$kernel->getContainer();
+        $container = $this->getContainer();
 
-        $factory = $container->get('form.factory');
-
-        $this->form = $factory->create($this->getFormClass(), $this->getFormData());
-    }
-
-    protected function tearDown()
-    {
-        $this->form = null;
-
-        parent::tearDown();
+        $this->factory = $container->get('form.factory');
     }
 
     /**
      * Тестирование формы на валидность
-     *
-     * @param array $data
-     *
-     * @dataProvider getValidData
      */
-    public function testIsValid($data)
+    public function testIsValid()
     {
-        $this->form->submit($data);
+        foreach ($this->getValidData() as $item) {
+            $data = $item['data'];
+            /** @var Form $form */
+            $form = $this->factory->create($this->getFormClass(), $this->getFormData());
 
-        $this->assertChildrensHasKey($this->form, $data);
+            $form->submit($data);
 
-        $this->assertTrue($this->form->isValid());
+            $this->assertTrue($form->isValid());
+        }
     }
 
     /**
      * Тестирование формы на невалидность
-     *
-     * @param array $data
-     * @param array $errorKeys Поля с ошибками
-     *
-     * @dataProvider getInvalidData
      */
-    public function testIsInvalid($data, array $errorKeys = [])
+    public function testIsInvalid()
     {
-        $this->form->submit($data);
+        foreach ($this->getInvalidData() as $item) {
+            $data = $item['data'];
+            $errorKeys = !empty($item['errorKeys']) ? $item['errorKeys'] : [];
 
-        $this->assertChildrensHasKey($this->form, $data);
+            $form = $this->factory->create($this->getFormClass(), $this->getFormData());
 
-        $this->assertFalse($this->form->isValid());
+            $form->submit($data);
 
-        if (!empty($errorKeys)) {
-            foreach ($this->form as $child) {
-                foreach ($child->getErrors(true) as $error) {
-                    $originName = $error->getOrigin()->getName();
-                    $childName = $child->getName();
-                    $key = $childName != $originName ? $childName . '[' . $originName . ']' : $childName;
-                    $this->assertContains($key, $errorKeys);
+            $this->assertChildrensHasKey($form, $data);
+
+            $this->assertFalse($form->isValid());
+
+            if (!empty($errorKeys)) {
+                foreach ($form as $child) {
+                    foreach ($child->getErrors(true) as $error) {
+                        $originName = $error->getOrigin()->getName();
+                        $childName = $child->getName();
+                        $key = $childName != $originName ? $childName . '[' . $originName . ']' : $childName;
+                        $this->assertContains($key, $errorKeys);
+                    }
                 }
             }
         }

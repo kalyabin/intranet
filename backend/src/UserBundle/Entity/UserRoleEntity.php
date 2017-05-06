@@ -96,7 +96,7 @@ class UserRoleEntity
      *
      * @return string
      */
-    public function getUserType(): string
+    public function getUserType(): ?string
     {
         return $this->getUser() ? $this->getUser()->getUserType() : '';
     }

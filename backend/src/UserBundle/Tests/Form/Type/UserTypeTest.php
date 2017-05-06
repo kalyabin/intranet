@@ -2,10 +2,12 @@
 
 namespace UserBunde\Tests\Form\Type;
 
-
+use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Tests\FormWebTestCase;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Form\Type\UserType;
+use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование формы создания или редактирования пользователя
@@ -14,20 +16,45 @@ use UserBundle\Form\Type\UserType;
  */
 class UserTypeTest extends FormWebTestCase
 {
+    /**
+     * @var ReferenceRepository
+     */
+    protected $fixtures;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->fixtures = $this->loadFixtures([
+            UserTestFixture::class,
+            CustomerTestFixture::class
+        ])->getReferenceRepository();
+    }
+
+    protected function getFormData(): UserEntity
+    {
+        return $this->fixtures->getReference('active-user');
+    }
+
     public function getValidData()
     {
+        $user = $this->getFormData();
+
         return [
             [
                 'data' => [
                     'name' => 'testing',
+                    'status' => $user->getStatus(),
                     'email' => 'testusertype@test.ru',
                     'password' => 'userpassword',
                     'userType' => UserEntity::TYPE_CUSTOMER,
+                    'customer' => $user->getCustomer()->getId()
                 ],
             ],
             [
                 'data' => [
                     'name' => 'testing',
+                    'status' => $user->getStatus(),
                     'email' => 'testusertype@test.ru',
                     'password' => 'userpassword',
                     'userType' => UserEntity::TYPE_CUSTOMER,
@@ -36,11 +63,13 @@ class UserTypeTest extends FormWebTestCase
                             'code' => 'CUSTOMER_ADMIN'
                         ],
                     ],
+                    'customer' => $user->getCustomer()->getId()
                 ],
             ],
             [
                 'data' => [
                     'name' => 'testing',
+                    'status' => $user->getStatus(),
                     'email' => 'testusertype@test.ru',
                     'password' => 'userpassword',
                     'userType' => UserEntity::TYPE_CUSTOMER,
@@ -52,24 +81,9 @@ class UserTypeTest extends FormWebTestCase
                             'code' => 'FINANCE_CUSTOMER'
                         ]
                     ],
+                    'customer' => $user->getCustomer()->getId()
                 ],
             ],
-            [
-                'data' => [
-                    'name' => 'testing',
-                    'email' => 'testusertype@test.ru',
-                    'isTemporaryPassword' => true,
-                    'userType' => UserEntity::TYPE_CUSTOMER,
-                    'role' => [
-                        [
-                            'code' => 'USER_CUSTOMER'
-                        ],
-                        [
-                            'code' => 'FINANCE_CUSTOMER'
-                        ]
-                    ],
-                ],
-            ]
         ];
     }
 
@@ -141,10 +155,5 @@ class UserTypeTest extends FormWebTestCase
     public function getFormClass()
     {
         return UserType::class;
-    }
-
-    public function getFormData()
-    {
-        return new UserEntity();
     }
 }
