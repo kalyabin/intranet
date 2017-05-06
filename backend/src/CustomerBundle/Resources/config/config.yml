@@ -7,4 +7,4 @@ services:
         class: '%customer.manager_controller%'
         arguments: ['@doctrine.orm.entity_manager']
         calls:
-            - [ setContainer: ['@service_container'] ]
+            - [ setContainer, [ '@service_container' ] ]

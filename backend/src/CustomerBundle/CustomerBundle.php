@@ -2,6 +2,7 @@
 
 namespace CustomerBundle;
 
+use CustomerBundle\DependencyInjection\CustomerExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -11,5 +12,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class CustomerBundle extends Bundle
 {
-
+    public function getContainerExtension(): CustomerExtension
+    {
+        return new CustomerExtension();
+    }
 }
