@@ -1,0 +1,10 @@
+parameters:
+    customer.manager_controller: CustomerBundle\Controller\ManagerController
+
+services:
+    # Администраторское управление контрагентами
+    customer.manager_controller:
+        class: '%customer.manager_controller%'
+        arguments: ['@doctrine.orm.entity_manager']
+        calls:
+            - [ setContainer: ['@service_container'] ]

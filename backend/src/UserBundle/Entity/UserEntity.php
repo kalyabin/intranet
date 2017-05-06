@@ -619,7 +619,8 @@ class UserEntity implements UserInterface, \JsonSerializable
             'status' => $this->getStatus(),
             'name' => $this->getName(),
             'email' => $this->getEmail(),
-            'type' => $this->getUserType()
+            'type' => $this->getUserType(),
+            'customer' => $this->getCustomer() ? $this->getCustomer() : null
         ];
     }
 }

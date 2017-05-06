@@ -76,7 +76,7 @@ class DashboardControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
         $this->assertArraySubset([
             'auth' => true,
-            'user' => $user->jsonSerialize(),
+            'user' => json_decode(json_encode($user), true),
             'isTemporaryPassword' => false
         ], $jsonData);
 

@@ -16,7 +16,7 @@ use UserBundle\Entity\UserEntity;
  *
  * @package CustomerBundle\Entity
  */
-class CustomerEntity
+class CustomerEntity implements \JsonSerializable
 {
     /**
      * @ORM\Column(type="bigint", name="id")
@@ -184,5 +184,21 @@ class CustomerEntity
     {
         $this->allowBookerDepartment = $allowBookerDepartment === true;
         return $this;
+    }
+
+    /**
+     * Формирование объекта для рестов
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'currentAgreement' => $this->getCurrentAgreement(),
+            'allowItDepartment' => $this->getAllowItDepartment(),
+            'allowBookerDepartment' => $this->getAllowBookerDepartment(),
+        ];
     }
 }

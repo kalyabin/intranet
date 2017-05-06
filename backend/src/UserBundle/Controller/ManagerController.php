@@ -4,6 +4,7 @@ namespace UserBundle\Controller;
 
 
 use HttpHelperBundle\Response\FormValidationJsonResponse;
+use HttpHelperBundle\Response\ListJsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -84,9 +85,9 @@ class ManagerController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return FormValidationJsonResponse
      */
-    public function createAction(Request $request): JsonResponse
+    public function createAction(Request $request): FormValidationJsonResponse
     {
         $user = new UserEntity();
 
@@ -120,9 +121,9 @@ class ManagerController extends Controller
      * @param integer $id Идентификатор редактируемого пользователя
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return FormValidationJsonResponse
      */
-    public function updateAction(int $id, Request $request): JsonResponse
+    public function updateAction(int $id, Request $request): FormValidationJsonResponse
     {
         $user = $this->getUserById($id);
 
@@ -165,9 +166,9 @@ class ManagerController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return ListJsonResponse
      */
-    public function listAction(Request $request): JsonResponse
+    public function listAction(Request $request): ListJsonResponse
     {
         $pageSize = (int) $request->get('pageSize', 500);
         $pageSize = min(100, $pageSize);
@@ -183,12 +184,7 @@ class ManagerController extends Controller
         /** @var UserEntity[] $list */
         $list = $repository->findBy([], [], $pageSize, $offset * $pageNum);
 
-        return new JsonResponse([
-            'list' => $list,
-            'pageSize' => $pageSize,
-            'pageNum' => $pageNum,
-            'totalCount' => $totalCount,
-        ]);
+        return new ListJsonResponse($list, $pageSize, $pageNum, $totalCount);
     }
 
     /**
