@@ -2,6 +2,7 @@
 
 namespace UserBunde\Tests\Entity\Repository;
 
+use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
@@ -20,12 +21,19 @@ class UserRepositoryTest extends WebTestCase
      */
     protected $repository;
 
+    /**
+     * @var ReferenceRepository
+     */
+    protected $fixtures;
+
     protected function setUp()
     {
         static::bootKernel();
 
         $this->repository = static::$kernel->getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(UserEntity::class);
+
+        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
     }
 
     /**
@@ -36,9 +44,7 @@ class UserRepositoryTest extends WebTestCase
     public function testFindOneById()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([
-            UserTestFixture::class,
-        ])->getReferenceRepository()->getReference('active-user');
+        $user = $this->fixtures->getReference('active-user');
 
         $expectedUser = $this->repository->findOneById($user->getId());
 
@@ -58,9 +64,7 @@ class UserRepositoryTest extends WebTestCase
     public function testFindOneByEmail()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([
-            UserTestFixture::class,
-        ])->getReferenceRepository()->getReference('active-user');
+        $user = $this->fixtures->getReference('active-user');
 
         $expectedUser = $this->repository->findOneByEmail($user->getEmail());
 
@@ -80,9 +84,7 @@ class UserRepositoryTest extends WebTestCase
     public function testUserIsExistsByEmail()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([
-            UserTestFixture::class,
-        ])->getReferenceRepository()->getReference('active-user');
+        $user = $this->fixtures->getReference('active-user');
 
         $this->assertTrue($this->repository->userIsExistsByEmail($user->getEmail()));
         $this->assertFalse($this->repository->userIsExistsByEmail('non-existent@email.ru'));
@@ -97,9 +99,7 @@ class UserRepositoryTest extends WebTestCase
     public function testGetTotalCount()
     {
         /** @var UserEntity[] $users */
-        $users = $this->loadFixtures([
-            UserTestFixture::class,
-        ])->getReferenceRepository()->getReferences();
+        $users = $this->fixtures->getReferences();
 
         $expectedCount = count($users);
         $count = $this->repository->getTotalCount();

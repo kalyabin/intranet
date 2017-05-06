@@ -67,7 +67,14 @@ abstract class FormWebTestCase extends WebTestCase
 
             $form->submit($data);
 
-            $this->assertTrue($form->isValid());
+            $errorMessage = '';
+
+            if (!$form->isValid()) {
+                $errorMessage = $form->getErrors(true)->current()->getOrigin()->getName() . ': ' .
+                    $form->getErrors(true)->current()->getMessage();
+            }
+
+            $this->assertEmpty($errorMessage, $errorMessage);
         }
     }
 

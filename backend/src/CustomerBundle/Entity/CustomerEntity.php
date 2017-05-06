@@ -11,7 +11,7 @@ use UserBundle\Entity\UserEntity;
 /**
  * Модель контрагента (арендатора)
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CustomerBundle\Entity\Repository\CustomerRepository")
  * @ORM\Table(name="customer")
  *
  * @package CustomerBundle\Entity
@@ -41,7 +41,6 @@ class CustomerEntity
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
      *
-     * @Assert\Blank()
      * @Assert\Type(type="string")
      * @Assert\Length(max=100)
      *
@@ -52,7 +51,6 @@ class CustomerEntity
     /**
      * @ORM\Column(type="boolean", nullable=true)
      *
-     * @Assert\Blank()
      * @Assert\Type(type="boolean")
      *
      * @var boolean Доступ к IT-аутсорсингу
@@ -62,7 +60,6 @@ class CustomerEntity
     /**
      * @ORM\Column(type="boolean", nullable=true)
      *
-     * @Assert\Blank()
      * @Assert\Type(type="boolean")
      *
      * @var boolean Доступ к службе SMART-бухгалтера
