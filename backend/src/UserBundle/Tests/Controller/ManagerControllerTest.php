@@ -9,6 +9,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\JsonResponseTestTrait;
+use Tests\ManagerControllerTestTrait;
 use UserBundle\Controller\ManagerController;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
@@ -22,6 +23,7 @@ use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
 class ManagerControllerTest extends WebTestCase
 {
     use JsonResponseTestTrait;
+    use ManagerControllerTestTrait;
 
     /**
      * @var ObjectManager
@@ -42,24 +44,6 @@ class ManagerControllerTest extends WebTestCase
             UserTestFixture::class,
             CustomerTestFixture::class
         ])->getReferenceRepository();
-    }
-
-    protected function assertNonAuthenticatedUsers($method, $url, $postData = [])
-    {
-        $nonAdminUser = $this->fixtures->getReference('active-user');
-
-        $client = $this->createClient();
-
-        // неавторизованный пользователь должен видеть 401 ошибку
-        $client->request($method, $url, $postData);
-        $this->assertStatusCode(401, $client);
-
-        // авторизованный пользователь но не админ должен получить 403-ю ошибку
-        $this->loginAs($nonAdminUser, 'main');
-
-        $client = static::makeClient();
-        $client->request($method, $url, $postData);
-        $this->assertStatusCode(403, $client);
     }
 
     /**

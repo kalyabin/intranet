@@ -158,7 +158,7 @@ class DashboardController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function changeEmailAction(Request $request): Response
+    public function changeEmailAction(Request $request): FormValidationJsonResponse
     {
         if (!$this->changeEmailEnabled) {
             throw $this->createAccessDeniedException();
@@ -175,7 +175,6 @@ class DashboardController extends Controller
 
         $form = $this->createForm(ChangeEmailType::class, $changeEmail);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $success = $this->userManager->changeUserEmail($user, $changeEmail->newEmail);
         }
@@ -199,7 +198,7 @@ class DashboardController extends Controller
      *
      * @return FormValidationJsonResponse
      */
-    public function changePasswordAction(Request $request): Response
+    public function changePasswordAction(Request $request): FormValidationJsonResponse
     {
         $success = false;
 

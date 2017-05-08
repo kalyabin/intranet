@@ -99,9 +99,13 @@ class UserRepositoryTest extends WebTestCase
     public function testGetTotalCount()
     {
         /** @var UserEntity[] $users */
-        $users = $this->fixtures->getReferences();
+        $expectedCount = 0;
+        foreach ($this->fixtures->getReferences() as $reference) {
+            if ($reference instanceof UserEntity) {
+                $expectedCount++;
+            }
+        }
 
-        $expectedCount = count($users);
         $count = $this->repository->getTotalCount();
 
         $this->assertGreaterThan(0, $expectedCount);

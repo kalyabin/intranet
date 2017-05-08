@@ -64,7 +64,7 @@ class ManagerController extends Controller
      * Список всех контрагентов
      *
      * @Method({"GET"})
-     * @Route("/customer", name="customer.list", options={"expose": true})
+     * @Route("/manager/customer", name="customer.manager.list", options={"expose": true})
      *
      * @param Request $request
      *
@@ -90,7 +90,7 @@ class ManagerController extends Controller
      * Создание нового контрагента
      *
      * @Method({"POST"})
-     * @Route("/customer", name="customer.create", options={"expose": true})
+     * @Route("/manager/customer", name="customer.manager.create", options={"expose": true})
      *
      * @param Request $request
      *
@@ -123,7 +123,7 @@ class ManagerController extends Controller
      * Редактирование контрагента
      *
      * @Method({"POST"})
-     * @Route("/customer/{id}", name="customer.update", requirements={"id": "\d+"}, options={"expose": true})
+     * @Route("/manager/customer/{id}", name="customer.manager.update", requirements={"id": "\d+"}, options={"expose": true})
      *
      * @param int $id Идентификатор редактируемого контрагента
      * @param Request $request
@@ -161,7 +161,7 @@ class ManagerController extends Controller
      * Получить информацию о контрагенте
      *
      * @Method({"GET"})
-     * @Route("/customer/{id}", requirements={"id": "\d+"}, options={"expose": true}, name="customer.details")
+     * @Route("/manager/customer/{id}", requirements={"id": "\d+"}, options={"expose": true}, name="customer.manager.details")
      *
      * @param int $id
      *

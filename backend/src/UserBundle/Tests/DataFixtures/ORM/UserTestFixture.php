@@ -124,6 +124,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $manager->persist($superadmin);
         $manager->flush();
 
+        $this->addReference('user-customer', $customer);
         $this->addReference('locked-user', $lockedUser);
         $this->addReference('inactive-user', $inactiveUser);
         $this->addReference('active-user', $activeUser);

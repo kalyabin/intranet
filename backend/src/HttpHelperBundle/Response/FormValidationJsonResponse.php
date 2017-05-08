@@ -28,10 +28,10 @@ class FormValidationJsonResponse extends JsonResponse
      */
     public function handleForm(Form $form)
     {
-        $this->jsonData['valid'] = $form->isValid();
         $this->jsonData['submitted'] = $form->isSubmitted();
+        $this->jsonData['valid'] = $this->jsonData['submitted'] && $form->isValid();
 
-        if (!$form->isValid()) {
+        if (!$this->jsonData['valid']) {
             $errors = [];
 
             foreach ($form as $child) {

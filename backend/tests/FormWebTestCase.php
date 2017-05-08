@@ -67,6 +67,8 @@ abstract class FormWebTestCase extends WebTestCase
 
             $form->submit($data);
 
+            $this->assertTrue($form->isSubmitted());
+
             $errorMessage = '';
 
             if (!$form->isValid()) {
@@ -93,7 +95,7 @@ abstract class FormWebTestCase extends WebTestCase
 
             $this->assertChildrensHasKey($form, $data);
 
-            $this->assertFalse($form->isValid());
+            $this->assertFalse($form->isSubmitted() && $form->isValid());
 
             if (!empty($errorKeys)) {
                 foreach ($form as $child) {

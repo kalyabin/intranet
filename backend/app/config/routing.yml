@@ -4,4 +4,8 @@ app:
 
 user:
     resource: "@UserBundle/Controller/"
-    type:     annotation
+    type: annotation
+
+customer:
+    resource: "@CustomerBundle/Controller/"
+    type: annotation

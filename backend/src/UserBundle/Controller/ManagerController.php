@@ -81,7 +81,7 @@ class ManagerController extends Controller
      * Создание пользователя
      *
      * @Method({"POST"})
-     * @Route("/user/manager/create", options={"expose": true}, name="user.manager.create")
+     * @Route("/manager/user", options={"expose": true}, name="user.manager.create")
      *
      * @param Request $request
      *
@@ -116,7 +116,7 @@ class ManagerController extends Controller
      * Текущий пользователь не может редактировать свой аккаунт через эту форму.
      *
      * @Method({"POST"})
-     * @Route("/user/manager/update/{id}", options={"expose": true}, name="user.manager.update", requirements={"id": "\d+"})
+     * @Route("/manager/user/{id}", options={"expose": true}, name="user.manager.update", requirements={"id": "\d+"})
      *
      * @param integer $id Идентификатор редактируемого пользователя
      * @param Request $request
@@ -162,7 +162,7 @@ class ManagerController extends Controller
      * Все параметры опциональные.
      *
      * @Method({"GET"})
-     * @Route("/user/manager/list", options={"expose": true}, name="user.manager.list")
+     * @Route("/manager/user", options={"expose": true}, name="user.manager.list")
      *
      * @param Request $request
      *
@@ -191,7 +191,7 @@ class ManagerController extends Controller
      * Получить карточку пользователя.
      *
      * @Method({"GET"})
-     * @Route("/user/manager/details/{id}", options={"expose": true}, name="user.manager.details", requirements={"id": "\d+"})
+     * @Route("/manager/user/{id}", options={"expose": true}, name="user.manager.details", requirements={"id": "\d+"})
      *
      * @param integer $id Идентификатор просматриваемого пользователя
      *

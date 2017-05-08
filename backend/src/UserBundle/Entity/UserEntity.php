@@ -60,7 +60,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @Assert\NotBlank()
      * @Assert\Length(max=50)
-     * @Assert\Choice(callback="getUserTypes")
+     * @Assert\Choice(callback="getUserTypes", strict=true)
      *
      * @var string Тип пользователя
      */
@@ -117,7 +117,7 @@ class UserEntity implements UserInterface, \JsonSerializable
      *
      * @Assert\NotBlank()
      * @Assert\Type("integer")
-     * @Assert\Choice(callback="getStatusesList")
+     * @Assert\Choice(callback="getStatusesList", strict=true)
      *
      * @var integer Статус пользователя (на основе констант self::STATUS_*)
      */
