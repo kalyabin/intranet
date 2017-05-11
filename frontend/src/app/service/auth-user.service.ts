@@ -3,6 +3,7 @@ import {AuthInterface} from "../interface/auth.interface";
 import {AxiosResponse} from "axios";
 import {LoginInterface} from "../interface/login.interface";
 import {UserInterface} from "../interface/user.interface";
+import {environment} from "../../environment";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -23,8 +24,14 @@ export class AuthUserService {
      */
     protected isTemporaryPassword: boolean;
 
+    /**
+     * Интервал для перезапуска статуса авторизации
+     */
+    protected checkAuthTimeout;
+
     constructor(
-        protected backendService: BackendService
+        protected backendService: BackendService,
+        protected reloadAuthStateInterval: number
     ) { }
 
     /**
@@ -38,6 +45,18 @@ export class AuthUserService {
                 this.isAuth = data.auth;
                 this.userData = data.user;
                 this.isTemporaryPassword = data.isTemporaryPassword;
+
+                if (this.checkAuthTimeout) {
+                    clearTimeout(this.checkAuthTimeout);
+                }
+
+                if (this.isAuth) {
+                    // запустить регулярную проверку авторизации, если пользователь авторизован
+                    this.checkAuthTimeout = setTimeout(() => {
+                        this.checkAuth();
+                    }, this.reloadAuthStateInterval);
+                }
+
                 return data;
             })
             .catch(() => {
@@ -78,4 +97,4 @@ export class AuthUserService {
     }
 }
 
-export const authUserService = new AuthUserService(backendService);
+export const authUserService = new AuthUserService(backendService, environment.reloadAuthStateInterval);
