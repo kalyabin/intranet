@@ -15,11 +15,11 @@ module.exports = {
     },
     resolve: {
         extensions: [".ts", ".js", ".tsx", ".jsx"],
-        modules: [
-            "./node_modules"
-        ],
         alias: {
-            vue: 'vue/dist/vue.common.js'
+            vue: 'vue/dist/vue.common.js',
+            jquery: 'jquery/dist/jquery.slim.js',
+            moment: 'moment/moment.js',
+            axios: 'axios/dist/axios.js'
         }
     },
     output: {
@@ -102,7 +102,15 @@ module.exports = {
                 NODE_ENV: ENV
             }
         })
-    ]
+    ],
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8000',
+                secure: false
+            }
+        }
+    }
 };
 
 if (ENV == 'production') {

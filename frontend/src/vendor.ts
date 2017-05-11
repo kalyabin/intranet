@@ -3,10 +3,11 @@
  */
 
 // скрипты
-import 'jquery/dist/jquery.js';
-import 'moment/moment.js';
+import 'jquery';
+import 'moment';
 import 'bootstrap/dist/js/bootstrap.js';
 import 'vue';
+import 'axios';
 
 // стили
 require('bootstrap/less/bootstrap.less');

@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Component from "vue-class-component";
-
-declare const $: any;
+import $ from 'jquery';
 
 /**
  * Страница авторизации

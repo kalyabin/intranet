@@ -8,12 +8,14 @@
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/vue/types",
-      "./src/@types"
+      "./src/@types",
+      "./node_modules/axios/index.d.ts"
     ],
     "types": [
       "moment",
       "jquery",
-      "vue"
+      "vue",
+      "axios"
     ],
     "sourceMap": false,
     // необходимые настройки для работы vue.js

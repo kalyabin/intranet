@@ -1,11 +1,14 @@
 app:
     resource: '@AppBundle/Controller/'
     type: annotation
+    prefix: /api/
 
 user:
     resource: "@UserBundle/Controller/"
     type: annotation
+    prefix: /api/
 
 customer:
     resource: "@CustomerBundle/Controller/"
     type: annotation
+    prefix: /api/
