@@ -35,27 +35,30 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'raw-loader' })
+                loader: ExtractTextPlugin.extract({
+                    use: 'css-loader?{\"sourceMap\":false,\"importLoaders\":1,\"minimize\":true}',
+                    fallback: 'style-loader'
+                })
             },
             {
-                test: /\.scss$/,
-                use: [{
-                    loader: "style-loader"
-                }, {
-                    loader: "css-loader"
-                }, {
-                    loader: "sass-loader"
-                }]
+                test: /\.(scss|sass)$/,
+                loader: ExtractTextPlugin.extract({
+                    use:['css-loader?{\"sourceMap\":false,\"importLoaders\":1,\"minimize\":true}', 'sass-loader'],
+                    fallback: 'style-loader'
+                })
             },
             {
                 test: /\.less$/,
-                use: [{
-                    loader: "style-loader"
-                }, {
-                    loader: "css-loader"
-                }, {
-                    loader: "less-loader"
-                }]
+                loader: ExtractTextPlugin.extract({
+                    use:['css-loader?{\"sourceMap\":false,\"importLoaders\":1,\"minimize\":true}', 'less-loader'],
+                    fallback: 'style-loader'
+                })
+            },
+
+            // изображения внутри css
+            {
+                test: /\.(jpg|png|gif|cur|ani)$/,
+                loader: 'url-loader?name=[name].[hash:20].[ext]&limit=10000'
             },
 
             // Конфигурация для font-awesome

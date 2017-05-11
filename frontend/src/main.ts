@@ -5,9 +5,9 @@ import {routes} from "./app/routes";
  * Точка входа приложения
  */
 
-require('./theme/nprogress.css');
-require('./theme/animate.min.css');
-require('./theme/custom.min.css');
+require('./theme/css/nprogress.css');
+require('./theme/css/animate.min.css');
+require('./theme/css/custom.min.css');
 
 const app = new AppComponent({
     el: '#app',
