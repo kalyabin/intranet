@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/vue/types",
+      "./src/@types"
+    ],
+    "types": [
+      "moment",
+      "jquery",
+      "vue"
+    ],
+    "sourceMap": false,
+    // необходимые настройки для работы vue.js
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ],
+    "experimentalDecorators": true
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": false
+}
