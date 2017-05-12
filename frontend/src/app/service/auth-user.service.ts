@@ -72,7 +72,7 @@ export class AuthUserService {
      */
     login(username: string, password: string): Promise<LoginInterface> {
         return this.backendService
-            .makeRequest('POST', 'login', {
+            .makeRequest('POST', 'login/check', {
                 username: username,
                 password: password
             })

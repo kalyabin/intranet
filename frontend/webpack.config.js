@@ -17,6 +17,7 @@ module.exports = {
         extensions: [".ts", ".js", ".tsx", ".jsx"],
         alias: {
             vue: 'vue/dist/vue.common.js',
+            'vee-validate': 'vee-validate/dist/vee-validate.js',
             jquery: 'jquery/dist/jquery.slim.js',
             moment: 'moment/moment.js',
             axios: 'axios/dist/axios.js'

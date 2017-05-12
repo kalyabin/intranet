@@ -1,13 +1,10 @@
 import VueRouter, {Route} from "vue-router";
-import Vue from 'vue';
 import {routes} from './routes';
 import {authUserService, AuthUserService} from "../service/auth-user.service";
 
 /**
  * Конфигурация роутера
  */
-
-Vue.use(VueRouter);
 
 export const router = new VueRouter({
     mode: 'history',

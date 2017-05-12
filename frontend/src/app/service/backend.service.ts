@@ -53,11 +53,9 @@ export class BackendService {
         })
         .catch((error: AxiosError) => {
             // TODO: сделать обработку ошибок
-            if (!error.response) {
-                throw error;
-            }
-
             console.log(error.response);
+
+            return error.response;
         });
     }
 }
