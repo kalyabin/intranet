@@ -21,6 +21,7 @@ use UserBundle\Form\Type\ChangePasswordType;
 use UserBundle\Form\Type\ProfileType;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\Repository\UserCheckerRepository;
+use UserBundle\Utils\RolesManager;
 use UserBundle\Utils\UserManager;
 
 /**
@@ -86,15 +87,29 @@ class DashboardController extends Controller
     {
         $response = new JsonResponse([
             'auth' => false,
-            'user' => null
+            'user' => null,
+            'roles' => [],
+            'isTemporaryPassword' => false,
         ]);
 
         $user = $this->getUser();
 
         if ($user instanceof UserEntity) {
+            // определить роли пользователя с учетом вложенности ролей
+            $rolesHierarchy = $this->container->getParameter('security.role_hierarchy.roles');
+
+            $userRoles = $user->getRoles();
+            foreach ($userRoles as $role) {
+                // если это родительская роль, то получить все ее дочерние роли
+                if (!empty($rolesHierarchy[$role])) {
+                    $userRoles = array_merge($userRoles, $rolesHierarchy[$role]);
+                }
+            }
+
             $response->setData([
                 'auth' => true,
                 'user' => $user,
+                'roles' => array_unique($userRoles),
                 'isTemporaryPassword' => $user->getIsTemporaryPassword(),
             ]);
         }

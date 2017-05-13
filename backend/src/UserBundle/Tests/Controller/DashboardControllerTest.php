@@ -44,8 +44,12 @@ class DashboardControllerTest extends WebTestCase
         $client->request('POST', $url);
         $this->assertStatusCode(200, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
-        $this->assertFalse($jsonData['auth']);
-        $this->assertNull($jsonData['user']);
+        $this->assertArraySubset([
+            'auth' => false,
+            'user' => null,
+            'roles' => [],
+            'isTemporaryPassword' => false,
+        ], $jsonData);
 
         // проверить, что был получен CSRF-токен
         $token = $client->getResponse()->headers->get('X-CSRF-Token');
@@ -61,7 +65,7 @@ class DashboardControllerTest extends WebTestCase
     public function testCheckAuthorizationActionAuth()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('superadmin-user');
 
         $url = $this->getUrl('user.check_auth');
 
@@ -79,6 +83,9 @@ class DashboardControllerTest extends WebTestCase
             'user' => json_decode(json_encode($user), true),
             'isTemporaryPassword' => false
         ], $jsonData);
+
+        $this->assertInternalType('array', $jsonData['roles']);
+        $this->assertGreaterThan(1, count($jsonData['roles']));
 
         // проверить, что был получен CSRF-токен
         $token = $client->getResponse()->headers->get('X-CSRF-Token');
