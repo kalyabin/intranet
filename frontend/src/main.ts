@@ -6,6 +6,7 @@ import {validateConfiguration} from "./app/validation/config";
 import LoaderComponent from "./app/loader.component";
 import LoginFormComponent from "./app/user/login-form.component";
 import RememberPasswordFormComponent from "./app/user/remember-password-form.component";
+import {NeedRoleDirective} from "./app/directive/need-role.directive";
 
 /**
  * Точка входа приложения
@@ -23,6 +24,7 @@ Vue.use(VeeValidate, validateConfiguration);
 Vue.component('loader', LoaderComponent);
 Vue.component('login-form', LoginFormComponent);
 Vue.component('remember-password-form', RememberPasswordFormComponent);
+Vue.directive('need-role', NeedRoleDirective);
 
 export const app = new Vue({
     template: '<router-view></router-view>',

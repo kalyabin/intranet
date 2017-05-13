@@ -11,6 +11,7 @@ export interface UserStateInterface {
     isAuth: boolean;
     userData: UserInterface;
     isTemporaryPassword: boolean;
+    roles: string[]
 }
 
 /**
@@ -21,7 +22,8 @@ export const userStore = new Vuex.Store({
         // по умолчанию состояние пользователя - не известно: надо проверить статус авторизации
         isAuth: undefined,
         userData: null,
-        isTemporaryPassword: false
+        isTemporaryPassword: false,
+        roles: []
     },
     mutations: {
         isAuth: (state: UserStateInterface, isAuth: boolean) => {
@@ -32,6 +34,9 @@ export const userStore = new Vuex.Store({
         },
         isTemporaryPassword: (state: UserStateInterface, isTemporaryPassword: boolean) => {
             state.isTemporaryPassword = isTemporaryPassword;
+        },
+        roles: (state: UserStateInterface, roles: string[]) => {
+            state.roles = roles;
         }
     }
 });

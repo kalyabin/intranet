@@ -20,21 +20,25 @@ export class AuthUserService {
     constructor(
         protected backendService: BackendService,
         protected reloadAuthStateInterval: number
-    ) {
-        console.log(this.reloadAuthStateInterval);
-    }
+    ) { }
 
     /**
      * Проверка авторизации
      */
     checkAuth(): Promise<AuthInterface> {
+        const commitUserData = (data: AuthInterface) => {
+            userStore.commit('isAuth', data.auth);
+            userStore.commit('userData', data.user);
+            userStore.commit('isTemporaryPassword', data.isTemporaryPassword);
+            userStore.commit('roles', data.roles);
+        };
+
         return this.backendService
             .makeRequest('POST', 'check_auth')
             .then((response: AxiosResponse) => {
                 let data = <AuthInterface>response.data;
-                userStore.commit('isAuth', data.auth);
-                userStore.commit('userData', data.user);
-                userStore.commit('isTemporaryPassword', data.isTemporaryPassword);
+
+                commitUserData(data);
 
                 if (this.checkAuthTimeout) {
                     clearTimeout(this.checkAuthTimeout);
@@ -51,8 +55,12 @@ export class AuthUserService {
             })
             .catch(() => {
                 let data: AuthInterface = {
-                    auth: false
+                    auth: false,
+                    user: null,
+                    isTemporaryPassword: false,
+                    roles: []
                 };
+                commitUserData(data);
                 return data;
             });
     }
@@ -83,6 +91,7 @@ export class AuthUserService {
         userStore.commit('isAuth', false);
         userStore.commit('userData', null);
         userStore.commit('isTemporaryPassword', false);
+        userStore.commit('roles', []);
 
         if (this.checkAuthTimeout) {
             clearTimeout(this.checkAuthTimeout);

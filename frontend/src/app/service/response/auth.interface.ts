@@ -12,10 +12,15 @@ export interface AuthInterface {
     /**
      * Модель пользователя, если авторизован
      */
-    user?: UserInterface;
+    user: UserInterface;
 
     /**
      * Флаг временного пароля
      */
-    isTemporaryPassword?: boolean;
+    isTemporaryPassword: boolean;
+
+    /**
+     * Массив ролей пользователя
+     */
+    roles: string[];
 }
