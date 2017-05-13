@@ -13,11 +13,13 @@ export const router = new VueRouter({
 
 let checkUserCanAccess = (authUserService: AuthUserService, to: Route, from: Route, next) => {
     let isAuth = authUserService.getIsAuth();
+    let notAuthPages = ['login', 'restore-password'];
+    let errorPages = ['404'];
 
-    if (isAuth && to.name == 'login') {
+    if (isAuth && notAuthPages.indexOf(to.name) != -1) {
         // авторизованному пользователю на странице авторизации делать нечего
         next({name: 'dashboard'});
-    } else if (!isAuth && to.name != 'login') {
+    } else if (!isAuth && notAuthPages.indexOf(to.name) == -1 && errorPages.indexOf(to.name) == -1) {
         // неавторизованный пользователь должен попасть на страницу авторизации
         next({name: 'login'});
     } else {

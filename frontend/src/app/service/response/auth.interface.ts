@@ -1,4 +1,4 @@
-import {UserInterface} from "./user.interface";
+import {UserInterface} from "../model/user.interface";
 
 /**
  * Интерфейс ответа проверки авторизации

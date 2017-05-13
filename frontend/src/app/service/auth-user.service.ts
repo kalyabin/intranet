@@ -1,9 +1,11 @@
 import {BackendService, backendService} from "./backend.service";
-import {AuthInterface} from "../interface/auth.interface";
+import {AuthInterface} from "./response/auth.interface";
 import {AxiosResponse} from "axios";
-import {LoginInterface} from "../interface/login.interface";
-import {UserInterface} from "../interface/user.interface";
+import {LoginInterface} from "./model/login.interface";
+import {UserInterface} from "./model/user.interface";
 import {environment} from "../../environment";
+import {RememberPasswordInterface} from "./response/remember-password.interface";
+import {RestorePasswordInterface} from "./response/restore-password.interface";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -73,11 +75,58 @@ export class AuthUserService {
     login(username: string, password: string): Promise<LoginInterface> {
         return this.backendService
             .makeRequest('POST', 'login/check', {
-                username: username,
-                password: password
+                _username: username,
+                _password: password
             })
             .then((response: AxiosResponse) => {
                 let data = <LoginInterface>response.data;
+                return data;
+            });
+    }
+
+    /**
+     * Напоминание пароля
+     */
+    rememberPassword(email: string): Promise<RememberPasswordInterface> {
+        return this.backendService
+            .makeRequest('POST', 'remember_password/remember', {
+                remember_password: {
+                    email: email
+                }
+            })
+            .then((response: AxiosResponse) => {
+                let data = <RememberPasswordInterface>response.data;
+                return data;
+            });
+    }
+
+    /**
+     * Восстановление пароля
+     */
+    restorePassword(checkerId: number, checkerCode: string, newPassword: string) {
+        return this.backendService
+            .makeRequest('POST', 'change_password/' + checkerId + '/' + checkerCode, {
+                'change_password': {
+                    'password': {
+                        'first': newPassword,
+                        'second': newPassword,
+                    }
+                }
+            })
+            .then((response: AxiosResponse) => {
+                if (response.status == 404) {
+                    let data: RestorePasswordInterface = {
+                        success: false,
+                        valid: false,
+                        validationErrors: {
+                            notFound: 'Неверный код подтверждения'
+                        },
+                        submitted: true
+                    };
+                    return data;
+                }
+
+                let data = <RestorePasswordInterface>response.data;
                 return data;
             });
     }
