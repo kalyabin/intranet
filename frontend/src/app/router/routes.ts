@@ -3,13 +3,16 @@ import DashboardComponent from "../dashboard.component";
 import {RouteConfig} from "vue-router";
 import RestorePasswordComponent from "../user/restore-password.component";
 import PageNotFoundComponent from "../page-not-found.component";
+import IndexComponent from "../index.component";
 
 /**
  * Правила роутинга
  */
 export const routes: Array<RouteConfig> = [
-    { path: '/login', name: 'login', component: LoginComponent },
-    { path: '/', name: 'dashboard', component: DashboardComponent },
+    { path: '/', name: 'login', component: LoginComponent },
     { path: '/change-password/:checkerId/:checkerCode', name: 'restore-password', component: RestorePasswordComponent },
-    { path: '/404', name: '404', component: PageNotFoundComponent }
+    { path: '/404', name: '404', component: PageNotFoundComponent },
+    { path: '/auth', name: 'dashboard', component: DashboardComponent, children: [
+        { path: '/auth/index', name: 'testing', component: IndexComponent }
+    ] },
 ];

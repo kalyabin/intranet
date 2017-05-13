@@ -71,7 +71,7 @@ module.exports = {
 
             // шаблоны компонентов
             {
-                test: /.*\.component\.html$/,
+                test: /.*\.html$/,
                 loader: 'raw-loader!html-minifier-loader'
             }
         ]

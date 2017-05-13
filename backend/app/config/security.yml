@@ -58,7 +58,7 @@ security:
             pattern: ^/
             anonymous: ~
             logout:
-                path: /logout
+                path: /api/logout
                 target: /
             simple_form:
                 provider: user_provider

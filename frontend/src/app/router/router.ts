@@ -1,6 +1,7 @@
 import VueRouter, {Route} from "vue-router";
 import {routes} from './routes';
 import {authUserService, AuthUserService} from "../service/auth-user.service";
+import {userStore} from "../user/user-store";
 
 /**
  * Конфигурация роутера
@@ -12,7 +13,7 @@ export const router = new VueRouter({
 });
 
 let checkUserCanAccess = (authUserService: AuthUserService, to: Route, from: Route, next) => {
-    let isAuth = authUserService.getIsAuth();
+    let isAuth = userStore.state.isAuth;
     let notAuthPages = ['login', 'restore-password'];
     let errorPages = ['404'];
 
@@ -33,8 +34,7 @@ let checkUserCanAccess = (authUserService: AuthUserService, to: Route, from: Rou
  * В противном случае пользователь должен попасть на страницу авторизации.
  */
 router.beforeEach((to: Route, from: Route, next) => {
-    if (authUserService.needCheckAuth()) {
-        // проверка авторизации
+    if (userStore.state.isAuth == undefined) {
         authUserService.checkAuth().then(() => {
             checkUserCanAccess(authUserService, to, from, next);
         });

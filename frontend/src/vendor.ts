@@ -8,6 +8,7 @@ import 'moment';
 import 'bootstrap/dist/js/bootstrap.js';
 import 'vue';
 import 'vee-validate';
+import 'vuex';
 import 'axios';
 
 // стили

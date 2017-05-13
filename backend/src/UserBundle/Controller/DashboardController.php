@@ -270,9 +270,13 @@ class DashboardController extends Controller
      *
      * @Route("/logout", options={"expose" : true}, name="user.logout")
      * @Security("is_authenticated()")
+     *
+     * @return JsonResponse
      */
-    public function logoutAction()
-    { }
+    public function logoutAction(): JsonResponse
+    {
+        return new JsonResponse(['success' => true]);
+    }
 
     /**
      * Запрос на генерацию нового CSRF-токена

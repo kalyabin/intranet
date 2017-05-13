@@ -6,26 +6,12 @@ import {UserInterface} from "./model/user.interface";
 import {environment} from "../../environment";
 import {RememberPasswordInterface} from "./response/remember-password.interface";
 import {RestorePasswordInterface} from "./response/restore-password.interface";
+import {userStore} from "../user/user-store";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
  */
 export class AuthUserService {
-    /**
-     * Авторизован ли пользователь или нет
-     */
-    protected isAuth: boolean;
-
-    /**
-     * Данные пользователя
-     */
-    protected userData: UserInterface;
-
-    /**
-     * Временный пароль
-     */
-    protected isTemporaryPassword: boolean;
-
     /**
      * Интервал для перезапуска статуса авторизации
      */
@@ -34,7 +20,9 @@ export class AuthUserService {
     constructor(
         protected backendService: BackendService,
         protected reloadAuthStateInterval: number
-    ) { }
+    ) {
+        console.log(this.reloadAuthStateInterval);
+    }
 
     /**
      * Проверка авторизации
@@ -44,15 +32,15 @@ export class AuthUserService {
             .makeRequest('POST', 'check_auth')
             .then((response: AxiosResponse) => {
                 let data = <AuthInterface>response.data;
-                this.isAuth = data.auth;
-                this.userData = data.user;
-                this.isTemporaryPassword = data.isTemporaryPassword;
+                userStore.commit('isAuth', data.auth);
+                userStore.commit('userData', data.user);
+                userStore.commit('isTemporaryPassword', data.isTemporaryPassword);
 
                 if (this.checkAuthTimeout) {
                     clearTimeout(this.checkAuthTimeout);
                 }
 
-                if (this.isAuth) {
+                if (data.auth) {
                     // запустить регулярную проверку авторизации, если пользователь авторизован
                     this.checkAuthTimeout = setTimeout(() => {
                         this.checkAuth();
@@ -82,6 +70,23 @@ export class AuthUserService {
                 let data = <LoginInterface>response.data;
                 return data;
             });
+    }
+
+    /**
+     * Логаут пользователя
+     */
+    logout(): void {
+        this.backendService
+            .makeRequest('POST', 'logout')
+            .then(() => {}).catch(() => {});
+
+        userStore.commit('isAuth', false);
+        userStore.commit('userData', null);
+        userStore.commit('isTemporaryPassword', false);
+
+        if (this.checkAuthTimeout) {
+            clearTimeout(this.checkAuthTimeout);
+        }
     }
 
     /**
@@ -129,20 +134,6 @@ export class AuthUserService {
                 let data = <RestorePasswordInterface>response.data;
                 return data;
             });
-    }
-
-    /**
-     * Возвращает true, если требуется проверить авторизовацию пользователя
-     */
-    needCheckAuth(): boolean {
-        return typeof this.isAuth == 'undefined';
-    }
-
-    /**
-     * Возвращает true если пользователь авторизован
-     */
-    getIsAuth(): boolean {
-        return this.isAuth == true;
     }
 }
 
