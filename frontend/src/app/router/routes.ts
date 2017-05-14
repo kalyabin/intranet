@@ -13,6 +13,6 @@ export const routes: Array<RouteConfig> = [
     { path: '/change-password/:checkerId/:checkerCode', name: 'restore-password', component: RestorePasswordComponent },
     { path: '/404', name: '404', component: PageNotFoundComponent },
     { path: '/auth', name: 'dashboard', component: DashboardComponent, children: [
-        { path: '/auth/index', name: 'testing', component: IndexComponent }
+        { path: '/auth/index', name: 'auth_index', component: IndexComponent }
     ] },
 ];
