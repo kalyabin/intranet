@@ -12,12 +12,12 @@ export interface UserInterface {
     /**
      * Идентификатор
      */
-    id: number;
+    id?: number;
 
     /**
      * Статус
      */
-    status: number;
+    status: UserStatus;
 
     /**
      * Имя

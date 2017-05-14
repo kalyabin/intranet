@@ -1,0 +1,25 @@
+<tabs>
+    <tab-pane label="Основное">
+        <div class="form-group">
+            <label class="control-label">Имя</label>
+            <input type="text" name="name" v-model="name" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label class="control-label">E-mail</label>
+            <input type="text" name="email" v-model="email" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label class="control-label">Тип</label>
+            <select v-model="type" name="type" class="form-control">
+                <option value="customer">Арендатор</option>
+                <option value="manager">Сотрудник</option>
+            </select>
+        </div>
+    </tab-pane>
+    <tab-pane label="Роли">
+        roles
+    </tab-pane>
+    <tab-pane label="Арендатор">
+        customer
+    </tab-pane>
+</tabs>

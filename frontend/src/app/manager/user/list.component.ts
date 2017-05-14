@@ -5,6 +5,9 @@ import {userManagerService} from "../../service/user-manager.service";
 import {UserListInterface} from "../../service/response/user-list.interface";
 import $ from 'jquery';
 import {defaultDtOptions} from "../../widgets/default-dt-options";
+import ModalWindowComponent from "../../widgets/modal-window.component";
+import {UserDetailsInterface} from "../../service/model/user-datails.interface";
+import {UserInterface} from "../../service/model/user.interface";
 
 Component.registerHooks([
     'mounted',
@@ -29,6 +32,11 @@ export default class UserManagerListComponent extends Vue {
     protected needRebuildTable: boolean = false;
 
     /**
+     * Текущий редактируемый или создаваемый пользователь
+     */
+    @Model() currentUser: UserInterface = null;
+
+    /**
      * Список пользователей
      */
     @Model() list = [];
@@ -42,6 +50,9 @@ export default class UserManagerListComponent extends Vue {
 
     }
 
+    /**
+     * Рендер списка пользователя при изменинии массива
+     */
     updated(): void {
         if (this.needRebuildTable) {
             if (this.dtHandler) {
@@ -51,6 +62,9 @@ export default class UserManagerListComponent extends Vue {
         }
     }
 
+    /**
+     * Получение массива пользователей при рендере компонента
+     */
     mounted(): void {
         let currentPage = 0;
 
@@ -71,5 +85,17 @@ export default class UserManagerListComponent extends Vue {
         };
 
         fetchItems();
+    }
+
+    /**
+     * Открыть диалог создания нового пользователя
+     */
+    openCreateDialog(event): void {
+        event.preventDefault();
+
+        this.currentUser = null;
+
+        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        window.show();
     }
 }

@@ -18,7 +18,7 @@ module.exports = {
         alias: {
             vue: 'vue/dist/vue.common.js',
             'vee-validate': 'vee-validate/dist/vee-validate.js',
-            jquery: 'jquery/dist/jquery.slim.js',
+            jquery: 'jquery/dist/jquery.js',
             'datatables.net': 'datatables.net/js/jquery.dataTables.js',
             'datatables.net-bs': 'datatables.net-bs/js/dataTables.bootstrap.js',
             moment: 'moment/moment.js',
