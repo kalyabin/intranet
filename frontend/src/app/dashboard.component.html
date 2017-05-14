@@ -1,32 +1,18 @@
 <div class="container body">
     <div class="main_container">
-        <div class="col-md-3 left_col">
+        <div ref="left-col" class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
                     <router-link :to="{'name': 'dashboard'}" :class="{'site_title': true}">
-                        <i class="fa fa-paw"></i> <span>Gentellela Alela!</span>
+                        <span>Интранет</span>
                     </router-link>
                 </div>
 
                 <div class="clearfix"></div>
 
-                <div class="profile" v-if="isAuth">
-                    <div class="profile_pic">
-                        <!-- TODO: аватаров пока нет -->
-                        <div class="img-circle profile_img">&nbsp;</div>
-                        <!--<img src="images/img.jpg" alt="..." class="img-circle profile_img">-->
-                    </div>
-                    <div class="profile_info">
-                        <span>{{userData.name}}</span>
-                    </div>
-                </div>
-
-                <br />
-
                 <!-- sidebar menu -->
                 <div class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
-                        <h3>Главное меню</h3>
                         <ul class="nav side-menu">
                             <li v-for="menuItem in sideBarMenu">
                                 <router-link
@@ -69,10 +55,14 @@
                         <a href="#" @click="toggleMenu"><i class="fa fa-bars"></i></a>
                     </div>
 
+                    <div class="nav navbar-nav navbar-left" v-if="pageTitle">
+                        <h3>{{pageTitle}}</h3>
+                    </div>
+
                     <ul class="nav navbar-nav navbar-right">
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <img src="images/img.jpg" alt="">John Doe
+                                <img src="images/img.jpg" alt="">{{userData.name}}
                                 <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -160,24 +150,24 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-        <div class="right_col" role="main">
-            <div class="">
-                <div class="page-title">
-                    <div class="title_left">
-                        <h3>Fixed Footer <small> Just add class <strong>footer_fixed</strong></small></h3>
-                    </div>
-                </div>
+        <div ref="right-col" class="right_col" role="main">
+            <div>
+                <div class="clearfix"></div>
+                <router-view></router-view>
             </div>
         </div>
         <!-- /page content -->
 
         <!-- footer content -->
-        <footer>
-            <div class="pull-right">
-                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
-            </div>
-            <div class="clearfix"></div>
-        </footer>
+        <!--<footer>-->
+            <!--<div class="col-md-3 left_col pull-right">-->
+                <!--&nbsp;-->
+            <!--</div>-->
+            <!--<div class="pull-right">-->
+                <!--Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>-->
+            <!--</div>-->
+            <!--<div class="clearfix"></div>-->
+        <!--</footer>-->
         <!-- /footer content -->
     </div>
 </div>

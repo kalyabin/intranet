@@ -2,6 +2,7 @@ import VueRouter, {Route} from "vue-router";
 import {routes} from './routes';
 import {authUserService, AuthUserService} from "../service/auth-user.service";
 import {userStore} from "../user/user-store";
+import {pageMetaStore} from "./page-meta-store";
 
 /**
  * Конфигурация роутера
@@ -14,17 +15,25 @@ export const router = new VueRouter({
 
 let checkUserCanAccess = (authUserService: AuthUserService, to: Route, from: Route, next) => {
     let isAuth = userStore.state.isAuth;
-    let notAuthPages = ['login', 'restore-password'];
-    let errorPages = ['404'];
+    let needAuth = !!(to.meta && to.meta['needAuth']);
+    let needNotAuth = !!(to.meta && to.meta['needNotAuth']);
+    let needRole = to.meta && to.meta['needRole'] ? to.meta['needRole'] : '';
 
-    if (isAuth && notAuthPages.indexOf(to.name) != -1) {
-        // авторизованному пользователю на странице авторизации делать нечего
+    if (isAuth && needNotAuth) {
+        // авторизованному пользователю на этой странице делать нечего
         next({name: 'dashboard'});
-    } else if (!isAuth && notAuthPages.indexOf(to.name) == -1 && errorPages.indexOf(to.name) == -1) {
-        // неавторизованный пользователь должен попасть на страницу авторизации
+    } else if (!isAuth && (needAuth || needRole)) {
+        // требуется авторизовация
         next({name: 'login'});
+    } else if (needRole && !authUserService.hasRole(needRole)) {
+        // роль для просмотра страницы не совпадает
+        next({name: '403'});
     } else {
         // во всех остальных случаях даем пользователю перейти на страницу
+        let pageTitle = to.meta.pageTitle || '';
+        let title = to.meta.title || '';
+        pageMetaStore.commit('setPageTitle', pageTitle);
+        pageMetaStore.commit('setTitle', title);
         next();
     }
 };

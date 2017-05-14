@@ -15,7 +15,7 @@ export const sideBarMenus: Array<SideBarMenuItem> = [
         menuName: 'Главная страница',
     },
     {
-        routeName: 'auth_index',
+        routeName: 'user_manager_list',
         faIcon: 'fa-users',
         menuName: 'Пользователи',
         role: 'USER_MANAGEMENT',

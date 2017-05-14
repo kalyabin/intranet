@@ -7,6 +7,7 @@ import {router} from "./router/router";
 import {userStore} from "./user/user-store";
 import {Model} from "vue-property-decorator";
 import {SideBarMenuItem, sideBarMenus} from "./sidebar-menu";
+import {pageMetaStore} from "./router/page-meta-store";
 
 Component.registerHooks([
     'mounted',
@@ -29,6 +30,17 @@ export default class DashboardComponent extends Vue {
      * Все возможные пункты меню с разбивкой по ролям
      */
     @Model() sideBarMenu: Array<SideBarMenuItem> = [];
+
+    protected fixContentHeight(): void {
+        $(this.$refs['right-col']).css('min-height', Math.max($(this.$refs['left-col']).outerHeight(), $(window).height()));
+    }
+
+    /**
+     * Заголовок текущей страницы
+     */
+    get pageTitle(): string {
+        return pageMetaStore.state.pageTitle;
+    }
 
     /**
      * Флаг авторизованности
@@ -53,9 +65,12 @@ export default class DashboardComponent extends Vue {
         }
         $('body').addClass('footer_fixed');
         this.sideBarMenu = sideBarMenus;
+        this.fixContentHeight();
+        $(window).on('resize', () => this.fixContentHeight());
     }
 
     beforeRouteLeave(to, from, next): void {
+        $(window).off('resize');
         $('body').removeClass('nav-md footer_fixed');
         next();
     }
@@ -64,9 +79,13 @@ export default class DashboardComponent extends Vue {
      * Скрыть / раскрыть левое меню
      */
     toggleMenu(event): void {
+        event.preventDefault();
+
         this.menuToggled = !this.menuToggled;
 
         $('body').toggleClass('nav-md nav-sm');
+
+        this.fixContentHeight();
     }
 
     /**

@@ -5,7 +5,7 @@ import Component from "vue-class-component";
  * Главная страница для авторизованного пользователя
  */
 @Component({
-    template: '<div>testing</div>'
+    template: '<div>Index page</div>'
 })
 export default class IndexComponent extends Vue {
 

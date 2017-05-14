@@ -3,6 +3,7 @@
  */
 import {CustomerInterface} from "../response/customer.interface";
 export type UserType = 'customer' | 'manager';
+export type UserStatus = 1 | 0 | -1;
 
 /**
  * Модель пользователя

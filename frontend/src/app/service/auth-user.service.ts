@@ -144,6 +144,14 @@ export class AuthUserService {
                 return data;
             });
     }
+
+    /**
+     * Проверить роль пользователя
+     */
+    hasRole(role: string): boolean {
+        let roles = userStore.state.roles;
+        return !!(roles && roles.indexOf(role) != -1);
+    }
 }
 
 export const authUserService = new AuthUserService(backendService, environment.reloadAuthStateInterval);

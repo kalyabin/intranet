@@ -19,6 +19,8 @@ module.exports = {
             vue: 'vue/dist/vue.common.js',
             'vee-validate': 'vee-validate/dist/vee-validate.js',
             jquery: 'jquery/dist/jquery.slim.js',
+            'datatables.net': 'datatables.net/js/jquery.dataTables.js',
+            'datatables.net-bs': 'datatables.net-bs/js/dataTables.bootstrap.js',
             moment: 'moment/moment.js',
             axios: 'axios/dist/axios.js'
         }
@@ -96,7 +98,9 @@ module.exports = {
         new webpack.ContextReplacementPlugin(/\.\/locale$/, null, false, /js$/),
         new webpack.ProvidePlugin({
             jQuery: 'jquery',
-            $: 'jquery'
+            $: 'jquery',
+            DataTable: 'datatable.net',
+            DataTableBs: 'datatable.net-bs'
         }),
         new webpack.DefinePlugin({
             'process.env': {
