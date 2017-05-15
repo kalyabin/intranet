@@ -12,6 +12,7 @@ import 'vue';
 import 'vee-validate';
 import 'vuex';
 import 'axios';
+import 'switchery';
 
 // стили
 require('bootstrap/less/bootstrap.less');
