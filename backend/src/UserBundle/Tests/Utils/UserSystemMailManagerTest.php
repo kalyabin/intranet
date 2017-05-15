@@ -299,10 +299,7 @@ class UserSystemMailManagerTest extends WebTestCase
 
         $this->assertLastMessageEmails($user->getEmail(), 'testing@test.ru');
 
-        $url = $this->getUrl('remember_password.change_password_form', [
-            'checkerId' => $checker->getId(),
-            'code' => $checker->getCode(),
-        ]);
+        $url = "change-password/{$checker->getId()}/{$checker->getCode()}";
 
         $this->assertLastMessageContains($url);
     }
@@ -336,10 +333,7 @@ class UserSystemMailManagerTest extends WebTestCase
 
         $this->assertLastMessageEmails($user->getEmail(), 'testing@test.ru');
 
-        $url = $this->getUrl('remember_password.change_password_form', [
-            'checkerId' => $checker->getId(),
-            'code' => $checker->getCode(),
-        ]);
+        $url = "change-password/{$checker->getId()}/{$checker->getCode()}";
 
         $this->assertLastMessageContains($url);
     }

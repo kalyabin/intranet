@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Form\Type\UserType;
+use UserBundle\Utils\RolesManager;
 use UserBundle\Utils\UserManager;
 
 /**
@@ -37,9 +38,15 @@ class ManagerController extends Controller
      */
     protected $userManager;
 
-    public function __construct(UserManager $userManager)
+    /**
+     * @var RolesManager
+     */
+    protected $rolesManager;
+
+    public function __construct(UserManager $userManager, RolesManager $rolesManager)
     {
         $this->userManager = $userManager;
+        $this->rolesManager = $rolesManager;
     }
 
     /**
@@ -205,6 +212,23 @@ class ManagerController extends Controller
             'user' => $user,
             'roles' => $user->getRoles(),
             'status' => $user->getStatus(),
+        ]);
+    }
+
+    /**
+     * Информация о ролях.
+     *
+     * @Method({"GET"})
+     * @Route("/manager/user/roles", options={"expose": true}, name="user.manager.roles")
+     *
+     * @return JsonResponse
+     */
+    public function rolesAction(): JsonResponse
+    {
+        return new JsonResponse([
+            'labels' => $this->rolesManager->getRolesLables(),
+            'hierarchy' => $this->container->getParameter('security.role_hierarchy.roles'),
+            'roles' => $this->rolesManager->getRolesByUserType()
         ]);
     }
 }

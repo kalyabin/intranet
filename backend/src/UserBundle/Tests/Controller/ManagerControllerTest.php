@@ -14,6 +14,7 @@ use UserBundle\Controller\ManagerController;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use UserBundle\Utils\RolesManager;
 
 /**
  * Тестирование ManagerController
@@ -263,5 +264,31 @@ class ManagerControllerTest extends WebTestCase
         $this->assertArrayHasKey('id', $jsonData['user']);
         $this->assertEquals($user->getId(), $jsonData['user']['id']);
         $this->assertEquals($user->getStatus(), $jsonData['status']);
+    }
+
+    public function testRolesAction()
+    {
+        /** @var RolesManager $rolesManager */
+        $rolesManager = $this->getContainer()->get('user.roles_manager');
+
+        /** @var UserEntity $superAdminUser */
+        $superAdminUser = $this->fixtures->getReference('superadmin-user');
+
+        $url = $this->getUrl('user.manager.roles');
+
+        $this->assertNonAuthenticatedUsers('GET', $url);
+
+        // от супер-админа
+        $this->loginAs($superAdminUser, 'main');
+
+        $client = static::makeClient();
+        $client->request('GET', $url);
+        $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
+
+        $this->assertArraySubset([
+            'labels' => $rolesManager->getRolesLables(),
+            'hierarchy' => $this->getContainer()->getParameter('security.role_hierarchy.roles'),
+            'roles' => $rolesManager->getRolesByUserType(),
+        ], $jsonData);
     }
 }
