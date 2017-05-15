@@ -36,6 +36,16 @@ export class BackendService {
             headers['X-CSRF-Token'] = this.csrfToken;
         }
 
+        let retrieveCsrfToken = (response: AxiosResponse) => {
+            if (response && response.headers) {
+                for (let key in response.headers) {
+                    if (key.toLowerCase() == 'x-csrf-token') {
+                        this.csrfToken = response.headers[key];
+                    }
+                }
+            }
+        };
+
         return this.http.request({
             method: method,
             url: uri,
@@ -44,14 +54,12 @@ export class BackendService {
         })
         .then((response: AxiosResponse) => {
             // если пришел новый токен - запомнить его в переменной
-            for (let key in response.headers) {
-                if (key.toLowerCase() == 'x-csrf-token') {
-                    this.csrfToken = response.headers[key];
-                }
-            }
+            retrieveCsrfToken(response);
             return response;
         })
         .catch((error: AxiosError) => {
+            retrieveCsrfToken(error.response);
+
             // TODO: сделать обработку ошибок
             console.log(error.response);
 

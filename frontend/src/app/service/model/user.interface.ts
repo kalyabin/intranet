@@ -1,7 +1,7 @@
 /**
  * Тип пользователя
  */
-import {CustomerInterface} from "../response/customer.interface";
+import {CustomerInterface} from "./customer.interface";
 export type UserType = 'customer' | 'manager';
 export type UserStatus = 1 | 0 | -1;
 

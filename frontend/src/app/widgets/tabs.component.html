@@ -1,8 +1,11 @@
-<div role="tabpanel">
-    <ul class="nav nav-tabs bar_tabs" role="tablist">
-        <li role="presentation" v-for="(tabPane, index) in tabPanes" :class="{'active': index == currentTab}"><a href="#" @click="selectTab($event, index)">{{tabPane.label}}</a></li>
-    </ul>
-    <div class="tab-content">
-        <slot></slot>
+<div>
+    <div role="tabpanel">
+        <ul class="nav nav-tabs bar_tabs" role="tablist">
+            <li role="presentation" v-for="(tabPane, index) in tabPanes" v-if="tabPane.visible" :class="{'active': index == currentTab}"><a href="#" :class="{'text-danger': tabPane.hasError}" @click="selectTab($event, index)">{{tabPane.label}}</a></li>
+        </ul>
+        <div :class="{'tab-content': true, 'modal-body': inModalWindow}">
+            <slot></slot>
+        </div>
     </div>
+    <slot name="footer"></slot>
 </div>

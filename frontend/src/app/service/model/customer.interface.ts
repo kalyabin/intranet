@@ -5,7 +5,7 @@ export interface CustomerInterface {
     /**
      * Идентификатор
      */
-    id: number;
+    id?: number;
 
     /**
      * Название

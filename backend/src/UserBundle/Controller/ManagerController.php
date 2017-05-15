@@ -216,6 +216,32 @@ class ManagerController extends Controller
     }
 
     /**
+     * Удалить пользователя
+     *
+     * @Method({"DELETE"})
+     * @Route("/manager/user/{id}", options={"expose": true}, name="user.manager.delete", requirements={"id": "\d+"})
+     *
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function deleteAction(int $id): JsonResponse
+    {
+        $user = $this->getUserById($id);
+
+        $entityManager = $this->userManager->getEntityManager();
+
+        $entityManager->remove($user);
+
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'user' => $user,
+            'success' => true,
+        ]);
+    }
+
+    /**
      * Информация о ролях.
      *
      * @Method({"GET"})

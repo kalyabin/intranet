@@ -4,6 +4,7 @@ import {UserListInterface} from "./response/user-list.interface";
 import {UserRequestInterface} from "./request/user-request.interface";
 import {UserResponseInterface} from "./response/user-response.interface";
 import {UserDetailsInterface} from "./model/user-datails.interface";
+import {RolesResponseInterface} from "./response/roles-response.interface";
 
 /**
  * Сервис для менеджера пользователей
@@ -53,7 +54,19 @@ export class UserManagerService {
             .then((response: AxiosResponse) => {
                 let data: UserResponseInterface = <UserResponseInterface>response.data;
                 return data;
-            })
+            });
+    }
+
+    /**
+     * Удаление пользователя
+     */
+    remove(id: number): Promise<UserResponseInterface> {
+        return this.backendService
+            .makeRequest('DELETE', `manager/user/${id}`)
+            .then((response: AxiosResponse) => {
+                let data: UserResponseInterface = <UserResponseInterface>response.data;
+                return data;
+            });
     }
 
     /**
@@ -64,6 +77,18 @@ export class UserManagerService {
             .makeRequest('GET', `manager/user/${id}`)
             .then((response: AxiosResponse) => {
                 let data: UserDetailsInterface = <UserDetailsInterface>response.data;
+                return data;
+            });
+    }
+
+    /**
+     * Информация о ролях
+     */
+    roles(): Promise<RolesResponseInterface> {
+        return this.backendService
+            .makeRequest('GET', 'manager/user/roles')
+            .then((response: AxiosResponse) => {
+                let data: RolesResponseInterface = <RolesResponseInterface>response.data;
                 return data;
             });
     }

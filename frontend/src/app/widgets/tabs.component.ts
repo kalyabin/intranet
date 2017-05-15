@@ -20,6 +20,11 @@ export default class TabsComponent extends Vue {
     @Prop({type: Number, default: 0}) defaultTabPane: number;
 
     /**
+     * Табы отображаются внутри модального окна
+     */
+    @Prop({type: Boolean, default: false}) inModalWindow: boolean;
+
+    /**
      * Панели табов
      */
     @Model() tabPanes: Array<TabPaneComponent> = [];

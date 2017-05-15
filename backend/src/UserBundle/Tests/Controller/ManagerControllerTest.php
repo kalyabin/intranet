@@ -129,7 +129,6 @@ class ManagerControllerTest extends WebTestCase
             'user' => [
                 'name' => 'testing',
                 'email' => 'testupdateaction@test.ru',
-                'password' => 'userpassword',
                 'userType' => UserEntity::TYPE_CUSTOMER,
                 'status' => UserEntity::STATUS_ACTIVE,
                 'role' => [

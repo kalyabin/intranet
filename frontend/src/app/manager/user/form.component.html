@@ -1,25 +1,115 @@
-<tabs>
-    <tab-pane label="Основное">
-        <div class="form-group">
-            <label class="control-label">Имя</label>
-            <input type="text" name="name" v-model="name" class="form-control" />
+<form @submit.prevent="submit" @input="errorMessage = ''">
+    <loader :visible="awaitOfSubmit"></loader>
+    <div class="modal-body" v-if="errorMessage">
+        <div class="alert alert-danger">{{errorMessage}}</div>
+    </div>
+    <tabs :in-modal-window="true" ref="tabs">
+        <tab-pane label="Основное" :has-error="errors.has('status') || errors.has('name') || errors.has('email') || errors.has('type') || errors.has('password')">
+            <div class="form-group" :class="{'has-error': errors.has('status')}" v-if="user && user.id">
+                <label class="control-label">Статус</label>
+                <select v-model="status" v-validate="'required'" name="status" class="form-control">
+                    <option value="1">Активен</option>
+                    <option value="-1">Заблокирован</option>
+                </select>
+                <p class="help-block" v-if="errors.has('status')">
+                    {{errors.first('status')}}
+                </p>
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('name')}">
+                <label class="control-label">Имя</label>
+                <input type="text" v-validate="'required|max:100'" name="name" v-model="name" class="form-control" />
+                <p class="help-block" v-if="errors.has('name')">
+                    {{errors.first('name')}}
+                </p>
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('email')}">
+                <label class="control-label">E-mail</label>
+                <input type="text" v-validate="'required|max:100|email'" name="email" v-model="email" class="form-control" />
+                <p class="help-block" v-if="errors.has('email')">
+                    {{errors.first('email')}}
+                </p>
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('type')}">
+                <label class="control-label">Тип</label>
+                <select v-model="type" v-validate="'required'" name="type" class="form-control" @change="roles = []">
+                    <option value="customer">Арендатор</option>
+                    <option value="manager">Сотрудник</option>
+                </select>
+                <p class="help-block" v-if="errors.has('type')">
+                    {{errors.first('type')}}
+                </p>
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('password')}" v-if="!user">
+                <label class="control-label">Пароль</label>
+                <div class="input-group">
+                    <input type="text" v-validate="'required|min:6'" name="password" v-model="password" class="form-control" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" @click.prevent="generatePassword">Сгенерировать</button>
+                    </span>
+                </div>
+                <p class="help-block" v-if="errors.has('password')">
+                    {{errors.first('password')}}
+                </p>
+            </div>
+        </tab-pane>
+        <tab-pane label="Роли" :has-error="errors.has('rolesStr')">
+            <div class="form-group" :class="{'has-error': errors.has('rolesStr')}">
+                <p class="help-block" v-if="errors.has('rolesStr')">
+                    Необходимо выбрать хотя бы одну роль
+                </p>
+                <input type="hidden" name="rolesStr" v-model="rolesStr" v-validate="'required'" />
+                <div v-for="(children, role) in rolesHierarchy" v-if="canViewRole(role)">
+                    <label style="font-weight: bold;">
+                        <input type="checkbox" name="roles[]" :value="role" @click="chooseParentRole(role)" v-model="roles" />&nbsp;&nbsp;{{rolesLabels[role]}}
+                    </label>
+                    <div v-if="roles.indexOf(role) == -1">
+                        <div v-for="childRole in children" style="padding-left: 20px;">
+                            <label style="font-weight: normal;">
+                                <input type="checkbox" name="roles[]" :value="childRole" v-model="roles" />&nbsp;&nbsp;{{rolesLabels[childRole]}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </tab-pane>
+        <tab-pane label="Арендатор" :has-error="errors.has('customerId') || errors.has('customerName') || errors.has('customerAgreement')" :visible="type == 'customer'">
+            <div class="form-group" :class="{'has-error': errors.has('customerId')}">
+                <label class="control-label">Выберите арендатора</label>
+                <select v-model="customerId" v-validate="'required'" name="customerId" class="form-control">
+                    <option value="0">Новый арендатор</option>
+                    <option v-for="customer in customers" :value="customer.id">{{customer.name}}</option>
+                </select>
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('customerName')}">
+                <label class="control-label">Название</label>
+                <input class="form-control" v-validate="'required|max:100'" type="text" v-model="customer.name" name="customerName" />
+            </div>
+            <div class="form-group" :class="{'has-error': errors.has('customerAgreement')}">
+                <label class="control-label">Текущий договор</label>
+                <input class="form-control" v-validate="'required|max:100'" type="text" v-model="customer.currentAgreement" name="customerAgreement" />
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 col-sm-3 col-xs-12 control-label">Дополнительные доступы</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="customer.allowItDepartment" name="customerAllowItDepartment" />
+                            IT-аутсорсинг
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="customer.allowBookerDepartment" name="customerAllowBookerDepartment" />
+                            SMART-бухгалтер
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </tab-pane>
+        <div class="modal-footer" slot="footer">
+            <button type="button" @click.prevent="remove" class="btn btn-danger" v-if="user && user.id">Удалить</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
-        <div class="form-group">
-            <label class="control-label">E-mail</label>
-            <input type="text" name="email" v-model="email" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label class="control-label">Тип</label>
-            <select v-model="type" name="type" class="form-control">
-                <option value="customer">Арендатор</option>
-                <option value="manager">Сотрудник</option>
-            </select>
-        </div>
-    </tab-pane>
-    <tab-pane label="Роли">
-        roles
-    </tab-pane>
-    <tab-pane label="Арендатор">
-        customer
-    </tab-pane>
-</tabs>
+    </tabs>
+</form>

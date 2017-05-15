@@ -12,7 +12,6 @@ import UserManagerFormComponent from "./app/manager/user/form.component";
 import XPanelComponent from "./app/widgets/x-panel.component";
 import TabsComponent from "./app/widgets/tabs.component";
 import TabPaneComponent from "./app/widgets/tab-pane.component";
-import {SwitcheryDirective} from "./app/directive/switchery.directive";
 
 /**
  * Точка входа приложения
@@ -38,7 +37,6 @@ Vue.component('tab-pane', TabPaneComponent);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
-Vue.directive('switchery', SwitcheryDirective);
 
 export const app = new Vue({
     template: '<router-view></router-view>',

@@ -158,6 +158,29 @@ class ManagerController extends Controller
     }
 
     /**
+     * Удалить контрагента
+     *
+     * @Method({"DELETE"})
+     * @Route("/manager/customer/{id}", requirements={"id": "\d+"}, options={"expose": true}, name="customer.manager.delete")
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function deleteAction(int $id): JsonResponse
+    {
+        $customer = $this->getById($id);
+
+        $this->entityManager->remove($customer);
+
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'customer' => $customer,
+            'success' => true,
+        ]);
+    }
+
+    /**
      * Получить информацию о контрагенте
      *
      * @Method({"GET"})

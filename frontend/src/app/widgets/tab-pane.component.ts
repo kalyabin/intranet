@@ -4,7 +4,7 @@ import {Model, Prop} from "vue-property-decorator";
 import TabsComponent from "./tabs.component";
 
 Component.registerHooks([
-    'mounted'
+    'mounted',
 ]);
 
 /**
@@ -24,6 +24,19 @@ export default class TabPaneComponent extends Vue {
      */
     @Model() opened: boolean = false;
 
+    /**
+     * Статус отображения
+     */
+    @Prop({type: Boolean, default: true}) visible: boolean;
+
+    /**
+     * Подсвечивать как ошибку
+     */
+    @Prop({type: Boolean, default: false}) hasError: boolean;
+
+    /**
+     * Добавить к родителю
+     */
     mounted(): void {
         let parent = <TabsComponent>this.$parent;
         parent.tabPanes.push(this);

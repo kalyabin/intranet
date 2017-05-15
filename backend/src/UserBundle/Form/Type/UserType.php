@@ -81,6 +81,7 @@ class UserType extends AbstractType
             } else {
                 // удалить флаг временного пароля, если пользователь уже существует
                 $event->getForm()->remove('isTemporaryPassword');
+                $event->getForm()->remove('password');
             }
         });
 

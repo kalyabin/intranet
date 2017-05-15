@@ -11,6 +11,7 @@ import {UserInterface} from "../../service/model/user.interface";
 
 Component.registerHooks([
     'mounted',
+    'beforeUpdate',
     'updated',
 ]);
 
@@ -27,11 +28,6 @@ export default class UserManagerListComponent extends Vue {
     protected dtHandler;
 
     /**
-     * Флаг необходимости ререндеринга таблицы
-     */
-    protected needRebuildTable: boolean = false;
-
-    /**
      * Текущий редактируемый или создаваемый пользователь
      */
     @Model() currentUser: UserInterface = null;
@@ -42,24 +38,24 @@ export default class UserManagerListComponent extends Vue {
     @Model() list = [];
 
     /**
-     * При изменении списка перегенерировать dataTables
+     * Показать / скрыть форму
      */
-    @Watch('list')
-    onChangeList(): void {
-        this.needRebuildTable = true;
+    @Model() viewForm: boolean = false;
 
+    /**
+     * Ребилд таблицы
+     */
+    beforeUpdate(): void {
+        if (this.dtHandler) {
+            $(this.$refs['table']).DataTable().destroy();
+        }
     }
 
     /**
      * Рендер списка пользователя при изменинии массива
      */
     updated(): void {
-        if (this.needRebuildTable) {
-            if (this.dtHandler) {
-                $(this.$refs['table']).dataTable().fnDestroy();
-            }
-            this.dtHandler = $(this.$refs['table']).dataTable(defaultDtOptions).api();
-        }
+        this.dtHandler = $(this.$refs['table']).DataTable(defaultDtOptions);
     }
 
     /**
@@ -78,8 +74,6 @@ export default class UserManagerListComponent extends Vue {
                     if (response.totalCount > this.list.length) {
                         // запросить еще порцию пользователей
                         fetchItems();
-                    } else {
-                        this.needRebuildTable = true;
                     }
                 });
         };
@@ -94,8 +88,69 @@ export default class UserManagerListComponent extends Vue {
         event.preventDefault();
 
         this.currentUser = null;
+        this.viewForm = true;
 
         let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
         window.show();
+    }
+
+    /**
+     * Открыть диалог редактирования пользователя
+     */
+    openEditDialog(user: UserInterface): void {
+        this.currentUser = user;
+        this.viewForm = true;
+
+        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        window.show();
+    }
+
+    /**
+     * Создан новый пользователь
+     */
+    newUser(user: UserInterface): void {
+        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        window.hide();
+
+        this.currentUser = user;
+        this.viewForm = false;
+
+        this.list.push(user);
+    }
+
+    /**
+     * Отредактирован пользователь
+     */
+    updatedUser(user: UserInterface): void {
+        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        window.hide();
+
+        this.currentUser = user;
+        this.viewForm = false;
+
+        for (let i in this.list) {
+            if (this.list[i].id == user.id) {
+                this.list[i] = user;
+                break;
+            }
+        }
+    }
+
+    /**
+     * Пользователь удален
+     */
+    removedUser(id: number): void {
+        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        window.hide();
+
+        this.currentUser = null;
+        this.viewForm = false;
+
+        for (let i in this.list) {
+            if (this.list[i].id == id) {
+                this.list.splice(parseInt(i), 1);
+                break;
+            }
+        }
     }
 }
