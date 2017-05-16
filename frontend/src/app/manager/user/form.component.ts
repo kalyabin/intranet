@@ -290,6 +290,7 @@ export default class UserManagerFormComponent extends Vue {
                     .then((response: CustomerResponseInterface) => {
                         if (isValidResponse(response)) {
                             submitUserData(response.customer.id);
+                            customerListStore.commit('updateCustomer', response.customer);
                         }
                     });
             } else {
@@ -300,6 +301,7 @@ export default class UserManagerFormComponent extends Vue {
                         if (isValidResponse(response)) {
                             newCustomerHasBeenCreated = response.customer.id;
                             submitUserData(response.customer.id);
+                            customerListStore.commit('addCustomer', response.customer);
                         }
                     });
             }

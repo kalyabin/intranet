@@ -33,10 +33,21 @@ export const customerListStore = new Vuex.Store({
             state.list.push(customer);
         },
         /**
+         * Обновление контрагента
+         */
+        updateCustomer: (state: CustomerListStateInterface, customer: CustomerInterface) => {
+            for (let i in state.list) {
+                if (customer.id && state.list[i].id == customer.id) {
+                    state.list[i] = customer;
+                }
+            }
+        },
+        /**
          * Очистить весь стек контрагентов
          */
         clear: (state: CustomerListStateInterface) => {
             state.list = [];
+            state.allFetched = false;
         },
     },
     actions: {
