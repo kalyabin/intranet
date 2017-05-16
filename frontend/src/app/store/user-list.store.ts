@@ -8,13 +8,18 @@ import {UserListInterface} from "../service/response/user-list.interface";
  */
 export interface UserListStateInterface {
     list: UserInterface[];
+    allFetched: boolean;
 }
 
 export const userListStore = new Vuex.Store({
     state: <UserListStateInterface>{
-        list: []
+        list: [],
+        allFetched: false
     },
     mutations: {
+        allFetched: (state: UserListStateInterface) => {
+            state.allFetched = true
+        },
         /**
          * Добавить массив пользователей
          */
@@ -46,7 +51,7 @@ export const userListStore = new Vuex.Store({
         /**
          * Обновить пользователя
          */
-        updateUser: (state: UserListInterface, user: UserInterface) => {
+        updateUser: (state: UserListStateInterface, user: UserInterface) => {
             for (let i in state.list) {
                 if (user.id && state.list[i].id == user.id) {
                     state.list[i] = user;
@@ -60,6 +65,10 @@ export const userListStore = new Vuex.Store({
          */
         fetchList: (action) => {
             return new Promise((resolve, reject) => {
+                if (action.state.allFetched) {
+                    return resolve();
+                }
+
                 let currentPage = 0;
                 let cnt = 0;
 
@@ -74,6 +83,7 @@ export const userListStore = new Vuex.Store({
                                 // запросить еще порцию пользователей
                                 fetchItems();
                             } else {
+                                action.commit('allFetched');
                                 resolve();
                             }
                         }).catch(() => reject());
