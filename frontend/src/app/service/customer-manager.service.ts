@@ -33,7 +33,12 @@ export class CustomerManager {
     update(id: number, customer: CustomerInterface): Promise<CustomerResponseInterface> {
         return this.backendService
             .makeRequest('POST', `manager/customer/${id}`, {
-                'customer': customer
+                customer: {
+                    name: customer.name,
+                    currentAgreement: customer.currentAgreement,
+                    allowItDepartment: customer.allowItDepartment,
+                    allowBookerDepartment: customer.allowBookerDepartment
+                }
             })
             .then((response: AxiosResponse) => {
                 let data: CustomerResponseInterface = <CustomerResponseInterface>response.data;

@@ -13,6 +13,17 @@ import {UserRequestInterface} from "../../service/request/user-request.interface
 import {UserResponseInterface} from "../../service/response/user-response.interface";
 import TabsComponent from "../../widgets/tabs.component";
 import {CustomerListInterface} from "../../service/response/customer-list.interface";
+import Vuex from 'vuex';
+
+/**
+ * Мета данные для формы
+ */
+interface FormState {
+    rolesLabels: {[key: string]: string};
+    rolesHierarchy: {[key: string]: string[]};
+    rolesByUserType: {[key: string]: Array<string>};
+    customers: Array<CustomerInterface>;
+}
 
 Component.registerHooks([
     'mounted'
@@ -22,36 +33,71 @@ Component.registerHooks([
  * Форма редактирования / создания пользователя
  */
 @Component({
-    template: require('./form.component.html')
+    template: require('./form.component.html'),
+    store:  new Vuex.Store({
+        state: <FormState>{
+            rolesLabels: {},
+            rolesHierarchy: {},
+            rolesByUserType: {},
+            customers: []
+        },
+        mutations: {
+            fetchRolesData: (state: FormState, roles: RolesResponseInterface) => {
+                state.rolesHierarchy = roles.hierarchy;
+                state.rolesLabels = roles.labels;
+                state.rolesByUserType = roles.roles;
+            },
+            addCustomer: (state: FormState, customer: CustomerInterface) => {
+                state.customers.push(customer);
+            },
+            addCustomers: (state: FormState, customers: CustomerInterface[]) => {
+                state.customers = state.customers.concat(customers);
+            }
+        },
+        actions: {
+            // подтяжка данных о доступных ролях для пользователей
+            rolesData: (action) => {
+                userManagerService.roles().then((response: RolesResponseInterface) => {
+                    action.commit('fetchRolesData', response);
+                });
+            },
+            // подтяжка контрагентов
+            customers: (action) => {
+                let pageNum = 0;
+                let cnt = 0;
+                let fetchCustomers = () => {
+                    customerManagerService.list(pageNum).then((response: CustomerListInterface) => {
+                        action.commit('addCustomers', response.list);
+                        pageNum++;
+                        cnt += response.list.length;
+                        if (response.totalCount > cnt) {
+                            fetchCustomers();
+                        }
+                    });
+                };
+                fetchCustomers();
+            }
+        }
+    })
 })
 export default class UserManagerFormComponent extends Vue {
     /**
-     * Редактируемый пользователь
+     * Свойство на вход
      */
     @Prop(Object) user: UserInterface;
 
     /**
-     * Имя пользователя
+     * Данные для редактирования
      */
-    @Model() name: string = '';
+    @Model() userData: UserInterface = this.user ? this.user : {
+        name: '',
+        email: '',
+        status: 1,
+        userType: 'customer'
+    };
 
     /**
-     * E-mail пользователя
-     */
-    @Model() email: string = '';
-
-    /**
-     * Тип пользователя
-     */
-    @Model() type: UserType = 'customer';
-
-    /**
-     * Статус редактируемого пользователя
-     */
-    @Model() status: UserStatus = 1;
-
-    /**
-     * Пароль: только для новых пользователей
+     * Пароль
      */
     @Model() password: string = '';
 
@@ -63,32 +109,17 @@ export default class UserManagerFormComponent extends Vue {
     /**
      * Идентификатор контрагента (арендатора, 0, если заносится новый арендатор)
      */
-    @Model() customerId: number = 0;
+    @Model() customerId: number = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
 
     /**
-     * Модель нового арендатора
+     * Модель арендатора
      */
-    @Model() customer: CustomerInterface = {
+    @Model() customer: CustomerInterface = this.userData.customer ? this.userData.customer : {
         name: '',
         currentAgreement: '',
-        allowBookerDepartment: false,
-        allowItDepartment: false
+        allowItDepartment: false,
+        allowBookerDepartment: false
     };
-
-    /**
-     * Подписи для ролей
-     */
-    @Model() rolesLabels: {[key: string]: string} = {};
-
-    /**
-     * Иерархия ролей
-     */
-    @Model() rolesHierarchy: {[key: string]: string[]} = {};
-
-    /**
-     * Доступные арендаторы для привязки
-     */
-    @Model() customers: CustomerInterface[] = [];
 
     /**
      * Ожидание субмита формы
@@ -101,72 +132,71 @@ export default class UserManagerFormComponent extends Vue {
     @Model() errorMessage: string = '';
 
     /**
-     * Коды ролей по типу пульзователя
+     * Доступные арендаторы для привязки
      */
-    protected rolesByUserType: {[key: string]: Array<string>};
+    get customers(): CustomerInterface[] {
+        return this.$store.state.customers;
+    }
 
     /**
-     * Запрос необходимых данных с бекенда
+     * Подписи для ролей
      */
+    get rolesLabels(): {[key: string]: string} {
+        return this.$store.state.rolesLabels;
+    }
+
+    /**
+     * Иерархия ролей
+     */
+    get rolesHierarchy(): {[key: string]: string[]} {
+        return this.$store.state.rolesHierarchy;
+    }
+
+    /**
+     * Коды ролей по типу пульзователя
+     */
+    get rolesByUserType(): {[key: string]: Array<string>} {
+        return this.$store.state.rolesByUserType;
+    }
+
     mounted(): void {
-        // рестарт табов
-        let tabs: TabsComponent = <TabsComponent>this.$refs['tabs'];
-        tabs.currentTab = 0;
+        // запрос данных о доступных ролях
+        this.$store.dispatch('rolesData');
+        this.$store.dispatch('customers');
 
-        let val = this.user;
+        this.fetchUserData(this.user);
+    }
 
+    /**
+     * Получить дополнительные данные о пользователе (роли, доступные контрагенты)
+     */
+    fetchUserData(val: UserInterface): void {
+        this.roles = [];
         if (val && val.id) {
-            // существующий пользователь, форма редактирования
-            this.name = val.name;
-            this.email = val.email;
-            this.type = val.userType;
-            // запрос дополнительных данных о пользователе
             userManagerService.details(val.id).then((response: UserDetailsInterface) => {
-                this.status = response.status;
-                this.roles = [];
                 for (let role of response.roles) {
                     this.roles.push(role);
                 }
             });
-        } else {
-            // новый пользователь, форма создания
-            this.name = '';
-            this.email = '';
-            this.status = 1;
-            this.password = '';
-            this.type = 'customer';
-            this.customerId = 0;
-            this.roles = [];
         }
-
-        userManagerService.roles().then((response: RolesResponseInterface) => {
-            this.rolesLabels = response.labels;
-            this.rolesHierarchy = response.hierarchy;
-            this.rolesByUserType = response.roles;
-        });
-
-        let pageNum = 0;
-        this.customers = [];
-        let fetchCustomers = () => {
-            customerManagerService.list(pageNum).then((response: CustomerListInterface) => {
-                this.customers = this.customers.concat(response.list);
-                pageNum++;
-                if (response.totalCount > this.customers.length) {
-                    fetchCustomers();
-                } else {
-                    // после получения всех контрагентов установить идентифиатор редактируемого контрагента
-                    this.customerId = val.customer ? val.customer.id : 0;
-                }
-            });
-        };
-        fetchCustomers();
     }
 
-    /**
-     * Возвращает true, если для данного типа пользователей возможно отображать указанную роль
-     */
-    canViewRole(role: string): boolean {
-        return !!(this.rolesByUserType[this.type] && this.rolesByUserType[this.type].indexOf(role) != -1);
+    @Watch('user')
+    setUserData(val): void {
+        // рестарт табов
+        let tabs: TabsComponent = <TabsComponent>this.$refs['tabs'];
+        tabs.currentTab = 0;
+
+        this.userData = val ? val : {
+            name: '',
+            email: '',
+            status: 1,
+            userType: 'customer'
+        };
+
+        this.customerId = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
+
+        this.fetchUserData(val);
     }
 
     /**
@@ -196,25 +226,23 @@ export default class UserManagerFormComponent extends Vue {
     @Watch('customerId')
     onCustomerIdSet(val: number): void {
         if (val > 0) {
-            for (let customer of this.customers) {
-                if (customer.id == val) {
-                    this.customer = {
-                        name: customer.name,
-                        currentAgreement: customer.currentAgreement,
-                        allowBookerDepartment: customer.allowBookerDepartment,
-                        allowItDepartment: customer.allowItDepartment
-                    };
-                    return;
+            this.$store.dispatch('customers').then(() => {
+                for (let customer of this.customers) {
+                    if (customer.id == val) {
+                        this.customer = customer;
+                        return;
+                    }
                 }
-            }
-            // если контрагент не найден - установка его в 0
-            this.customerId = 0;
+
+                // если контрагент не найден - установка его в 0
+                this.customerId = 0;
+            });
         } else {
             this.customer = {
                 name: '',
                 currentAgreement: '',
-                allowBookerDepartment: false,
-                allowItDepartment: false
+                allowItDepartment: false,
+                allowBookerDepartment: false
             };
         }
     }
@@ -261,9 +289,9 @@ export default class UserManagerFormComponent extends Vue {
         // субмит пользователя с привязкой к контрагенту
         let submitUserData = (customerId?: number) => {
             let request = {
-                name: this.name,
-                email: this.email,
-                userType: this.type,
+                name: this.userData.name,
+                email: this.userData.email,
+                userType: this.userData.userType,
                 role: []
             };
             if (customerId) {
@@ -286,7 +314,7 @@ export default class UserManagerFormComponent extends Vue {
                     });
             } else {
                 // редактирование существующего пользователя
-                request['status'] = this.status;
+                request['status'] = this.userData.status;
                 userManagerService
                     .update(this.user.id, <UserRequestInterface>request)
                     .then((response: UserResponseInterface) => {
@@ -303,7 +331,7 @@ export default class UserManagerFormComponent extends Vue {
             this.awaitOfSubmit = true;
 
             // создание или редактирование пользователя
-            if (this.type == 'manager') {
+            if (this.userData.userType == 'manager') {
                 submitUserData(null);
                 return;
             }

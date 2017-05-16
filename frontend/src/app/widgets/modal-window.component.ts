@@ -20,12 +20,17 @@ export default class ModalWindowComponent extends Vue {
      */
     show(): void {
         $(this.$refs['modal']).modal('show');
+        $(this.$refs['modal']).off('hidden.bs.modal').bind('hidden.bs.modal', () => {
+            this.$emit('hide');
+        });
+        this.$emit('show');
     }
 
     /**
      * Скрыть модальное окно
      */
     hide(): void {
+        this.$emit('hide');
         $(this.$refs['modal']).modal('hide');
     }
 }

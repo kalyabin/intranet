@@ -7,7 +7,7 @@
         <tab-pane label="Основное" :has-error="errors.has('status') || errors.has('name') || errors.has('email') || errors.has('type') || errors.has('password')">
             <div class="form-group" :class="{'has-error': errors.has('status')}" v-if="user && user.id">
                 <label class="control-label">Статус</label>
-                <select v-model="status" v-validate="'required'" name="status" class="form-control">
+                <select v-model="userData.status" v-validate="'required'" name="status" class="form-control">
                     <option value="1">Активен</option>
                     <option value="-1">Заблокирован</option>
                 </select>
@@ -17,21 +17,21 @@
             </div>
             <div class="form-group" :class="{'has-error': errors.has('name')}">
                 <label class="control-label">Имя</label>
-                <input type="text" v-validate="'required|max:100'" name="name" v-model="name" class="form-control" />
+                <input type="text" v-validate="'required|max:100'" name="name" v-model="userData.name" class="form-control" />
                 <p class="help-block" v-if="errors.has('name')">
                     {{errors.first('name')}}
                 </p>
             </div>
             <div class="form-group" :class="{'has-error': errors.has('email')}">
                 <label class="control-label">E-mail</label>
-                <input type="text" v-validate="'required|max:100|email'" name="email" v-model="email" class="form-control" />
+                <input type="text" v-validate="'required|max:100|email'" name="email" v-model="userData.email" class="form-control" />
                 <p class="help-block" v-if="errors.has('email')">
                     {{errors.first('email')}}
                 </p>
             </div>
             <div class="form-group" :class="{'has-error': errors.has('type')}">
                 <label class="control-label">Тип</label>
-                <select v-model="type" v-validate="'required'" name="type" class="form-control" @change="roles = []">
+                <select v-model="userData.userType" v-validate="'required'" name="type" class="form-control" @change="roles = []">
                     <option value="customer">Арендатор</option>
                     <option value="manager">Сотрудник</option>
                 </select>
@@ -39,7 +39,7 @@
                     {{errors.first('type')}}
                 </p>
             </div>
-            <div class="form-group" :class="{'has-error': errors.has('password')}" v-if="!user">
+            <div class="form-group" :class="{'has-error': errors.has('password')}" v-if="!user || !user.id">
                 <label class="control-label">Пароль</label>
                 <div class="input-group">
                     <input type="text" v-validate="'required|min:6'" name="password" v-model="password" class="form-control" />
@@ -58,7 +58,7 @@
                     Необходимо выбрать хотя бы одну роль
                 </p>
                 <input type="hidden" name="rolesStr" v-model="rolesStr" v-validate="'required'" />
-                <div v-for="(children, role) in rolesHierarchy" v-if="canViewRole(role)">
+                <div v-for="(children, role) in rolesHierarchy" v-if="rolesByUserType[userData.userType] && rolesByUserType[userData.userType].indexOf(role) != -1">
                     <label style="font-weight: bold;">
                         <input type="checkbox" name="roles[]" :value="role" @click="chooseParentRole(role)" v-model="roles" />&nbsp;&nbsp;{{rolesLabels[role]}}
                     </label>
@@ -72,7 +72,7 @@
                 </div>
             </div>
         </tab-pane>
-        <tab-pane label="Арендатор" :has-error="errors.has('customerId') || errors.has('customerName') || errors.has('customerAgreement')" :visible="type == 'customer'">
+        <tab-pane label="Арендатор" :has-error="errors.has('customerId') || errors.has('customerName') || errors.has('customerAgreement')" :visible="customer && userData.userType == 'customer'">
             <div class="form-group" :class="{'has-error': errors.has('customerId')}">
                 <label class="control-label">Выберите арендатора</label>
                 <select v-model="customerId" v-validate="'required'" name="customerId" class="form-control">
@@ -83,10 +83,16 @@
             <div class="form-group" :class="{'has-error': errors.has('customerName')}">
                 <label class="control-label">Название</label>
                 <input class="form-control" v-validate="'required|max:100'" type="text" v-model="customer.name" name="customerName" />
+                <p class="help-block" v-if="errors.has('customerName')">
+                    {{errors.first('customerName')}}
+                </p>
             </div>
             <div class="form-group" :class="{'has-error': errors.has('customerAgreement')}">
                 <label class="control-label">Текущий договор</label>
                 <input class="form-control" v-validate="'required|max:100'" type="text" v-model="customer.currentAgreement" name="customerAgreement" />
+                <p class="help-block" v-if="errors.has('customerAgreement')">
+                    {{errors.first('customerAgreement')}}
+                </p>
             </div>
             <div class="form-group">
                 <label class="col-md-3 col-sm-3 col-xs-12 control-label">Дополнительные доступы</label>

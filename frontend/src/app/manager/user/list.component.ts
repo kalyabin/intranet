@@ -8,6 +8,7 @@ import {defaultDtOptions} from "../../widgets/default-dt-options";
 import ModalWindowComponent from "../../widgets/modal-window.component";
 import {UserDetailsInterface} from "../../service/model/user-datails.interface";
 import {UserInterface} from "../../service/model/user.interface";
+import UserManagerFormComponent from "./form.component";
 
 Component.registerHooks([
     'mounted',
@@ -112,8 +113,7 @@ export default class UserManagerListComponent extends Vue {
         let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
         window.hide();
 
-        this.currentUser = user;
-        this.viewForm = false;
+        this.currentUser = null;
 
         this.list.push(user);
     }
@@ -125,8 +125,7 @@ export default class UserManagerListComponent extends Vue {
         let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
         window.hide();
 
-        this.currentUser = user;
-        this.viewForm = false;
+        this.currentUser = null;
 
         for (let i in this.list) {
             if (this.list[i].id == user.id) {
@@ -144,7 +143,6 @@ export default class UserManagerListComponent extends Vue {
         window.hide();
 
         this.currentUser = null;
-        this.viewForm = false;
 
         for (let i in this.list) {
             if (this.list[i].id == id) {

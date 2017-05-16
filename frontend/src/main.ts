@@ -12,6 +12,7 @@ import UserManagerFormComponent from "./app/manager/user/form.component";
 import XPanelComponent from "./app/widgets/x-panel.component";
 import TabsComponent from "./app/widgets/tabs.component";
 import TabPaneComponent from "./app/widgets/tab-pane.component";
+import Vuex from "vuex";
 
 /**
  * Точка входа приложения
@@ -24,6 +25,7 @@ require('./theme/scss/custom.scss');
 // используемые расширения
 Vue.use(VueRouter);
 Vue.use(VeeValidate, validateConfiguration);
+Vue.use(Vuex);
 
 // подключаемые компоненты
 Vue.component('loader', LoaderComponent);

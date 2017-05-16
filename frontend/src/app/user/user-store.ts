@@ -1,4 +1,4 @@
-import Vuex, {StoreOptions} from 'vuex';
+import Vuex from 'vuex';
 import {UserInterface} from "../service/model/user.interface";
 import Vue from "vue";
 
