@@ -4,7 +4,7 @@ import $ from "jquery";
 import {UserInterface} from "./service/model/user.interface";
 import {authUserService} from "./service/auth-user.service";
 import {router} from "./router/router";
-import {userStore} from "./user/user-store";
+import {authUserStore} from "./store/auth-user.store";
 import {Model} from "vue-property-decorator";
 import {SideBarMenuItem, sideBarMenus} from "./sidebar-menu";
 import {pageMetaStore} from "./router/page-meta-store";
@@ -46,20 +46,22 @@ export default class DashboardComponent extends Vue {
      * Флаг авторизованности
      */
     get isAuth(): boolean {
-        if (!userStore.state.isAuth) {
+        if (!authUserStore.state.isAuth) {
             router.push({name: 'login'});
         }
-        return userStore.state.isAuth;
+        return authUserStore.state.isAuth;
     }
 
     /**
      * Данные пользователя
      */
     get userData(): UserInterface {
-        return userStore.state.userData;
+        return authUserStore.state.userData;
     }
 
     mounted(): void {
+        authUserStore.dispatch('fetchData');
+
         if (this.menuToggled) {
             $('body').addClass('nav-md');
         }

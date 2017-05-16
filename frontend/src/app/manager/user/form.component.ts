@@ -2,28 +2,18 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Prop, Watch} from "vue-property-decorator";
 import {UserDetailsInterface} from "../../service/model/user-datails.interface";
-import {UserInterface, UserStatus, UserType} from "../../service/model/user.interface";
+import {UserInterface} from "../../service/model/user.interface";
 import {CustomerInterface} from "../../service/model/customer.interface";
 import {userManagerService} from "../../service/user-manager.service";
-import {RolesResponseInterface} from "../../service/response/roles-response.interface";
 import {ValidationInterface} from "../../service/response/validation.interface";
 import {customerManagerService} from "../../service/customer-manager.service";
 import {CustomerResponseInterface} from "../../service/response/customer-response.interface";
 import {UserRequestInterface} from "../../service/request/user-request.interface";
 import {UserResponseInterface} from "../../service/response/user-response.interface";
 import TabsComponent from "../../widgets/tabs.component";
-import {CustomerListInterface} from "../../service/response/customer-list.interface";
-import Vuex from 'vuex';
+import {customerListStore} from "../../store/customer-list.store";
+import {rolesListStore} from "../../store/roles-list.store";
 
-/**
- * Мета данные для формы
- */
-interface FormState {
-    rolesLabels: {[key: string]: string};
-    rolesHierarchy: {[key: string]: string[]};
-    rolesByUserType: {[key: string]: Array<string>};
-    customers: Array<CustomerInterface>;
-}
 
 Component.registerHooks([
     'mounted'
@@ -34,51 +24,6 @@ Component.registerHooks([
  */
 @Component({
     template: require('./form.component.html'),
-    store:  new Vuex.Store({
-        state: <FormState>{
-            rolesLabels: {},
-            rolesHierarchy: {},
-            rolesByUserType: {},
-            customers: []
-        },
-        mutations: {
-            fetchRolesData: (state: FormState, roles: RolesResponseInterface) => {
-                state.rolesHierarchy = roles.hierarchy;
-                state.rolesLabels = roles.labels;
-                state.rolesByUserType = roles.roles;
-            },
-            addCustomer: (state: FormState, customer: CustomerInterface) => {
-                state.customers.push(customer);
-            },
-            addCustomers: (state: FormState, customers: CustomerInterface[]) => {
-                state.customers = state.customers.concat(customers);
-            }
-        },
-        actions: {
-            // подтяжка данных о доступных ролях для пользователей
-            rolesData: (action) => {
-                userManagerService.roles().then((response: RolesResponseInterface) => {
-                    action.commit('fetchRolesData', response);
-                });
-            },
-            // подтяжка контрагентов
-            customers: (action) => {
-                let pageNum = 0;
-                let cnt = 0;
-                let fetchCustomers = () => {
-                    customerManagerService.list(pageNum).then((response: CustomerListInterface) => {
-                        action.commit('addCustomers', response.list);
-                        pageNum++;
-                        cnt += response.list.length;
-                        if (response.totalCount > cnt) {
-                            fetchCustomers();
-                        }
-                    });
-                };
-                fetchCustomers();
-            }
-        }
-    })
 })
 export default class UserManagerFormComponent extends Vue {
     /**
@@ -135,34 +80,34 @@ export default class UserManagerFormComponent extends Vue {
      * Доступные арендаторы для привязки
      */
     get customers(): CustomerInterface[] {
-        return this.$store.state.customers;
+        return customerListStore.state.list;
     }
 
     /**
      * Подписи для ролей
      */
     get rolesLabels(): {[key: string]: string} {
-        return this.$store.state.rolesLabels;
+        return rolesListStore.state.rolesLabels;
     }
 
     /**
      * Иерархия ролей
      */
     get rolesHierarchy(): {[key: string]: string[]} {
-        return this.$store.state.rolesHierarchy;
+        return rolesListStore.state.rolesHierarchy;
     }
 
     /**
      * Коды ролей по типу пульзователя
      */
     get rolesByUserType(): {[key: string]: Array<string>} {
-        return this.$store.state.rolesByUserType;
+        return rolesListStore.state.rolesByUserType;
     }
 
     mounted(): void {
         // запрос данных о доступных ролях
-        this.$store.dispatch('rolesData');
-        this.$store.dispatch('customers');
+        rolesListStore.dispatch('fetchData');
+        customerListStore.dispatch('fetchList');
 
         this.fetchUserData(this.user);
     }
@@ -195,6 +140,7 @@ export default class UserManagerFormComponent extends Vue {
         };
 
         this.customerId = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
+        this.password = '';
 
         this.fetchUserData(val);
     }
@@ -226,7 +172,7 @@ export default class UserManagerFormComponent extends Vue {
     @Watch('customerId')
     onCustomerIdSet(val: number): void {
         if (val > 0) {
-            this.$store.dispatch('customers').then(() => {
+            customerListStore.dispatch('fetchList').then(() => {
                 for (let customer of this.customers) {
                     if (customer.id == val) {
                         this.customer = customer;

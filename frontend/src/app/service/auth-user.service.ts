@@ -6,7 +6,7 @@ import {UserInterface} from "./model/user.interface";
 import {environment} from "../../environment";
 import {RememberPasswordInterface} from "./response/remember-password.interface";
 import {RestorePasswordInterface} from "./response/restore-password.interface";
-import {userStore} from "../user/user-store";
+import {authUserStore} from "../store/auth-user.store";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -27,10 +27,10 @@ export class AuthUserService {
      */
     checkAuth(): Promise<AuthInterface> {
         const commitUserData = (data: AuthInterface) => {
-            userStore.commit('isAuth', data.auth);
-            userStore.commit('userData', data.user);
-            userStore.commit('isTemporaryPassword', data.isTemporaryPassword);
-            userStore.commit('roles', data.roles);
+            authUserStore.commit('isAuth', data.auth);
+            authUserStore.commit('userData', data.user);
+            authUserStore.commit('isTemporaryPassword', data.isTemporaryPassword);
+            authUserStore.commit('roles', data.roles);
         };
 
         return this.backendService
@@ -88,10 +88,10 @@ export class AuthUserService {
             .makeRequest('POST', 'logout')
             .then(() => {}).catch(() => {});
 
-        userStore.commit('isAuth', false);
-        userStore.commit('userData', null);
-        userStore.commit('isTemporaryPassword', false);
-        userStore.commit('roles', []);
+        authUserStore.commit('isAuth', false);
+        authUserStore.commit('userData', null);
+        authUserStore.commit('isTemporaryPassword', false);
+        authUserStore.commit('roles', []);
 
         if (this.checkAuthTimeout) {
             clearTimeout(this.checkAuthTimeout);
@@ -149,7 +149,7 @@ export class AuthUserService {
      * Проверить роль пользователя
      */
     hasRole(role: string): boolean {
-        let roles = userStore.state.roles;
+        let roles = authUserStore.state.roles;
         return !!(roles && roles.indexOf(role) != -1);
     }
 }

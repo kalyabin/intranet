@@ -9,6 +9,7 @@ import ModalWindowComponent from "../../widgets/modal-window.component";
 import {UserDetailsInterface} from "../../service/model/user-datails.interface";
 import {UserInterface} from "../../service/model/user.interface";
 import UserManagerFormComponent from "./form.component";
+import {userListStore} from "../../store/user-list.store";
 
 Component.registerHooks([
     'mounted',
@@ -20,7 +21,8 @@ Component.registerHooks([
  * Список пользователей
  */
 @Component({
-    template: require('./list.component.html')
+    template: require('./list.component.html'),
+    store: userListStore
 })
 export default class UserManagerListComponent extends Vue {
     /**
@@ -34,14 +36,16 @@ export default class UserManagerListComponent extends Vue {
     @Model() currentUser: UserInterface = null;
 
     /**
-     * Список пользователей
-     */
-    @Model() list = [];
-
-    /**
      * Показать / скрыть форму
      */
     @Model() viewForm: boolean = false;
+
+    /**
+     * Список пользователей
+     */
+    get list(): UserInterface[] {
+        return this.$store.state.list;
+    }
 
     /**
      * Ребилд таблицы
@@ -63,23 +67,7 @@ export default class UserManagerListComponent extends Vue {
      * Получение массива пользователей при рендере компонента
      */
     mounted(): void {
-        let currentPage = 0;
-
-        // заполнить список пользователей
-        let fetchItems = () => {
-            userManagerService
-                .list(currentPage, 1)
-                .then((response: UserListInterface) => {
-                    this.list = this.list.concat(response.list);
-                    currentPage = response.pageNum + 1;
-                    if (response.totalCount > this.list.length) {
-                        // запросить еще порцию пользователей
-                        fetchItems();
-                    }
-                });
-        };
-
-        fetchItems();
+        this.$store.dispatch('fetchList');
     }
 
     /**
@@ -115,7 +103,7 @@ export default class UserManagerListComponent extends Vue {
 
         this.currentUser = null;
 
-        this.list.push(user);
+        this.$store.commit('addUser', user);
     }
 
     /**
@@ -127,12 +115,7 @@ export default class UserManagerListComponent extends Vue {
 
         this.currentUser = null;
 
-        for (let i in this.list) {
-            if (this.list[i].id == user.id) {
-                this.list[i] = user;
-                break;
-            }
-        }
+        this.$store.commit('updateUser', user);
     }
 
     /**
@@ -144,11 +127,6 @@ export default class UserManagerListComponent extends Vue {
 
         this.currentUser = null;
 
-        for (let i in this.list) {
-            if (this.list[i].id == id) {
-                this.list.splice(parseInt(i), 1);
-                break;
-            }
-        }
+        this.$store.commit('removeUser', id);
     }
 }
