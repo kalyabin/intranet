@@ -12,7 +12,6 @@ import {UserRequestInterface} from "../../../service/request/user-request.interf
 import {UserResponseInterface} from "../../../service/response/user-response.interface";
 import {customerListStore} from "../../../store/customer-list.store";
 import {rolesListStore} from "../../../store/roles-list.store";
-import {Tabs} from "../../../components/tabs";
 
 /**
  * Форма редактирования / создания пользователя

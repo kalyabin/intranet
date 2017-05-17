@@ -229,6 +229,8 @@ class ManagerController extends Controller
     {
         $user = $this->getUserById($id);
 
+        $this->checkIsUserIsNotCurrent($user);
+
         $entityManager = $this->userManager->getEntityManager();
 
         $entityManager->remove($user);

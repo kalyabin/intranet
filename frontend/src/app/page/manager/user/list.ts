@@ -72,20 +72,9 @@ export class ManagerUserList extends Vue {
     }
 
     /**
-     * Открыть диалог создания нового пользователя
-     */
-    openCreateDialog(): void {
-        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
-        window.show();
-
-        this.currentUser = null;
-        this.viewForm = true;
-    }
-
-    /**
      * Открыть диалог редактирования пользователя
      */
-    openEditDialog(user: UserInterface): void {
+    openDialog(user?: UserInterface): void {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
 

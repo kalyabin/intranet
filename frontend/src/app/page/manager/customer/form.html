@@ -1,0 +1,42 @@
+<form @submit.prevent="submit" @input="errorMessage = ''">
+    <loader :visible="awaitOfSubmit"></loader>
+    <div slot="body" class="modal-body">
+        <div class="alert alert-danger" v-if="errorMessage">{{errorMessage}}</div>
+        <div class="form-group" :class="{'has-error': errors.has('name')}">
+            <label class="control-label">Название</label>
+            <input type="text" v-validate="'required|max:100'" name="name" v-model="customerData.name" class="form-control" />
+            <p class="help-block" v-if="errors.has('name')">
+                {{errors.first('name')}}
+            </p>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('currentAgreement')}">
+            <label class="control-label">Номер договора</label>
+            <input type="text" v-validate="'required|max:100'" name="currentAgreement" v-model="customerData.currentAgreement" class="form-control" />
+            <p class="help-block" v-if="errors.has('currentAgreement')">
+                {{errors.first('currentAgreement')}}
+            </p>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 col-sm-3 col-xs-12 control-label">Дополнительные доступы</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" v-model="customerData.allowItDepartment" name="allowItDepartment" />
+                        IT-аутсорсинг
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" v-model="customerData.allowBookerDepartment" name="allowBookerDepartment" />
+                        SMART-бухгалтер
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="modal-footer" slot="footer">
+        <button type="button" @click.prevent="remove" class="btn btn-danger" v-if="customerId">Удалить</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

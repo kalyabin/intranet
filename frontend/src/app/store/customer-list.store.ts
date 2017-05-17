@@ -38,6 +38,16 @@ export const customerListStore = new Vuex.Store({
             }
         },
         /**
+         * Удаление контрагента
+         */
+        removeCustomer: (state: CustomerListInterface, id: number) => {
+            for (let i in state.list) {
+                if (id && state.list[i].id == id) {
+                    state.list.splice(parseInt(i), 1);
+                }
+            }
+        },
+        /**
          * Очистить весь стек контрагентов
          */
         clear: (state: CustomerListStateInterface) => {
