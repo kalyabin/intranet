@@ -90,7 +90,6 @@ export class Dashboard extends Vue {
      */
     logout(event): void {
         event.preventDefault();
-        authUserService.logout();
-        router.push({name: 'login'});
+        authUserService.logout().then(() => router.push({name: 'login'}));
     }
 }

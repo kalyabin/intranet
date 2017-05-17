@@ -83,19 +83,21 @@ export class AuthUserService {
     /**
      * Логаут пользователя
      */
-    logout(): void {
-        this.backendService
+    logout(): Promise<boolean> {
+        return this.backendService
             .makeRequest('POST', 'logout')
-            .then(() => {}).catch(() => {});
+            .then(() => {
+                authUserStore.commit('isAuth', false);
+                authUserStore.commit('userData', null);
+                authUserStore.commit('isTemporaryPassword', false);
+                authUserStore.commit('roles', []);
 
-        authUserStore.commit('isAuth', false);
-        authUserStore.commit('userData', null);
-        authUserStore.commit('isTemporaryPassword', false);
-        authUserStore.commit('roles', []);
+                if (this.checkAuthTimeout) {
+                    clearTimeout(this.checkAuthTimeout);
+                }
 
-        if (this.checkAuthTimeout) {
-            clearTimeout(this.checkAuthTimeout);
-        }
+                return true;
+            }).catch(() => false);
     }
 
     /**
