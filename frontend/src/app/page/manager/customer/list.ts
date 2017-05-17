@@ -7,6 +7,6 @@ import Component from "vue-class-component";
 @Component({
     template: require('./list.html')
 })
-export default class ManagerCustomerList extends Vue {
+export class ManagerCustomerList extends Vue {
 
 }

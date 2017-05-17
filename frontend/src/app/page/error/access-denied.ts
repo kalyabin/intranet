@@ -7,6 +7,6 @@ import Component from "vue-class-component";
 @Component({
     template: '<div>Access denied</div>'
 })
-export default class PageAccessDeniedComponent extends Vue {
+export class AccessDenied extends Vue {
 
 }

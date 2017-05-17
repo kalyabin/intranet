@@ -8,6 +8,6 @@ import {Prop} from "vue-property-decorator";
 @Component({
     template: `<div class="loading" :class="{'visible': visible}"></div>`
 })
-export default class LoaderComponent extends Vue {
+export class Loader extends Vue {
     @Prop(Boolean) visible: boolean;
 }

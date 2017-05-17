@@ -1,11 +1,11 @@
-import LoginComponent from "../page/sign-in/sign-in";
-import DashboardComponent from "../page/dashboard";
+import {SignIn} from "../page/sign-in/sign-in";
+import {Dashboard} from "../page/dashboard";
 import {RouteConfig} from "vue-router";
-import RestorePasswordComponent from "../page/sign-in/restore-password";
-import PageNotFoundComponent from "../page-not-found.component";
-import PageAccessDeniedComponent from "../page-access-denied.component";
-import IndexComponent from "../page/index";
-import UserManagerListComponent from "../page/manager/user/list";
+import {RestorePassword} from "../page/sign-in/restore-password";
+import {NotFound} from "../page/error/not-found";
+import {AccessDenied} from "../page/error/access-denied";
+import {Index} from "../page/index";
+import {ManagerUserList} from "../page/manager/user/list";
 
 /**
  * Правила роутинга
@@ -14,7 +14,7 @@ export const routes: Array<RouteConfig> = [
     {
         path: '/',
         name: 'login',
-        component: LoginComponent,
+        component: SignIn,
         meta: {
             needNotAuth: true
         }
@@ -22,7 +22,7 @@ export const routes: Array<RouteConfig> = [
     {
         path: '/change-password/:checkerId/:checkerCode',
         name: 'restore-password',
-        component: RestorePasswordComponent,
+        component: RestorePassword,
         meta: {
             needNotAuth: true
         }
@@ -30,7 +30,7 @@ export const routes: Array<RouteConfig> = [
     {
         path: '/auth',
         name: 'dashboard',
-        component: DashboardComponent,
+        component: Dashboard,
         meta: {
             needAuth: true,
             pageTitle: 'Личный кабинет'
@@ -39,7 +39,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/index',
                 name: 'auth_index',
-                component: IndexComponent,
+                component: Index,
                 meta: {
                     needAuth: true,
                     pageTitle: 'Личный кабинет'
@@ -48,7 +48,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/manager/user',
                 name: 'user_manager_list',
-                component: UserManagerListComponent,
+                component: ManagerUserList,
                 meta: {
                     needRole: 'USER_MANAGEMENT',
                     pageTitle: 'Управление пользователями'
@@ -59,11 +59,11 @@ export const routes: Array<RouteConfig> = [
     {
         path: '/404',
         name: '404',
-        component: PageNotFoundComponent
+        component: NotFound
     },
     {
         path: '/403',
         name: '403',
-        component: PageAccessDeniedComponent,
+        component: AccessDenied,
     }
 ];

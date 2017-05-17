@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import Component from "vue-class-component";
-import LoginFormComponent from "./login-form";
-import RememberPasswordFormComponent from "./remember-password-form";
 import $ from 'jquery';
+import {LoginForm} from "./login-form";
+import {RememberPasswordForm} from "./remember-password-form";
 
 Component.registerHooks([
     'mounted',
@@ -15,11 +15,11 @@ Component.registerHooks([
 @Component({
     template: require('./sign-in.html'),
     components: {
-        'login-form': LoginFormComponent,
-        'remember-password-form': RememberPasswordFormComponent
+        'login-form': LoginForm,
+        'remember-password-form': RememberPasswordForm
     }
 })
-export default class SignIn extends Vue {
+export class SignIn extends Vue {
     mounted(): void {
         $('body').addClass('login');
     }

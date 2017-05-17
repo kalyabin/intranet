@@ -11,7 +11,7 @@ import {LoginInterface} from "../../service/model/login.interface";
 @Component({
     template: require('./login-fom.html')
 })
-export default class LoginForm extends Vue {
+export class LoginForm extends Vue {
     /**
      * Текст об ошибке авторизации
      */

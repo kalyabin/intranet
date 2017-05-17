@@ -20,7 +20,7 @@ Component.registerHooks([
 @Component({
     template: require('./dashboard.html')
 })
-export default class Dashboard extends Vue {
+export class Dashboard extends Vue {
     /**
      * Состояние меню
      */

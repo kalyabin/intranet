@@ -10,7 +10,7 @@ import {RememberPasswordInterface} from "../../service/response/remember-passwor
 @Component({
     template: require('./remember-password-form.html')
 })
-export default class RememberPasswordForm extends Vue {
+export class RememberPasswordForm extends Vue {
     /**
      * Флаг ожидания получения ответа от API
      */

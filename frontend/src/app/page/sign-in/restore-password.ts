@@ -17,7 +17,7 @@ Component.registerHooks([
 @Component({
     template: require('./restore-password.html')
 })
-export default class RestorePassword extends Vue {
+export class RestorePassword extends Vue {
     /**
      * Флаг ожидания ответа от API
      */

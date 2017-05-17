@@ -3,13 +3,13 @@ import Vue from "vue";
 import VeeValidate from 'vee-validate';
 import VueRouter from "vue-router";
 import {validateConfiguration} from "./app/validation/config";
-import LoaderComponent from "./app/loader.component";
+import {Loader} from "./app/components/loader";
 import {NeedRoleDirective} from "./app/directive/need-role.directive";
-import ModalWindowComponent from "./app/widgets/modal-window.component";
-import XPanelComponent from "./app/widgets/x-panel.component";
-import TabsComponent from "./app/widgets/tabs.component";
-import TabPaneComponent from "./app/widgets/tab-pane.component";
 import Vuex from "vuex";
+import {ModalWindow} from "./app/components/modal-window";
+import {XPanel} from "./app/components/x-panel";
+import {Tabs} from "./app/components/tabs";
+import {TabPane} from "./app/components/tab-pane";
 
 /**
  * Точка входа приложения
@@ -25,11 +25,11 @@ Vue.use(VeeValidate, validateConfiguration);
 Vue.use(Vuex);
 
 // подключаемые компоненты
-Vue.component('loader', LoaderComponent);
-Vue.component('modal-window', ModalWindowComponent);
-Vue.component('x-panel', XPanelComponent);
-Vue.component('tabs', TabsComponent);
-Vue.component('tab-pane', TabPaneComponent);
+Vue.component('loader', Loader);
+Vue.component('modal-window', ModalWindow);
+Vue.component('x-panel', XPanel);
+Vue.component('tabs', Tabs);
+Vue.component('tab-pane', TabPane);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);

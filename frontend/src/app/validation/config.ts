@@ -1,5 +1,7 @@
 /**
  * Конфигурация валидаторов форм
+ *
+ * @see http://vee-validate.logaretm.com/
  */
 
 export const validateConfiguration = {

@@ -10,9 +10,9 @@ import {customerManagerService} from "../../../service/customer-manager.service"
 import {CustomerResponseInterface} from "../../../service/response/customer-response.interface";
 import {UserRequestInterface} from "../../../service/request/user-request.interface";
 import {UserResponseInterface} from "../../../service/response/user-response.interface";
-import TabsComponent from "../../../widgets/tabs.component";
 import {customerListStore} from "../../../store/customer-list.store";
 import {rolesListStore} from "../../../store/roles-list.store";
+import {Tabs} from "../../../components/tabs";
 
 
 Component.registerHooks([
@@ -25,7 +25,7 @@ Component.registerHooks([
 @Component({
     template: require('./form.html')
 })
-export default class ManagerUserForm extends Vue {
+export class ManagerUserForm extends Vue {
     /**
      * Свойство на вход
      */
@@ -129,7 +129,7 @@ export default class ManagerUserForm extends Vue {
     @Watch('user')
     setUserData(val): void {
         // рестарт табов
-        let tabs: TabsComponent = <TabsComponent>this.$refs['tabs'];
+        let tabs: Tabs = <Tabs>this.$refs['tabs'];
         tabs.currentTab = 0;
 
         this.userData = val ? val : {

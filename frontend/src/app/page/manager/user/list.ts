@@ -1,15 +1,12 @@
 import Vue from "vue";
 import Component from "vue-class-component";
-import {Model, Watch} from "vue-property-decorator";
-import {userManagerService} from "../../../service/user-manager.service";
-import {UserListInterface} from "../../../service/response/user-list.interface";
+import {Model} from "vue-property-decorator";
 import $ from 'jquery';
-import {defaultDtOptions} from "../../../widgets/default-dt-options";
-import ModalWindowComponent from "../../../widgets/modal-window.component";
-import {UserDetailsInterface} from "../../../service/model/user-datails.interface";
 import {UserInterface} from "../../../service/model/user.interface";
-import UserManagerFormComponent from "./form";
 import {userListStore} from "../../../store/user-list.store";
+import {defaultDtOptions} from "../../../components/default-dt-options";
+import {ManagerUserForm} from "./form";
+import {ModalWindow} from "../../../components/modal-window";
 
 Component.registerHooks([
     'mounted',
@@ -24,10 +21,10 @@ Component.registerHooks([
     template: require('./list.html'),
     store: userListStore,
     components: {
-        'user-form': UserManagerFormComponent
+        'user-form': ManagerUserForm
     }
 })
-export default class ManagerUserList extends Vue {
+export class ManagerUserList extends Vue {
     /**
      * API для управления datatables.net
      */
@@ -82,7 +79,7 @@ export default class ManagerUserList extends Vue {
         this.currentUser = null;
         this.viewForm = true;
 
-        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
     }
 
@@ -93,7 +90,7 @@ export default class ManagerUserList extends Vue {
         this.currentUser = user;
         this.viewForm = true;
 
-        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
     }
 
@@ -101,7 +98,7 @@ export default class ManagerUserList extends Vue {
      * Создан новый пользователь
      */
     newUser(user: UserInterface): void {
-        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
         this.currentUser = null;
@@ -113,7 +110,7 @@ export default class ManagerUserList extends Vue {
      * Отредактирован пользователь
      */
     updatedUser(user: UserInterface): void {
-        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
         this.currentUser = null;
@@ -125,7 +122,7 @@ export default class ManagerUserList extends Vue {
      * Пользователь удален
      */
     removedUser(id: number): void {
-        let window: ModalWindowComponent = <ModalWindowComponent>this.$refs['modal-window'];
+        let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
         this.currentUser = null;

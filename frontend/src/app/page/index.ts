@@ -7,6 +7,6 @@ import Component from "vue-class-component";
 @Component({
     template: '<div>Index page</div>'
 })
-export default class Index extends Vue {
+export class Index extends Vue {
 
 }

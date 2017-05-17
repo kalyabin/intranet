@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Prop} from "vue-property-decorator";
-import TabsComponent from "./tabs.component";
+import {Tabs} from "./tabs";
 
 Component.registerHooks([
     'mounted',
@@ -11,9 +11,9 @@ Component.registerHooks([
  * Единичный таб
  */
 @Component({
-    template: require('./tab-pane.component.html')
+    template: require('./tab-pane.html')
 })
-export default class TabPaneComponent extends Vue {
+export class TabPane extends Vue {
     /**
      * Заголовок таба
      */
@@ -38,7 +38,7 @@ export default class TabPaneComponent extends Vue {
      * Добавить к родителю
      */
     mounted(): void {
-        let parent = <TabsComponent>this.$parent;
+        let parent = <Tabs>this.$parent;
         parent.tabPanes.push(this);
     }
 

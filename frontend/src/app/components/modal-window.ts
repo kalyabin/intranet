@@ -7,9 +7,9 @@ import $ from "jquery";
  * Модальное окно
  */
 @Component({
-    template: require('./modal-window.component.html')
+    template: require('./modal-window.html')
 })
-export default class ModalWindowComponent extends Vue {
+export class ModalWindow extends Vue {
     /**
      * Заголовок модального окна
      */

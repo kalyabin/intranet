@@ -4,9 +4,9 @@ import {Model, Prop} from "vue-property-decorator";
 import $ from "jquery";
 
 @Component({
-    template: require('./x-panel.component.html')
+    template: require('./x-panel.html')
 })
-export default class XPanelComponent extends Vue {
+export class XPanel extends Vue {
     /**
      * Заголовок панели
      */

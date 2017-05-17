@@ -1,7 +1,7 @@
 import * as Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Prop, Watch} from "vue-property-decorator";
-import TabPaneComponent from "./tab-pane.component";
+import {TabPane} from "./tab-pane";
 
 Component.registerHooks([
     'mounted'
@@ -11,9 +11,9 @@ Component.registerHooks([
  * Виджет табов (работает вместе с tab-pane)
  */
 @Component({
-    template: require('./tabs.component.html')
+    template: require('./tabs.html')
 })
-export default class TabsComponent extends Vue {
+export class Tabs extends Vue {
     /**
      * По умолчанию открытая панель
      */
@@ -27,7 +27,7 @@ export default class TabsComponent extends Vue {
     /**
      * Панели табов
      */
-    @Model() tabPanes: Array<TabPaneComponent> = [];
+    @Model() tabPanes: Array<TabPane> = [];
 
     /**
      * Текущая открытая панель

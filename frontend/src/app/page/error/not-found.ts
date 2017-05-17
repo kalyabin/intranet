@@ -7,6 +7,6 @@ import Component from "vue-class-component";
 @Component({
     template: '<div>Page not found</div>'
 })
-export default class PageNotFoundComponent extends Vue {
+export class NotFound extends Vue {
 
 }

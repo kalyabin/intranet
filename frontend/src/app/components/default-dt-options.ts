@@ -1,6 +1,9 @@
 /**
  * Опции по умолчанию для datatables.net
+ *
+ * @see http://datatables.net/
  */
+
 export const defaultDtOptions = {
     oLanguage: {
         sSearch: 'Поиск',
