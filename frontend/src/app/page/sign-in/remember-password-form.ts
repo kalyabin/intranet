@@ -1,16 +1,16 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model} from "vue-property-decorator";
-import {authUserService} from "../service/auth-user.service";
-import {RememberPasswordInterface} from "../service/response/remember-password.interface";
+import {authUserService} from "../../service/auth-user.service";
+import {RememberPasswordInterface} from "../../service/response/remember-password.interface";
 
 /**
  * Форма напоминания пароля
  */
 @Component({
-    template: require('./remember-password-form.component.html')
+    template: require('./remember-password-form.html')
 })
-export default class RememberPasswordFormComponent extends Vue {
+export default class RememberPasswordForm extends Vue {
     /**
      * Флаг ожидания получения ответа от API
      */

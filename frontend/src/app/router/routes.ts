@@ -1,11 +1,11 @@
-import LoginComponent from "../user/sign-in.component";
-import DashboardComponent from "../dashboard.component";
+import LoginComponent from "../page/sign-in/sign-in";
+import DashboardComponent from "../page/dashboard";
 import {RouteConfig} from "vue-router";
-import RestorePasswordComponent from "../user/restore-password.component";
+import RestorePasswordComponent from "../page/sign-in/restore-password";
 import PageNotFoundComponent from "../page-not-found.component";
 import PageAccessDeniedComponent from "../page-access-denied.component";
-import IndexComponent from "../index.component";
-import UserManagerListComponent from "../manager/user/list.component";
+import IndexComponent from "../page/index";
+import UserManagerListComponent from "../page/manager/user/list";
 
 /**
  * Правила роутинга

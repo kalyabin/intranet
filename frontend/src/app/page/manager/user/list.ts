@@ -1,15 +1,15 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Watch} from "vue-property-decorator";
-import {userManagerService} from "../../service/user-manager.service";
-import {UserListInterface} from "../../service/response/user-list.interface";
+import {userManagerService} from "../../../service/user-manager.service";
+import {UserListInterface} from "../../../service/response/user-list.interface";
 import $ from 'jquery';
-import {defaultDtOptions} from "../../widgets/default-dt-options";
-import ModalWindowComponent from "../../widgets/modal-window.component";
-import {UserDetailsInterface} from "../../service/model/user-datails.interface";
-import {UserInterface} from "../../service/model/user.interface";
-import UserManagerFormComponent from "./form.component";
-import {userListStore} from "../../store/user-list.store";
+import {defaultDtOptions} from "../../../widgets/default-dt-options";
+import ModalWindowComponent from "../../../widgets/modal-window.component";
+import {UserDetailsInterface} from "../../../service/model/user-datails.interface";
+import {UserInterface} from "../../../service/model/user.interface";
+import UserManagerFormComponent from "./form";
+import {userListStore} from "../../../store/user-list.store";
 
 Component.registerHooks([
     'mounted',
@@ -21,10 +21,13 @@ Component.registerHooks([
  * Список пользователей
  */
 @Component({
-    template: require('./list.component.html'),
-    store: userListStore
+    template: require('./list.html'),
+    store: userListStore,
+    components: {
+        'user-form': UserManagerFormComponent
+    }
 })
-export default class UserManagerListComponent extends Vue {
+export default class ManagerUserList extends Vue {
     /**
      * API для управления datatables.net
      */

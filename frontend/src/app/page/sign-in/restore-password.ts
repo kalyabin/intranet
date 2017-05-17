@@ -2,8 +2,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import $ from 'jquery';
 import {Model} from "vue-property-decorator";
-import {authUserService} from "../service/auth-user.service";
-import {RestorePasswordInterface} from "../service/response/restore-password.interface";
+import {authUserService} from "../../service/auth-user.service";
+import {RestorePasswordInterface} from "../../service/response/restore-password.interface";
 
 Component.registerHooks([
     'mounted',
@@ -15,9 +15,9 @@ Component.registerHooks([
  * Форма восстановления пароля
  */
 @Component({
-    template: require('./restore-password.component.html')
+    template: require('./restore-password.html')
 })
-export default class RestorePasswordComponent extends Vue {
+export default class RestorePassword extends Vue {
     /**
      * Флаг ожидания ответа от API
      */

@@ -4,11 +4,8 @@ import VeeValidate from 'vee-validate';
 import VueRouter from "vue-router";
 import {validateConfiguration} from "./app/validation/config";
 import LoaderComponent from "./app/loader.component";
-import LoginFormComponent from "./app/user/login-form.component";
-import RememberPasswordFormComponent from "./app/user/remember-password-form.component";
 import {NeedRoleDirective} from "./app/directive/need-role.directive";
 import ModalWindowComponent from "./app/widgets/modal-window.component";
-import UserManagerFormComponent from "./app/manager/user/form.component";
 import XPanelComponent from "./app/widgets/x-panel.component";
 import TabsComponent from "./app/widgets/tabs.component";
 import TabPaneComponent from "./app/widgets/tab-pane.component";
@@ -29,10 +26,7 @@ Vue.use(Vuex);
 
 // подключаемые компоненты
 Vue.component('loader', LoaderComponent);
-Vue.component('login-form', LoginFormComponent);
-Vue.component('remember-password-form', RememberPasswordFormComponent);
 Vue.component('modal-window', ModalWindowComponent);
-Vue.component('user-manager-form', UserManagerFormComponent);
 Vue.component('x-panel', XPanelComponent);
 Vue.component('tabs', TabsComponent);
 Vue.component('tab-pane', TabPaneComponent);

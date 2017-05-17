@@ -1,17 +1,17 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model} from "vue-property-decorator";
-import {authUserService} from "../service/auth-user.service";
-import {router} from "../router/router";
-import {LoginInterface} from "../service/model/login.interface";
+import {authUserService} from "../../service/auth-user.service";
+import {router} from "../../router/router";
+import {LoginInterface} from "../../service/model/login.interface";
 
 /**
  * Форма авторизации
  */
 @Component({
-    template: require('./login-fom.component.html')
+    template: require('./login-fom.html')
 })
-export default class LoginFormComponent extends Vue {
+export default class LoginForm extends Vue {
     /**
      * Текст об ошибке авторизации
      */

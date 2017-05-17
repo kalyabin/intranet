@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Component from "vue-class-component";
 import $ from "jquery";
-import {UserInterface} from "./service/model/user.interface";
-import {authUserService} from "./service/auth-user.service";
-import {router} from "./router/router";
-import {authUserStore} from "./store/auth-user.store";
+import {UserInterface} from "../service/model/user.interface";
+import {authUserService} from "../service/auth-user.service";
+import {router} from "../router/router";
+import {authUserStore} from "../store/auth-user.store";
 import {Model} from "vue-property-decorator";
-import {SideBarMenuItem, sideBarMenus} from "./sidebar-menu";
-import {pageMetaStore} from "./router/page-meta-store";
+import {SideBarMenuItem, sideBarMenus} from "../sidebar-menu";
+import {pageMetaStore} from "../router/page-meta-store";
 
 Component.registerHooks([
     'mounted',
@@ -18,9 +18,9 @@ Component.registerHooks([
  * Главная страница личного кабинета
  */
 @Component({
-    template: require('./dashboard.component.html')
+    template: require('./dashboard.html')
 })
-export default class DashboardComponent extends Vue {
+export default class Dashboard extends Vue {
     /**
      * Состояние меню
      */

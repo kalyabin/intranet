@@ -8,18 +8,13 @@ import {CustomerListInterface} from "../service/response/customer-list.interface
  */
 export interface CustomerListStateInterface {
     list: CustomerInterface[];
-    allFetched: boolean;
 }
 
 export const customerListStore = new Vuex.Store({
     state: <CustomerListStateInterface>{
-        list: [],
-        allFetched: false
+        list: []
     },
     mutations: {
-        allFetched: (state: CustomerListStateInterface) => {
-            state.allFetched = true;
-        },
         /**
          * Добавить список контрагентов
          */
@@ -47,7 +42,6 @@ export const customerListStore = new Vuex.Store({
          */
         clear: (state: CustomerListStateInterface) => {
             state.list = [];
-            state.allFetched = false;
         },
     },
     actions: {
@@ -56,7 +50,8 @@ export const customerListStore = new Vuex.Store({
          */
         fetchList: (action) => {
             return new Promise((resolve, reject) => {
-                if (action.state.allFetched) {
+                // защита от задвоения данных
+                if (action.state.list.length > 0) {
                     return resolve();
                 }
                 let pageNum = 0;
@@ -69,7 +64,6 @@ export const customerListStore = new Vuex.Store({
                         if (response.totalCount > cnt) {
                             fetchCustomers();
                         } else {
-                            action.commit('allFetched');
                             resolve();
                         }
                     }).catch(() => reject());

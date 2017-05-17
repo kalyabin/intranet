@@ -1,18 +1,18 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Prop, Watch} from "vue-property-decorator";
-import {UserDetailsInterface} from "../../service/model/user-datails.interface";
-import {UserInterface} from "../../service/model/user.interface";
-import {CustomerInterface} from "../../service/model/customer.interface";
-import {userManagerService} from "../../service/user-manager.service";
-import {ValidationInterface} from "../../service/response/validation.interface";
-import {customerManagerService} from "../../service/customer-manager.service";
-import {CustomerResponseInterface} from "../../service/response/customer-response.interface";
-import {UserRequestInterface} from "../../service/request/user-request.interface";
-import {UserResponseInterface} from "../../service/response/user-response.interface";
-import TabsComponent from "../../widgets/tabs.component";
-import {customerListStore} from "../../store/customer-list.store";
-import {rolesListStore} from "../../store/roles-list.store";
+import {UserDetailsInterface} from "../../../service/model/user-datails.interface";
+import {UserInterface} from "../../../service/model/user.interface";
+import {CustomerInterface} from "../../../service/model/customer.interface";
+import {userManagerService} from "../../../service/user-manager.service";
+import {ValidationInterface} from "../../../service/response/validation.interface";
+import {customerManagerService} from "../../../service/customer-manager.service";
+import {CustomerResponseInterface} from "../../../service/response/customer-response.interface";
+import {UserRequestInterface} from "../../../service/request/user-request.interface";
+import {UserResponseInterface} from "../../../service/response/user-response.interface";
+import TabsComponent from "../../../widgets/tabs.component";
+import {customerListStore} from "../../../store/customer-list.store";
+import {rolesListStore} from "../../../store/roles-list.store";
 
 
 Component.registerHooks([
@@ -23,9 +23,9 @@ Component.registerHooks([
  * Форма редактирования / создания пользователя
  */
 @Component({
-    template: require('./form.component.html'),
+    template: require('./form.html')
 })
-export default class UserManagerFormComponent extends Vue {
+export default class ManagerUserForm extends Vue {
     /**
      * Свойство на вход
      */

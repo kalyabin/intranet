@@ -25,7 +25,7 @@
     </div>
     <modal-window @hide="currentUser = null" ref="modal-window" :title="currentUser ? 'Редактирование пользователя' : 'Создание пользователя'">
         <div slot="body">
-            <user-manager-form v-if="viewForm" ref="form" @user:remove="removedUser" @user:new="newUser" @user:updated="updatedUser" :user="currentUser"></user-manager-form>
+            <user-form v-if="viewForm" ref="form" @user:remove="removedUser" @user:new="newUser" @user:updated="updatedUser" :user="currentUser"></user-form>
         </div>
     </modal-window>
 </div>
