@@ -20,9 +20,14 @@ import {ModalWindow} from "../../../components/modal-window";
 })
 export class ManagerUserList extends Vue {
     /**
-     * Идентификатор текущего пользователя
+     * Текущий редактируемый пользователь
      */
-    @Model() currentUserId: number = null;
+    @Model() currentUser: UserInterface = null;
+
+    /**
+     * Показать / скрыть форму
+     */
+    @Model() viewForm: boolean = false;
 
     /**
      * API для управления datatables.net
@@ -70,26 +75,22 @@ export class ManagerUserList extends Vue {
      * Открыть диалог создания нового пользователя
      */
     openCreateDialog(): void {
-        this.currentUserId = null;
-
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
 
-        let form: ManagerUserForm = <ManagerUserForm>this.$refs['form'];
-        form.setUserData(null);
+        this.currentUser = null;
+        this.viewForm = true;
     }
 
     /**
      * Открыть диалог редактирования пользователя
      */
     openEditDialog(user: UserInterface): void {
-        this.currentUserId = user.id;
-
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
 
-        let form: ManagerUserForm = <ManagerUserForm>this.$refs['form'];
-        form.setUserData(user);
+        this.currentUser = user;
+        this.viewForm = true;
     }
 
     /**

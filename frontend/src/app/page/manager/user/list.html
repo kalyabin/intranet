@@ -23,9 +23,9 @@
             </tbody>
         </table>
     </div>
-    <modal-window @hide="restartForm" ref="modal-window" :title="currentUserId ? 'Редактирование пользователя' : 'Создание пользователя'">
-        <div slot="body">
-            <user-form ref="form" @user:remove="removedUser" @user:new="newUser" @user:updated="updatedUser"></user-form>
+    <modal-window ref="modal-window" @hide="viewForm = false; currentUser = null;" :title="currentUser ? 'Редактирование пользователя' : 'Создание пользователя'">
+        <div slot="body" v-if="viewForm">
+            <user-form :user="currentUser" @user:remove="removedUser" @user:new="newUser" @user:updated="updatedUser"></user-form>
         </div>
     </modal-window>
 </div>

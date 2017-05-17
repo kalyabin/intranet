@@ -22,14 +22,19 @@ import {Tabs} from "../../../components/tabs";
 })
 export class ManagerUserForm extends Vue {
     /**
+     * Модель редактируемого пользователя
+     */
+    @Prop(Object) user: UserInterface;
+
+    /**
      * Идентификатор редактируемого пользователя
      */
-    protected userId: number = 0;
+    protected userId: number = this.user ? this.user.id : 0;
 
     /**
      * Данные для редактирования
      */
-    @Model() userData: UserInterface = {
+    @Model() userData: UserInterface = this.user ? this.user : {
         name: '',
         email: '',
         status: 1,
@@ -49,12 +54,12 @@ export class ManagerUserForm extends Vue {
     /**
      * Идентификатор контрагента (арендатора, 0, если заносится новый арендатор)
      */
-    @Model() customerId: number = 0;
+    @Model() customerId: number = this.user && this.user.customer ? this.user.customer.id : 0;
 
     /**
      * Модель арендатора
      */
-    @Model() customer: CustomerInterface = {
+    @Model() customer: CustomerInterface = this.user && this.user.customer ? this.user.customer : {
         name: '',
         currentAgreement: '',
         allowItDepartment: false,
@@ -103,12 +108,8 @@ export class ManagerUserForm extends Vue {
         // запрос данных о доступных ролях
         rolesListStore.dispatch('fetchData');
         customerListStore.dispatch('fetchList');
-    }
 
-    /**
-     * Получить дополнительные данные о пользователе (роли, доступные контрагенты)
-     */
-    fetchUserData(): void {
+        // получить роли пользователя, если редактируем пользователя
         this.roles = [];
         if (this.userId) {
             userManagerService.details(this.userId).then((response: UserDetailsInterface) => {
@@ -119,29 +120,6 @@ export class ManagerUserForm extends Vue {
                 this.$validator.errorBag.clear();
             });
         }
-    }
-
-    /**
-     * Установка пользователя для редактирования или создания
-     */
-    setUserData(val?: UserInterface): void {
-        // рестарт табов
-        let tabs: Tabs = <Tabs>this.$refs['tabs'];
-        tabs.currentTab = 0;
-
-        this.userId = val ? val.id : 0;
-
-        this.userData = val ? val : {
-            name: '',
-            email: '',
-            status: 1,
-            userType: 'customer'
-        };
-
-        this.customerId = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
-        this.password = '';
-
-        this.fetchUserData();
     }
 
     /**
