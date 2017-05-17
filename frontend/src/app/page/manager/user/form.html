@@ -5,7 +5,7 @@
     </div>
     <tabs :in-modal-window="true" ref="tabs">
         <tab-pane label="Основное" :has-error="errors.has('status') || errors.has('name') || errors.has('email') || errors.has('type') || errors.has('password')">
-            <div class="form-group" :class="{'has-error': errors.has('status')}" v-if="user && user.id">
+            <div class="form-group" :class="{'has-error': errors.has('status')}" v-if="userId">
                 <label class="control-label">Статус</label>
                 <select v-model="userData.status" v-validate="'required'" name="status" class="form-control">
                     <option value="1">Активен</option>
@@ -39,7 +39,7 @@
                     {{errors.first('type')}}
                 </p>
             </div>
-            <div class="form-group" :class="{'has-error': errors.has('password')}" v-if="!user || !user.id">
+            <div class="form-group" :class="{'has-error': errors.has('password')}" v-if="!userId">
                 <label class="control-label">Пароль</label>
                 <div class="input-group">
                     <input type="text" v-validate="'required|min:6'" name="password" v-model="password" class="form-control" />
@@ -114,7 +114,7 @@
             <div class="clearfix"></div>
         </tab-pane>
         <div class="modal-footer" slot="footer">
-            <button type="button" @click.prevent="remove" class="btn btn-danger" v-if="user && user.id">Удалить</button>
+            <button type="button" @click.prevent="remove" class="btn btn-danger" v-if="userId">Удалить</button>
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
     </tabs>

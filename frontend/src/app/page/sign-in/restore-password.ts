@@ -5,12 +5,6 @@ import {Model} from "vue-property-decorator";
 import {authUserService} from "../../service/auth-user.service";
 import {RestorePasswordInterface} from "../../service/response/restore-password.interface";
 
-Component.registerHooks([
-    'mounted',
-    'beforeRouteLeave',
-    'beforeRouteEnter',
-]);
-
 /**
  * Форма восстановления пароля
  */

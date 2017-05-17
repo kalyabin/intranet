@@ -3,10 +3,6 @@ import Component from "vue-class-component";
 import {Model, Prop} from "vue-property-decorator";
 import {Tabs} from "./tabs";
 
-Component.registerHooks([
-    'mounted',
-]);
-
 /**
  * Единичный таб
  */

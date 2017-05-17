@@ -15,13 +15,13 @@ export const sideBarMenus: Array<SideBarMenuItem> = [
         menuName: 'Главная страница',
     },
     {
-        routeName: 'user_manager_list',
+        routeName: 'manager_user_list',
         faIcon: 'fa-users',
         menuName: 'Пользователи',
         role: 'USER_MANAGEMENT',
     },
     {
-        routeName: 'auth_index',
+        routeName: 'manager_customer_list',
         faIcon: 'fa-newspaper-o',
         menuName: 'Арендаторы',
         role: 'USER_MANAGEMENT'

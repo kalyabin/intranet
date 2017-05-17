@@ -6,6 +6,7 @@ import {NotFound} from "../page/error/not-found";
 import {AccessDenied} from "../page/error/access-denied";
 import {Index} from "../page/index";
 import {ManagerUserList} from "../page/manager/user/list";
+import {ManagerCustomerList} from "../page/manager/customer/list";
 
 /**
  * Правила роутинга
@@ -47,13 +48,22 @@ export const routes: Array<RouteConfig> = [
             },
             {
                 path: '/auth/manager/user',
-                name: 'user_manager_list',
+                name: 'manager_user_list',
                 component: ManagerUserList,
                 meta: {
                     needRole: 'USER_MANAGEMENT',
                     pageTitle: 'Управление пользователями'
                 }
             },
+            {
+                path: '/auth/manager/customer',
+                name: 'manager_customer_list',
+                component: ManagerCustomerList,
+                meta: {
+                    needRole: 'USER_MANAGEMENT',
+                    pageTitle: 'Управление арендаторами'
+                }
+            }
         ]
     },
     {

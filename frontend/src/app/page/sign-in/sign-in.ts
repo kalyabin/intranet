@@ -4,11 +4,6 @@ import $ from 'jquery';
 import {LoginForm} from "./login-form";
 import {RememberPasswordForm} from "./remember-password-form";
 
-Component.registerHooks([
-    'mounted',
-    'beforeRouteLeave'
-]);
-
 /**
  * Страница авторизации
  */

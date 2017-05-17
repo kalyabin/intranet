@@ -14,11 +14,6 @@ import {customerListStore} from "../../../store/customer-list.store";
 import {rolesListStore} from "../../../store/roles-list.store";
 import {Tabs} from "../../../components/tabs";
 
-
-Component.registerHooks([
-    'mounted'
-]);
-
 /**
  * Форма редактирования / создания пользователя
  */
@@ -27,14 +22,14 @@ Component.registerHooks([
 })
 export class ManagerUserForm extends Vue {
     /**
-     * Свойство на вход
+     * Идентификатор редактируемого пользователя
      */
-    @Prop(Object) user: UserInterface;
+    protected userId: number = 0;
 
     /**
      * Данные для редактирования
      */
-    @Model() userData: UserInterface = this.user ? this.user : {
+    @Model() userData: UserInterface = {
         name: '',
         email: '',
         status: 1,
@@ -54,12 +49,12 @@ export class ManagerUserForm extends Vue {
     /**
      * Идентификатор контрагента (арендатора, 0, если заносится новый арендатор)
      */
-    @Model() customerId: number = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
+    @Model() customerId: number = 0;
 
     /**
      * Модель арендатора
      */
-    @Model() customer: CustomerInterface = this.userData.customer ? this.userData.customer : {
+    @Model() customer: CustomerInterface = {
         name: '',
         currentAgreement: '',
         allowItDepartment: false,
@@ -108,29 +103,33 @@ export class ManagerUserForm extends Vue {
         // запрос данных о доступных ролях
         rolesListStore.dispatch('fetchData');
         customerListStore.dispatch('fetchList');
-
-        this.fetchUserData(this.user);
     }
 
     /**
      * Получить дополнительные данные о пользователе (роли, доступные контрагенты)
      */
-    fetchUserData(val: UserInterface): void {
+    fetchUserData(): void {
         this.roles = [];
-        if (val && val.id) {
-            userManagerService.details(val.id).then((response: UserDetailsInterface) => {
+        if (this.userId) {
+            userManagerService.details(this.userId).then((response: UserDetailsInterface) => {
                 for (let role of response.roles) {
                     this.roles.push(role);
                 }
+
+                this.$validator.errorBag.clear();
             });
         }
     }
 
-    @Watch('user')
-    setUserData(val): void {
+    /**
+     * Установка пользователя для редактирования или создания
+     */
+    setUserData(val?: UserInterface): void {
         // рестарт табов
         let tabs: Tabs = <Tabs>this.$refs['tabs'];
         tabs.currentTab = 0;
+
+        this.userId = val ? val.id : 0;
 
         this.userData = val ? val : {
             name: '',
@@ -142,7 +141,7 @@ export class ManagerUserForm extends Vue {
         this.customerId = this.userData.customer && this.userData.customer.id ? this.userData.customer.id : 0;
         this.password = '';
 
-        this.fetchUserData(val);
+        this.fetchUserData();
     }
 
     /**
@@ -246,7 +245,7 @@ export class ManagerUserForm extends Vue {
             for (let role of this. roles) {
                 request.role.push({code: role});
             }
-            if (!this.user) {
+            if (!this.userId) {
                 // создание нового пользователя
                 request['password'] = this.password;
                 userManagerService
@@ -255,6 +254,7 @@ export class ManagerUserForm extends Vue {
                         this.awaitOfSubmit = false;
                         if (isValidResponse(response)) {
                             this.awaitOfSubmit = false;
+                            this.userId = response.user.id;
                             this.$emit('user:new', response.user);
                         }
                     });
@@ -262,7 +262,7 @@ export class ManagerUserForm extends Vue {
                 // редактирование существующего пользователя
                 request['status'] = this.userData.status;
                 userManagerService
-                    .update(this.user.id, <UserRequestInterface>request)
+                    .update(this.userId, <UserRequestInterface>request)
                     .then((response: UserResponseInterface) => {
                         this.awaitOfSubmit = false;
                         if (isValidResponse(response)) {
@@ -315,10 +315,10 @@ export class ManagerUserForm extends Vue {
         if (confirm('Пользователь будет удален безвозвратно. Вы уверены что хотите удалить пользователя?')) {
             this.awaitOfSubmit = true;
             this.errorMessage = '';
-            userManagerService.remove(this.user.id).then((response: UserResponseInterface) => {
+            userManagerService.remove(this.userId).then((response: UserResponseInterface) => {
                 this.awaitOfSubmit = false;
                 if (response.success) {
-                    this.$emit('user:remove', this.user.id);
+                    this.$emit('user:remove', this.userId);
                 } else {
                     this.errorMessage = 'Не удалось удалить пользователя.';
                 }

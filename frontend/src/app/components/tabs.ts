@@ -3,10 +3,6 @@ import Component from "vue-class-component";
 import {Model, Prop, Watch} from "vue-property-decorator";
 import {TabPane} from "./tab-pane";
 
-Component.registerHooks([
-    'mounted'
-]);
-
 /**
  * Виджет табов (работает вместе с tab-pane)
  */

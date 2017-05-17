@@ -8,12 +8,6 @@ import {defaultDtOptions} from "../../../components/default-dt-options";
 import {ManagerUserForm} from "./form";
 import {ModalWindow} from "../../../components/modal-window";
 
-Component.registerHooks([
-    'mounted',
-    'beforeUpdate',
-    'updated',
-]);
-
 /**
  * Список пользователей
  */
@@ -26,19 +20,14 @@ Component.registerHooks([
 })
 export class ManagerUserList extends Vue {
     /**
+     * Идентификатор текущего пользователя
+     */
+    @Model() currentUserId: number = null;
+
+    /**
      * API для управления datatables.net
      */
     protected dtHandler;
-
-    /**
-     * Текущий редактируемый или создаваемый пользователь
-     */
-    @Model() currentUser: UserInterface = null;
-
-    /**
-     * Показать / скрыть форму
-     */
-    @Model() viewForm: boolean = false;
 
     /**
      * Список пользователей
@@ -71,27 +60,36 @@ export class ManagerUserList extends Vue {
     }
 
     /**
+     * Очищать сторейдж после выхода со страницы
+     */
+    beforeDestroy(): void {
+        this.$store.commit('clear');
+    }
+
+    /**
      * Открыть диалог создания нового пользователя
      */
-    openCreateDialog(event): void {
-        event.preventDefault();
-
-        this.currentUser = null;
-        this.viewForm = true;
+    openCreateDialog(): void {
+        this.currentUserId = null;
 
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
+
+        let form: ManagerUserForm = <ManagerUserForm>this.$refs['form'];
+        form.setUserData(null);
     }
 
     /**
      * Открыть диалог редактирования пользователя
      */
     openEditDialog(user: UserInterface): void {
-        this.currentUser = user;
-        this.viewForm = true;
+        this.currentUserId = user.id;
 
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.show();
+
+        let form: ManagerUserForm = <ManagerUserForm>this.$refs['form'];
+        form.setUserData(user);
     }
 
     /**
@@ -100,8 +98,6 @@ export class ManagerUserList extends Vue {
     newUser(user: UserInterface): void {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
-
-        this.currentUser = null;
 
         this.$store.commit('addUser', user);
     }
@@ -113,8 +109,6 @@ export class ManagerUserList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.currentUser = null;
-
         this.$store.commit('updateUser', user);
     }
 
@@ -124,8 +118,6 @@ export class ManagerUserList extends Vue {
     removedUser(id: number): void {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
-
-        this.currentUser = null;
 
         this.$store.commit('removeUser', id);
     }
