@@ -17,7 +17,9 @@
       "moment",
       "jquery",
       "vue",
-      "axios"
+      "axios",
+      "bootstrap",
+      "datatables.net"
     ],
     "sourceMap": false,
     // необходимые настройки для работы vue.js
