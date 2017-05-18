@@ -19,6 +19,9 @@
         <testsuite name="CustomerBundle tests">
             <directory>src/CustomerBundle/Tests</directory>
         </testsuite>
+        <testsuite name="TicketBundle tests">
+            <directory>src/TicketBundle/Tests</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

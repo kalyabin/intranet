@@ -7,6 +7,7 @@ use HttpHelperBundle\HttpHelperBundle;
 use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use TicketBundle\TicketBundle;
 use UserBundle\UserBundle;
 
 class AppKernel extends Kernel
@@ -25,6 +26,7 @@ class AppKernel extends Kernel
             new HttpHelperBundle(),
             new CustomerBundle(),
             new UserBundle(),
+            new TicketBundle(),
             new AppBundle\AppBundle(),
         ];
 
