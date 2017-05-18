@@ -55,9 +55,7 @@ export class ManagerCustomerForm extends Vue {
                 return true;
             }
 
-            if (response.validationErrors) {
-                this.errorMessage = response.validationErrors[Object.keys(response.validationErrors)[0]];
-            }
+            this.errorMessage = response.firstError;
 
             return false;
         };

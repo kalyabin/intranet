@@ -51,6 +51,9 @@ class FormValidationJsonResponse extends JsonResponse
             $this->setStatusCode(self::HTTP_BAD_REQUEST);
         }
 
-        $this->setData(array_merge($this->jsonData, ['validationErrors' => $this->validationErrors]));
+        $this->setData(array_merge($this->jsonData, [
+            'validationErrors' => $this->validationErrors,
+            'firstError' => !empty($this->validationErrors) ? reset($this->validationErrors) : ''
+        ]));
     }
 }

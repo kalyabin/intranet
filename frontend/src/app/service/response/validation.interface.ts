@@ -16,4 +16,9 @@ export interface ValidationInterface {
      * Тексты ошибок
      */
     validationErrors: {[key: string]: string}
+
+    /**
+     * Первая ошибка из массива всех ошибок
+     */
+    firstError: string;
 }

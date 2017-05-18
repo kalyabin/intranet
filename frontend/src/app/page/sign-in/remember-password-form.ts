@@ -46,9 +46,9 @@ export class RememberPasswordForm extends Vue {
             authUserService.rememberPassword(this.email).then((response: RememberPasswordInterface) => {
                 this.awaitOfSubmit = false;
                 this.success = response.success;
-                if (!response.valid && response.validationErrors) {
+                if (!response.valid) {
                     // показать первую ошибку
-                    this.errorMessage = response.validationErrors[Object.keys(response.validationErrors)[0]];
+                    this.errorMessage = response.firstError;
                 }
             });
         }).catch(() => {});

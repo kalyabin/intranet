@@ -79,8 +79,8 @@ export class RestorePassword extends Vue {
                 .then((response: RestorePasswordInterface) => {
                     this.awaitOfSubmit = false;
                     this.success = response.success;
-                    if (!response.valid && response.validationErrors) {
-                        this.errorMessage = response.validationErrors[Object.keys(response.validationErrors)[0]];
+                    if (!response.valid) {
+                        this.errorMessage = response.firstError;
                     }
                 });
         }).catch(() => {});

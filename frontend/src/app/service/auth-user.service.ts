@@ -137,6 +137,7 @@ export class AuthUserService {
                         validationErrors: {
                             notFound: 'Неверный код подтверждения'
                         },
+                        firstError: 'Неверный код подтверждения',
                         submitted: true
                     };
                     return data;

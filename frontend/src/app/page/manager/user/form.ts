@@ -194,7 +194,7 @@ export class ManagerUserForm extends Vue {
         // проверка ответа от API и вывод ошибки
         let isValidResponse = (response: ValidationInterface): boolean => {
             if (!response.valid) {
-                this.errorMessage = response.validationErrors[Object.keys(response.validationErrors)[0]];
+                this.errorMessage = response.firstError;
                 this.awaitOfSubmit = false;
 
                 // если был создан новый контрагент - удалить его чтобы не задваивались данные
