@@ -200,6 +200,7 @@ export class ManagerUserForm extends Vue {
                 // если был создан новый контрагент - удалить его чтобы не задваивались данные
                 if (newCustomerHasBeenCreated) {
                     customerManagerService.remove(newCustomerHasBeenCreated).then(() => {});
+                    customerListStore.commit('removeCustomer', newCustomerHasBeenCreated);
                     newCustomerHasBeenCreated = null;
                 }
 

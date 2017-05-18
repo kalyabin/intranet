@@ -34,6 +34,10 @@ class FormValidationJsonResponse extends JsonResponse
         if (!$this->jsonData['valid']) {
             $errors = [];
 
+            foreach ($form->getErrors(true) as $error) {
+                $errors['#'] = $error->getMessage();
+            }
+
             foreach ($form as $child) {
                 foreach ($child->getErrors(true) as $error) {
                     $originName = $error->getOrigin()->getName();

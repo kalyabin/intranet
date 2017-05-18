@@ -7,6 +7,7 @@ import {userListStore} from "../../../store/user-list.store";
 import {defaultDtOptions} from "../../../components/default-dt-options";
 import {ManagerUserForm} from "./form";
 import {ModalWindow} from "../../../components/modal-window";
+import {customerListStore} from "../../../store/customer-list.store";
 
 /**
  * Список пользователей
