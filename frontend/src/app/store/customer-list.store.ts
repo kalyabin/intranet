@@ -95,7 +95,7 @@ export const customerListStore = new Vuex.Store({
                     }
 
                     reject();
-                });
+                }).catch(reject);
             });
         },
         /**

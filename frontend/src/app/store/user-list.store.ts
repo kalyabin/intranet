@@ -119,14 +119,16 @@ export const userListStore = new Vuex.Store({
          */
         getUser: (action, userId: number) => {
             return new Promise<UserInterface[]>((resolve, reject) => {
-                for (let user of action.state.list) {
-                    if (user.id == userId) {
-                        resolve([user]);
-                        return;
+                action.dispatch('fetchList').then(() => {
+                    for (let user of action.state.list) {
+                        if (user.id == userId) {
+                            resolve([user]);
+                            return;
+                        }
                     }
-                }
 
-                reject();
+                    reject();
+                }).catch(reject);
             });
         },
         /**
