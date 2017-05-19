@@ -80,6 +80,59 @@ export const customerListStore = new Vuex.Store({
                 };
                 fetchCustomers();
             });
+        },
+        /**
+         * Получить контрагента по идентификатору
+         */
+        getCustomer: (action, customerId) => {
+            return new Promise<CustomerInterface[]>((resolve, reject) => {
+                action.dispatch('fetchList').then(() => {
+                    for (let customer of action.state.list) {
+                        if (customer.id == customerId) {
+                            resolve([customer]);
+                            return;
+                        }
+                    }
+
+                    reject();
+                });
+            });
+        },
+        /**
+         * Редактирование контрагента
+         */
+        updateCustomer: (action, customer: CustomerInterface) => {
+            return new Promise((resolve) => {
+                action.commit('updateCustomer', customer);
+                resolve();
+            });
+        },
+        /**
+         * Удалить контрагента
+         */
+        removeCustomer: (action, customerId: number) => {
+            return new Promise((resolve) => {
+                action.commit('removeCustomer', customerId);
+                resolve();
+            });
+        },
+        /**
+         * Добавить контрагента
+         */
+        addCustomer: (action, customer: CustomerInterface) => {
+            return new Promise((resolve) => {
+                action.commit('addCustomer', customer);
+                resolve();
+            });
+        },
+        /**
+         * Очистка списка
+         */
+        clear: (action) => {
+            return new Promise((resolve) => {
+                action.commit('clear');
+                resolve();
+            });
         }
     }
 });

@@ -70,6 +70,7 @@ export class ManagerUserList extends Vue {
      */
     beforeDestroy(): void {
         this.$store.commit('clear');
+        customerListStore.commit('clear');
     }
 
     /**
@@ -90,7 +91,7 @@ export class ManagerUserList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('addUser', user);
+        this.$store.dispatch('addUser', user);
     }
 
     /**
@@ -100,7 +101,7 @@ export class ManagerUserList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('updateUser', user);
+        this.$store.dispatch('updateUser', user);
     }
 
     /**
@@ -110,6 +111,6 @@ export class ManagerUserList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('removeUser', id);
+        this.$store.dispatch('removeUser', id);
     }
 }

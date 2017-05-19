@@ -86,6 +86,57 @@ export const userListStore = new Vuex.Store({
 
                 fetchItems();
             });
+        },
+        /**
+         * Добавление пользователя
+         */
+        addUser: (action, user: UserInterface) => {
+            return new Promise((resolve) => {
+                action.commit('addUser', user);
+                resolve();
+            });
+        },
+        /**
+         * Редактировать пользователя
+         */
+        updateUser: (action, user: UserInterface) => {
+            return new Promise((resolve) => {
+                action.commit('updateUser', user);
+                resolve();
+            });
+        },
+        /**
+         * Удалить пользователя
+         */
+        removeUser: (action, userId: number) => {
+            return new Promise((resolve) => {
+                action.commit('removeUser', userId);
+                resolve();
+            });
+        },
+        /**
+         * Получить пользователя по идентификатору
+         */
+        getUser: (action, userId: number) => {
+            return new Promise<UserInterface[]>((resolve, reject) => {
+                for (let user of action.state.list) {
+                    if (user.id == userId) {
+                        resolve([user]);
+                        return;
+                    }
+                }
+
+                reject();
+            });
+        },
+        /**
+         * Очистка списка
+         */
+        clear: (action) => {
+            return new Promise((resolve) => {
+                action.commit('clear');
+                resolve();
+            });
         }
     }
 });

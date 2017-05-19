@@ -88,7 +88,7 @@ export class ManagerCustomerList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('addCustomer', customer);
+        this.$store.dispatch('addCustomer', customer);
     }
 
     /**
@@ -98,7 +98,7 @@ export class ManagerCustomerList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('updateCustomer', customer);
+        this.$store.dispatch('updateCustomer', customer);
     }
 
     /**
@@ -108,6 +108,6 @@ export class ManagerCustomerList extends Vue {
         let window: ModalWindow = <ModalWindow>this.$refs['modal-window'];
         window.hide();
 
-        this.$store.commit('removeCustomer', id);
+        this.$store.dispatch('removeCustomer', id);
     }
 }

@@ -147,26 +147,19 @@ export class ManagerUserForm extends Vue {
      */
     @Watch('customerId')
     onCustomerIdSet(val: number): void {
-        if (val > 0) {
-            customerListStore.dispatch('fetchList').then(() => {
-                for (let customer of this.customers) {
-                    if (customer.id == val) {
-                        this.customer = customer;
-                        return;
-                    }
+        customerListStore
+            .dispatch('getCustomer', val)
+            .then((customer) => {
+                this.customer = customer[0];
+            })
+            .catch(() => {
+                this.customer = {
+                    name: '',
+                    currentAgreement: '',
+                    allowItDepartment: false,
+                    allowBookerDepartment: false
                 }
-
-                // если контрагент не найден - установка его в 0
-                this.customerId = 0;
             });
-        } else {
-            this.customer = {
-                name: '',
-                currentAgreement: '',
-                allowItDepartment: false,
-                allowBookerDepartment: false
-            };
-        }
     }
 
     /**
@@ -200,7 +193,7 @@ export class ManagerUserForm extends Vue {
                 // если был создан новый контрагент - удалить его чтобы не задваивались данные
                 if (newCustomerHasBeenCreated) {
                     customerManagerService.remove(newCustomerHasBeenCreated).then(() => {});
-                    customerListStore.commit('removeCustomer', newCustomerHasBeenCreated);
+                    customerListStore.dispatch('removeCustomer', newCustomerHasBeenCreated);
                     newCustomerHasBeenCreated = null;
                 }
 
@@ -220,7 +213,7 @@ export class ManagerUserForm extends Vue {
             if (customerId) {
                 request['customer'] = customerId;
             }
-            for (let role of this. roles) {
+            for (let role of this.roles) {
                 request.role.push({code: role});
             }
             if (!this.userId) {
@@ -268,7 +261,7 @@ export class ManagerUserForm extends Vue {
                     .then((response: CustomerResponseInterface) => {
                         if (isValidResponse(response)) {
                             submitUserData(response.customer.id);
-                            customerListStore.commit('updateCustomer', response.customer);
+                            customerListStore.dispatch('updateCustomer', response.customer);
                         }
                     });
             } else {
@@ -279,7 +272,7 @@ export class ManagerUserForm extends Vue {
                         if (isValidResponse(response)) {
                             newCustomerHasBeenCreated = response.customer.id;
                             submitUserData(response.customer.id);
-                            customerListStore.commit('addCustomer', response.customer);
+                            customerListStore.dispatch('addCustomer', response.customer);
                         }
                     });
             }
