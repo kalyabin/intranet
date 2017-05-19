@@ -31,6 +31,30 @@ class TicketEntityTest extends WebTestCase
         $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
     }
 
+    /**
+     * @covers TicketEntity::getId()
+     * @covers TicketEntity::getNumber()
+     * @covers TicketEntity::getTitle()
+     * @covers TicketEntity::getCreatedAt()
+     * @covers TicketEntity::getManagedBy()
+     * @covers TicketEntity::getLastQuestionAt()
+     * @covers TicketEntity::getLastAnswerAt()
+     * @covers TicketEntity::getCurrentStatus()
+     * @covers TicketEntity::getCreatedBy()
+     * @covers TicketEntity::getCustomer()
+     * @covers TicketEntity::getVoidedAt()
+     *
+     * @covers TicketEntity::setNumber()
+     * @covers TicketEntity::setTitle()
+     * @covers TicketEntity::setCreatedAt()
+     * @covers TicketEntity::setManagedBy()
+     * @covers TicketEntity::setLastQuestionAt()
+     * @covers TicketEntity::setLastAnswerAt()
+     * @covers TicketEntity::setCurrentStatus()
+     * @covers TicketEntity::setCreatedBy()
+     * @covers TicketEntity::setCustomer()
+     * @covers TicketEntity::setVoidedAt()
+     */
     public function testMe()
     {
         /** @var UserEntity $userManager */
@@ -44,6 +68,7 @@ class TicketEntityTest extends WebTestCase
 
         $entity = new TicketEntity();
 
+        $this->assertNull($entity->getNumber());
         $this->assertNull($entity->getTitle());
         $this->assertNull($entity->getCreatedAt());
         $this->assertNull($entity->getManagedBy());
@@ -56,6 +81,7 @@ class TicketEntityTest extends WebTestCase
 
         $entity
             ->setTitle('testing ticket')
+            ->setNumber('testing number')
             ->setCreatedAt(new \DateTime())
             ->setCategory($category)
             ->setManagedBy($userManager)
@@ -67,6 +93,7 @@ class TicketEntityTest extends WebTestCase
             ->setVoidedAt(new \DateTime());
 
         $this->assertEquals('testing ticket', $entity->getTitle());
+        $this->assertEquals('testing number', $entity->getNumber());
         $this->assertInstanceOf(\DateTime::class, $entity->getCreatedAt());
         $this->assertInstanceOf(UserEntity::class, $entity->getManagedBy());
         $this->assertInstanceOf(\DateTime::class, $entity->getLastQuestionAt());

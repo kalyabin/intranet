@@ -4,6 +4,7 @@ namespace TicketBundle\Entity;
 
 use DateTime;
 use CustomerBundle\Entity\CustomerEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use UserBundle\Entity\UserEntity;
@@ -51,6 +52,16 @@ class TicketEntity
      * @var integer Идентификатор
      */
     protected $id;
+
+    /**
+     * @ORM\Column(name="number", type="string", length=100, nullable=false)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(max=100)
+     *
+     * @var string Номер заявки
+     */
+    protected $number;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -132,6 +143,21 @@ class TicketEntity
     protected $title;
 
     /**
+     * @ORM\OneToMany(targetEntity="TicketBundle\Entity\TicketMessageEntity", mappedBy="ticket", cascade={"persist", "remove"})
+     *
+     * @var ArrayCollection Сообщения по тикету
+     */
+    protected $message;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->message = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Получить текстовое описание статусов
      *
      * @return array
@@ -155,6 +181,30 @@ class TicketEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set number
+     *
+     * @param string $number
+     *
+     * @return TicketEntity
+     */
+    public function setNumber(string $number): self
+    {
+        $this->number = $number;
+
+        return $this;
+    }
+
+    /**
+     * Get number
+     *
+     * @return string
+     */
+    public function getNumber(): ?string
+    {
+        return $this->number;
     }
 
     /**
@@ -395,5 +445,39 @@ class TicketEntity
     public function getCategory(): ?TicketCategoryEntity
     {
         return $this->category;
+    }
+
+    /**
+     * Add message
+     *
+     * @param \TicketBundle\Entity\TicketMessageEntity $message
+     *
+     * @return TicketEntity
+     */
+    public function addMessage(\TicketBundle\Entity\TicketMessageEntity $message)
+    {
+        $this->message[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Remove message
+     *
+     * @param \TicketBundle\Entity\TicketMessageEntity $message
+     */
+    public function removeMessage(\TicketBundle\Entity\TicketMessageEntity $message)
+    {
+        $this->message->removeElement($message);
+    }
+
+    /**
+     * Get message
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }
