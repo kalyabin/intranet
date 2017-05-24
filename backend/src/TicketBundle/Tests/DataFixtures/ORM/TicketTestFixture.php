@@ -92,6 +92,7 @@ class TicketTestFixture extends AbstractFixture
             ->setCurrentStatus(TicketEntity::STATUS_NEW)
             ->setLastAnswerAt(new \DateTime())
             ->setLastQuestionAt(new \DateTime())
+            ->setVoidedAt(new \DateTime())
             ->setManagedBy($userManager)
             ->setTitle('testing ticket');
 
@@ -114,6 +115,7 @@ class TicketTestFixture extends AbstractFixture
         $this->addReference('ticket-customer', $customer);
         $this->addReference('ticket-manager', $userManager);
         $this->addReference('ticket-customer-user', $userCustomer);
+        $this->addReference('ticket-message', $message);
         $this->addReference('ticket', $entity);
     }
 }

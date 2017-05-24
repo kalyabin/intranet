@@ -1,0 +1,8 @@
+parameters:
+    ticket.manager: 'TicketBundle\Utils\TicketManager'
+    ticket.voided_minutes: 10800 # количество минут, через которое закрыть отвеченную заявку
+
+services:
+    ticket.manager:
+        class: '%ticket.manager%'
+        arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher', '%ticket.voided_minutes%']

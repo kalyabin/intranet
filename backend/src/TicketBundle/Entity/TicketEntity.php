@@ -12,10 +12,10 @@ use UserBundle\Entity\UserEntity;
 /**
  * Модель тикета
  *
- * @ORM\Entity()
- * @ORM\Table(name="ticket")
- *
  * @package TicketBundle\Entity
+ *
+ * @ORM\Entity(repositoryClass="TicketBundle\Entity\Repository\TicketRepository")
+ * @ORM\Table(name="ticket")
  */
 class TicketEntity
 {
@@ -262,7 +262,7 @@ class TicketEntity
      *
      * @return TicketEntity
      */
-    public function setLastAnswerAt(DateTime $lastAnswerAt): self
+    public function setLastAnswerAt(?DateTime $lastAnswerAt): self
     {
         $this->lastAnswerAt = $lastAnswerAt;
 
@@ -286,7 +286,7 @@ class TicketEntity
      *
      * @return TicketEntity
      */
-    public function setVoidedAt(DateTime $voidedAt): self
+    public function setVoidedAt(?DateTime $voidedAt): self
     {
         $this->voidedAt = $voidedAt;
 
