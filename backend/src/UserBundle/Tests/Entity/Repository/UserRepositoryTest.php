@@ -129,7 +129,7 @@ class UserRepositoryTest extends WebTestCase
 
         $iterates = 0;
 
-        while (($rows = $result->next()) !== false) {
+        foreach ($result as $rows) {
             $this->assertInternalType('array', $rows);
             $this->assertCount(1, $rows);
 
