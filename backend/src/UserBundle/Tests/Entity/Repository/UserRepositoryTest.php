@@ -3,6 +3,7 @@
 namespace UserBunde\Tests\Entity\Repository;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
@@ -110,5 +111,37 @@ class UserRepositoryTest extends WebTestCase
 
         $this->assertGreaterThan(0, $expectedCount);
         $this->assertEquals($expectedCount, $count);
+    }
+
+    /**
+     * Тестирование получения пользователей по ролям
+     *
+     * @covers UserRepository::findByRole()
+     */
+    public function testFindByRole()
+    {
+        /** @var UserEntity $superadmin */
+        $superadmin = $this->fixtures->getReference('superadmin-user');
+
+        $result = $this->repository->findByRole('SUPERADMIN');
+
+        $this->assertInstanceOf(IterableResult::class, $result);
+
+        $iterates = 0;
+
+        while (($rows = $result->next()) !== false) {
+            $this->assertInternalType('array', $rows);
+            $this->assertCount(1, $rows);
+
+            foreach ($rows as $item) {
+                $iterates++;
+                /** @var UserEntity $item */
+                $this->assertInstanceOf(UserEntity::class, $item);
+                $this->assertEquals($superadmin->getId(), $item->getId());
+            }
+        }
+
+        // в фикстурах есть только 1 супер админ
+        $this->assertEquals(1, $iterates);
     }
 }

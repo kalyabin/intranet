@@ -120,6 +120,7 @@ class TicketManager
             $ticket
                 ->setLastAnswerAt(new \DateTime())
                 ->setCurrentStatus(TicketEntity::STATUS_ANSWERED)
+                ->setManagedBy($author)
                 ->setVoidedAt($date);
         } else {
             // очистить время автоматической очистки сообщения

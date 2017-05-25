@@ -3,6 +3,7 @@
 namespace UserBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use UserBundle\Entity\UserEntity;
 
 /**
@@ -85,5 +86,26 @@ class UserRepository extends EntityRepository
         $count = (int) $query->getQuery()->getSingleScalarResult();
 
         return $count > 0;
+    }
+
+    /**
+     * Получить всех пользователей с правом доступом role.
+     *
+     * @param string|string[] $role Право доступа или массив прав доступа
+     *
+     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     */
+    public function findByRole($role): IterableResult
+    {
+        $role = is_array($role) ? $role : [$role];
+
+        return $this->createQueryBuilder('u')
+            ->distinct()
+            ->join('u.role', 'r')
+            ->where('r.code IN (:role)')
+            ->setParameter('role', $role)
+            ->groupBy('u.id')
+            ->getQuery()
+            ->iterate();
     }
 }

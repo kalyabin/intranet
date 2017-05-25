@@ -13,6 +13,59 @@ use UserBundle\Entity\UserEntity;
 class RolesManager
 {
     /**
+     * @var array Вложенность ролей из модуля security
+     */
+    protected $rolesHierarchy;
+
+    /**
+     * RolesManager constructor.
+     *
+     * @param array $rolesHierarchy Иерархия ролей из модуля security
+     */
+    public function __construct(array $rolesHierarchy = [])
+    {
+        $this->rolesHierarchy = $rolesHierarchy;
+    }
+
+    /**
+     * Получить взаимосвязанные (наследованные) роли.
+     *
+     * Если в массиве указана дочерняя роль, то в массиве возвращается она и ее родитель, если есть.
+     *
+     * @param string|string[] $roles
+     *
+     * @return array
+     */
+    public function getParentRoles($roles): array
+    {
+        $roles = is_array($roles) ? $roles : [$roles];
+
+        $ret = [];
+
+        $checkChildren = function(string $role, array $children, callable $rec) use (&$ret) {
+            foreach ($children as $parent => $items) {
+                if (!is_array($items) || in_array($parent, $ret)) {
+                    continue;
+                }
+
+                if (in_array($role, $items)) {
+                    $ret[] = $parent;
+                }
+
+                $rec($role, $items, $rec);
+            }
+        };
+
+        foreach ($roles as $role) {
+            $ret[] = $role;
+
+            $checkChildren($role, $this->rolesHierarchy, $checkChildren);
+        }
+
+        return array_unique($ret);
+    }
+
+    /**
      * Получить доступные роли для каждого типа пользователя
      *
      * @return array

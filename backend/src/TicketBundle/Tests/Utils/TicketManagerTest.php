@@ -180,6 +180,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertInstanceOf(UserEntity::class, $result->getCreatedBy());
         $this->assertEquals($author->getId(), $result->getCreatedBy()->getId());
         $this->assertEquals($result->getType(), TicketMessageEntity::TYPE_QUESTION);
+        $this->assertInstanceOf(UserEntity::class, $result->getTicket()->getManagedBy());
 
         // проверка статуса тикета
         $this->assertInstanceOf(DateTime::class, $ticket->getLastQuestionAt());

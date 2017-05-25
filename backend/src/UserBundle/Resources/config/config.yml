@@ -48,6 +48,7 @@ services:
     # Менеджер ролей
     user.roles_manager:
         class: '%user.roles_manager%'
+        arguments: ['%security.role_hierarchy.roles%']
 
     # Менеджер пользователей
     user.manager:

@@ -68,4 +68,41 @@ class RolesManagerTest extends WebTestCase
             $this->assertInternalType('string', $rolesLabels[$role]);
         }
     }
+
+    /**
+     * @covers RolesManager::getChildRoles()
+     */
+    public function testGetChildRoles()
+    {
+        // по коду USER_MANAGEMENT должны получить USER_MANAGEMENT и SUPERADMIN, т.к. SUPERADMIN обладает ролью USER_MANAGEMENT
+        $result = $this->rolesManager->getParentRoles('USER_MANAGEMENT');
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(2, $result);
+        $this->assertArraySubset([
+            'USER_MANAGEMENT',
+            'SUPERADMIN'
+        ], $result);
+
+        // по коду USER_MANAGEMENT и IT_MANAGEMENT должны получить SUPERADMIN, USER_MANAGEMENT, IT_MANAGEMENT
+        $result = $this->rolesManager->getParentRoles(['USER_MANAGEMENT', 'IT_MANAGEMENT']);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(3, $result);
+        $this->assertArraySubset([
+            'USER_MANAGEMENT',
+            'SUPERADMIN',
+            'IT_MANAGEMENT',
+        ], $result);
+
+        // по коду FINANCE_CUSTOMER - FINANCE_CUSTOMER и CUSTOMER_ADMIN
+        $result = $this->rolesManager->getParentRoles(['FINANCE_CUSTOMER']);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(2, $result);
+        $this->assertArraySubset([
+            'FINANCE_CUSTOMER',
+            'CUSTOMER_ADMIN',
+        ], $result);
+    }
 }
