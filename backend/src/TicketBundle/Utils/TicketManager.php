@@ -9,6 +9,7 @@ use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use TicketBundle\Event\TicketNewEvent;
+use TicketBundle\Event\TicketNewMessageEvent;
 use TicketBundle\Form\Type\TicketMessageType;
 use TicketBundle\Form\Type\TicketType;
 use UserBundle\Entity\UserEntity;
@@ -137,10 +138,10 @@ class TicketManager
         $this->entityManager->flush();
 
         // событие в зависимости от типа сообщения
-        $event = new TicketNewEvent($ticket, $entity);
+        $event = new TicketNewMessageEvent($ticket, $entity);
         $eventType = $type == TicketMessageEntity::TYPE_ANSWER ?
-            TicketNewEvent::NEW_ANSWER :
-            TicketNewEvent::NEW_QUESTION;
+            TicketNewMessageEvent::NEW_ANSWER :
+            TicketNewMessageEvent::NEW_QUESTION;
 
         $this->eventDispatcher->dispatch($eventType, $event);
 
@@ -195,7 +196,7 @@ class TicketManager
 
         // генерация системного события
         $event = new TicketNewEvent($entity, $message);
-        $this->eventDispatcher->dispatch(TicketNewEvent::NEW_TICKET, $event);
+        $this->eventDispatcher->dispatch(TicketNewEvent::NAME, $event);
 
         return $entity;
     }

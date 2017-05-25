@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: max
+ * Date: 25.05.17
+ * Time: 21:59
+ */
 
 namespace TicketBundle\Event;
 
@@ -7,16 +13,21 @@ use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 
 /**
- * Событие на создание нового тикета
+ * Событие на создание нового сообщения в тикете
  *
  * @package TicketBundle\Event
  */
-class TicketNewEvent extends Event
+class TicketNewMessageEvent extends Event
 {
     /**
-     * Название события для нового тикета
+     * Название события для нового ответа по тикету
      */
-    const NAME = 'ticket.new';
+    const NEW_ANSWER = 'ticket.new_answer';
+
+    /**
+     * Название события для нового вопроса по тикету
+     */
+    const NEW_QUESTION = 'ticket.new_question';
 
     /**
      * @var TicketEntity
@@ -29,7 +40,7 @@ class TicketNewEvent extends Event
     protected $message;
 
     /**
-     * TicketNewEvent constructor.
+     * TicketNewMessageEvent constructor.
      *
      * @param TicketEntity $ticket
      * @param TicketMessageEntity $message

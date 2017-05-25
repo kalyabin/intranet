@@ -1,0 +1,18 @@
+Поступила новая заявка под номером №{{ ticket.number }} в очередь "{{ category.name }}".<br />
+<br />
+<strong>Создано:</strong> {{ ticket.createdAt|date("d.m.Y H:i") }}<br />
+{% if ticket.createdBy %}
+    <strong>Отправитель: </strong> {{ ticket.createdBy.name }} ({{ ticket.createdBy.email }})<br />
+    {% if ticket.createdBy.customer %}
+        <strong>Арендатор: </strong> {{ ticket.createdBy.customer.name }}<br />
+    {% endif %}
+{% endif %}
+<br />
+================================================================<br />
+{{ ticket.title }}<br />
+================================================================<br />
+<br />
+{{ message.text|nl2br }}<br />
+<br />
+================================================================<br />
+<br />

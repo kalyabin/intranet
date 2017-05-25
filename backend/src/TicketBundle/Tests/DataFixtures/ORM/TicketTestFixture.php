@@ -48,6 +48,21 @@ class TicketTestFixture extends AbstractFixture
 
         $manager->persist($userManager);
 
+        $role = new UserRoleEntity();
+        $role->setCode('SUPERADMIN');
+
+        $userManagerOther = new UserEntity();
+        $userManagerOther
+            ->setName('testing ticket manager second')
+            ->setStatus(UserEntity::STATUS_ACTIVE)
+            ->setUserType(UserEntity::TYPE_MANAGER)
+            ->addRole($role)
+            ->setEmail('ticket-manager-other@test.ru')
+            ->setPassword('testingpassword')
+            ->generateSalt();
+
+        $manager->persist($userManagerOther);
+
         $customer = new CustomerEntity();
 
         $customer
@@ -109,13 +124,26 @@ class TicketTestFixture extends AbstractFixture
 
         $manager->persist($message);
 
+        $answer = new TicketMessageEntity();
+
+        $answer
+            ->setCreatedBy($userManager)
+            ->setCreatedAt(new \DateTime())
+            ->setTicket($entity)
+            ->setText('testing answer')
+            ->setType(TicketMessageEntity::TYPE_ANSWER);
+
+        $manager->persist($answer);
+
         $manager->flush();
 
         $this->addReference('ticket-category', $category);
         $this->addReference('ticket-customer', $customer);
         $this->addReference('ticket-manager', $userManager);
+        $this->addReference('ticket-manager-other', $userManagerOther);
         $this->addReference('ticket-customer-user', $userCustomer);
         $this->addReference('ticket-message', $message);
+        $this->addReference('ticket-answer', $answer);
         $this->addReference('ticket', $entity);
     }
 }

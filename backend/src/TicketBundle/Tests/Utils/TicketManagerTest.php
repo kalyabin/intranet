@@ -11,6 +11,7 @@ use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use TicketBundle\Event\TicketNewEvent;
+use TicketBundle\Event\TicketNewMessageEvent;
 use TicketBundle\Form\Type\TicketMessageType;
 use TicketBundle\Form\Type\TicketType;
 use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
@@ -66,7 +67,8 @@ class TicketManagerTest extends WebTestCase
         $dispatcher = $this->getContainer()->get('event_dispatcher');
         $testCase = $this;
         $eventTriggered = false;
-        $dispatcher->addListener(TicketNewEvent::NEW_TICKET, function(TicketNewEvent $event) use ($form, $testCase, &$eventTriggered) {
+        $dispatcher->addListener(TicketNewEvent::NAME, function($event) use ($form, $testCase, &$eventTriggered) {
+            $this->assertInstanceOf(TicketNewEvent::class, $event);
             $testCase->assertInstanceOf(TicketEntity::class, $event->getTicket());
             $testCase->assertGreaterThan(0, $event->getTicket()->getId());
             $testCase->assertEquals($form->getTitle(), $event->getTicket()->getTitle());
@@ -142,7 +144,8 @@ class TicketManagerTest extends WebTestCase
         $dispatcher = $this->getContainer()->get('event_dispatcher');
         $testCase = $this;
         $eventTriggered = null;
-        $dispatcher->addListener(TicketNewEvent::NEW_QUESTION, function(TicketNewEvent $event) use ($form, $testCase, &$eventTriggered, $ticket) {
+        $dispatcher->addListener(TicketNewMessageEvent::NEW_QUESTION, function($event) use ($form, $testCase, &$eventTriggered, $ticket) {
+            $this->assertInstanceOf(TicketNewMessageEvent::class, $event);
             $testCase->assertInstanceOf(TicketEntity::class, $event->getTicket());
             $testCase->assertEquals($ticket->getId(), $event->getTicket()->getId());
 
@@ -150,11 +153,12 @@ class TicketManagerTest extends WebTestCase
             $testCase->assertGreaterThan(0, $event->getMessage()->getId());
             $testCase->assertEquals($form->getText(), $event->getMessage()->getText());
 
-            $eventTriggered = TicketNewEvent::NEW_QUESTION;
+            $eventTriggered = TicketNewMessageEvent::NEW_QUESTION;
         });
 
         // проверка диспатчера событий по созданию ответов по событию
-        $dispatcher->addListener(TicketNewEvent::NEW_ANSWER, function(TicketNewEvent $event) use (&$form, $testCase, &$eventTriggered, $ticket) {
+        $dispatcher->addListener(TicketNewMessageEvent::NEW_ANSWER, function($event) use (&$form, $testCase, &$eventTriggered, $ticket) {
+            $this->assertInstanceOf(TicketNewMessageEvent::class, $event);
             $testCase->assertInstanceOf(TicketEntity::class, $event->getTicket());
             $testCase->assertEquals($ticket->getId(), $event->getTicket()->getId());
 
@@ -162,12 +166,12 @@ class TicketManagerTest extends WebTestCase
             $testCase->assertGreaterThan(0, $event->getMessage()->getId());
             $testCase->assertEquals($form->getText(), $event->getMessage()->getText());
 
-            $eventTriggered = TicketNewEvent::NEW_ANSWER;
+            $eventTriggered = TicketNewMessageEvent::NEW_ANSWER;
         });
 
         $result = $this->manager->createTicketMessage($ticket, $form, TicketMessageEntity::TYPE_QUESTION, $author);
 
-        $this->assertEquals(TicketNewEvent::NEW_QUESTION, $eventTriggered);
+        $this->assertEquals(TicketNewMessageEvent::NEW_QUESTION, $eventTriggered);
 
         // обнулить флаг для дальнейших тестов
         $eventTriggered = null;
@@ -193,7 +197,7 @@ class TicketManagerTest extends WebTestCase
 
         $result = $this->manager->createTicketMessage($ticket, $form, TicketMessageEntity::TYPE_ANSWER, $manager);
 
-        $this->assertEquals(TicketNewEvent::NEW_ANSWER, $eventTriggered);
+        $this->assertEquals(TicketNewMessageEvent::NEW_ANSWER, $eventTriggered);
 
         $this->assertInstanceOf(TicketMessageEntity::class, $result);
         $this->assertGreaterThan(0, $result->getId());

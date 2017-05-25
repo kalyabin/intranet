@@ -27,3 +27,6 @@ parameters:
 
     # e-mail отправителя писем авторизации
     user.default_from_email: 'mail@domain.ltd'
+
+    # e-mail отправителя писем в тикетной системе
+    ticket.default_from_email: 'mail@domain.ltd'

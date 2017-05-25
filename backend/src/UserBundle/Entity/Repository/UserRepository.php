@@ -93,7 +93,7 @@ class UserRepository extends EntityRepository
      *
      * @param string|string[] $role Право доступа или массив прав доступа
      *
-     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     * @return IterableResult
      */
     public function findByRole($role): IterableResult
     {

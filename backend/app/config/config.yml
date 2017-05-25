@@ -43,6 +43,7 @@ twig:
     strict_variables: '%kernel.debug%'
     paths:
         '%kernel.root_dir%/../src/UserBundle/Resources/views/Emails': 'user_emails'
+        '%kernel.root_dir%/../src/TicketBundle/Resources/views/Emails': 'ticket_emails'
 
 # Doctrine Configuration
 doctrine:
