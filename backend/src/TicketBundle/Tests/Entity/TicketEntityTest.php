@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Entity\TicketHistoryEntity;
 use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
 use UserBundle\Entity\UserEntity;
 
@@ -43,6 +44,7 @@ class TicketEntityTest extends WebTestCase
      * @covers TicketEntity::getCreatedBy()
      * @covers TicketEntity::getCustomer()
      * @covers TicketEntity::getVoidedAt()
+     * @covers TicketEntity::getHistory()
      *
      * @covers TicketEntity::setNumber()
      * @covers TicketEntity::setTitle()
@@ -78,6 +80,7 @@ class TicketEntityTest extends WebTestCase
         $this->assertNull($entity->getCreatedBy());
         $this->assertNull($entity->getCustomer());
         $this->assertNull($entity->getVoidedAt());
+        $this->assertCount(0, $entity->getHistory());
 
         $entity
             ->setTitle('testing ticket')

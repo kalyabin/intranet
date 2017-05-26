@@ -8,6 +8,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Entity\TicketHistoryEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\UserRoleEntity;
@@ -135,6 +136,16 @@ class TicketTestFixture extends AbstractFixture
 
         $manager->persist($answer);
 
+        $historyItem = new TicketHistoryEntity();
+
+        $historyItem
+            ->setCreatedBy($userCustomer)
+            ->setCreatedAt(new \DateTime())
+            ->setTicket($entity)
+            ->setStatus(TicketEntity::STATUS_CLOSED);
+
+        $manager->persist($historyItem);
+
         $manager->flush();
 
         $this->addReference('ticket-category', $category);
@@ -144,6 +155,7 @@ class TicketTestFixture extends AbstractFixture
         $this->addReference('ticket-customer-user', $userCustomer);
         $this->addReference('ticket-message', $message);
         $this->addReference('ticket-answer', $answer);
+        $this->addReference('ticket-history-item', $historyItem);
         $this->addReference('ticket', $entity);
     }
 }

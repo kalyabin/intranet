@@ -5,6 +5,7 @@ namespace TicketBundle\Entity;
 use DateTime;
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use UserBundle\Entity\UserEntity;
@@ -150,11 +151,19 @@ class TicketEntity
     protected $message;
 
     /**
+     * @ORM\OneToMany(targetEntity="TicketBundle\Entity\TicketHistoryEntity", mappedBy="ticket", cascade={"persist", "remove"})
+     *
+     * @var ArrayCollection История по тикету
+     */
+    protected $history;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->message = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->message = new ArrayCollection();
+        $this->history = new ArrayCollection();
     }
 
     /**
@@ -454,7 +463,7 @@ class TicketEntity
      *
      * @return TicketEntity
      */
-    public function addMessage(\TicketBundle\Entity\TicketMessageEntity $message)
+    public function addMessage(\TicketBundle\Entity\TicketMessageEntity $message): self
     {
         $this->message[] = $message;
 
@@ -472,11 +481,45 @@ class TicketEntity
     }
 
     /**
+     * Add history item
+     *
+     * @param TicketHistoryEntity $history
+     *
+     * @return TicketEntity
+     */
+    public function addHistory(TicketHistoryEntity $history): self
+    {
+        $this->history[] = $history;
+
+        return $this;
+    }
+
+    /**
+     * Remove history item
+     *
+     * @param TicketHistoryEntity $history
+     */
+    public function removeHistory(TicketHistoryEntity $history)
+    {
+        $this->history->removeElement($history);
+    }
+
+    /**
+     * Get history
+     *
+     * @return Collection
+     */
+    public function getHistory(): Collection
+    {
+        return $this->history;
+    }
+
+    /**
      * Get message
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
-    public function getMessage()
+    public function getMessage(): Collection
     {
         return $this->message;
     }
