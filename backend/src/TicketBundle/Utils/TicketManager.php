@@ -7,7 +7,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Entity\TicketHistoryEntity;
 use TicketBundle\Entity\TicketMessageEntity;
+use TicketBundle\Event\TicketClosedEvent;
+use TicketBundle\Event\TicketManagerSetEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
 use TicketBundle\Form\Type\TicketMessageType;
@@ -90,6 +93,79 @@ class TicketManager
     }
 
     /**
+     * Закрытие тикета.
+     *
+     * Меняет статус тикета и отправляет событие на закрытие.
+     *
+     * Возвращает false, если тикет уже закрыт.
+     *
+     * @param TicketEntity $ticket Тикет
+     * @param null|UserEntity $author Автор события (по умолчанию - пользователь, создавший тикет)
+     *
+     * @return bool
+     */
+    public function closeTicket(TicketEntity $ticket, ?UserEntity $author = null): bool
+    {
+        // повторно заявку закрыть нельзя
+        if ($ticket->getCurrentStatus() == TicketEntity::STATUS_CLOSED) {
+            return false;
+        }
+
+        $author = $author ? $author : $ticket->getCreatedBy();
+
+        // возможно пользователь контрагента был удален
+        // в таком случае работаем без события и изменений в истории
+        if (!$author) {
+            $ticket->setCurrentStatus(TicketEntity::STATUS_CLOSED);
+            $this->entityManager->persist($ticket);
+            $this->entityManager->flush();
+            return true;
+        }
+
+        $this->setTicketStatus($ticket, $author, TicketEntity::STATUS_CLOSED);
+
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+
+        // инициация события
+        $event = new TicketClosedEvent($ticket, $author);
+        $this->eventDispatcher->dispatch(TicketClosedEvent::NAME, $event);
+
+        return true;
+    }
+
+    /**
+     * Установка менеджера по тикету.
+     *
+     * Если менеджер уже установлен на текущего возвращает true, иначе возвращает false.
+     *
+     * Нужно отдельным методом только для того, чтобы пользователь получил письмо по данному событию.
+     *
+     * @param TicketEntity $ticket Тикет
+     * @param UserEntity $manager Менеджер для установки
+     *
+     * @return boolean
+     */
+    public function appointTicketToManager(TicketEntity $ticket, UserEntity $manager): bool
+    {
+        if ($ticket->getManagedBy() && $ticket->getManagedBy()->getId() == $manager->getId()) {
+            return false;
+        }
+
+        $ticket->setManagedBy($manager);
+        $this->setTicketStatus($ticket, $manager, TicketEntity::STATUS_IN_PROCESS);
+
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+
+        // отправка события
+        $event = new TicketManagerSetEvent($ticket, $manager);
+        $this->eventDispatcher->dispatch(TicketManagerSetEvent::NAME, $event);
+
+        return true;
+    }
+
+    /**
      * Создание сообщения по заявке.
      *
      * Если тип сообщения - ответ, то заполняет поле voided_at и last_answer_at, меняет на соответствующий статус.
@@ -120,15 +196,18 @@ class TicketManager
 
             $ticket
                 ->setLastAnswerAt(new \DateTime())
-                ->setCurrentStatus(TicketEntity::STATUS_ANSWERED)
+                // тихая установка менеджера
                 ->setManagedBy($author)
                 ->setVoidedAt($date);
+
+            $this->setTicketStatus($ticket, $author, TicketEntity::STATUS_ANSWERED);
         } else {
             // очистить время автоматической очистки сообщения
             $ticket
                 ->setLastQuestionAt(new \DateTime())
-                ->setCurrentStatus(TicketEntity::STATUS_WAIT)
                 ->setVoidedAt(null);
+
+            $this->setTicketStatus($ticket, $author, TicketEntity::STATUS_WAIT);
         }
 
         $this->entityManager->persist($ticket);
@@ -146,6 +225,28 @@ class TicketManager
         $this->eventDispatcher->dispatch($eventType, $event);
 
         return $entity;
+    }
+
+    /**
+     * Установка текущего статуса тикета и добавление статуса в историю
+     *
+     * @param TicketEntity $ticket Тикет
+     * @param UserEntity $author Инициатор смены статуса
+     * @param string $status Код статуса
+     */
+    protected function setTicketStatus(TicketEntity $ticket, UserEntity $author, string $status)
+    {
+        $ticket->setCurrentStatus($status);
+
+        $historyItem = new TicketHistoryEntity();
+
+        $historyItem
+            ->setTicket($ticket)
+            ->setCreatedAt(new \DateTime())
+            ->setCreatedBy($author)
+            ->setStatus($status);
+
+        $ticket->addHistory($historyItem);
     }
 
     /**
@@ -169,9 +270,10 @@ class TicketManager
             ->setCreatedAt(new \DateTime())
             ->setLastQuestionAt(new \DateTime())
             ->setCreatedBy($author)
-            ->setCurrentStatus(TicketEntity::STATUS_NEW)
             ->setCategory($category)
             ->setTitle($ticket->getTitle());
+
+        $this->setTicketStatus($entity, $author, TicketEntity::STATUS_NEW);
 
         $message = new TicketMessageEntity();
 

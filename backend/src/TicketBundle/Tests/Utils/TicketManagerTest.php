@@ -9,7 +9,10 @@ use DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Entity\TicketHistoryEntity;
 use TicketBundle\Entity\TicketMessageEntity;
+use TicketBundle\Event\TicketClosedEvent;
+use TicketBundle\Event\TicketManagerSetEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
 use TicketBundle\Form\Type\TicketMessageType;
@@ -41,6 +44,26 @@ class TicketManagerTest extends WebTestCase
 
         $this->manager = $this->getContainer()->get('ticket.manager');
         $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
+    }
+
+    /**
+     * Проверка последнего статуса тикета
+     *
+     * @param TicketEntity $ticket
+     * @param UserEntity $author
+     * @param string $status
+     */
+    protected function assertLastHistoryItem(TicketEntity $ticket, UserEntity $author, string $status)
+    {
+        $this->assertNotEmpty($ticket->getHistory());
+
+        /** @var TicketHistoryEntity $lastHistoryItem */
+        $lastHistoryItem = $ticket->getHistory()->get($ticket->getHistory()->count() - 1);
+
+        $this->assertInstanceOf(TicketHistoryEntity::class, $lastHistoryItem);
+        $this->assertInstanceOf(UserEntity::class, $lastHistoryItem->getCreatedBy());
+        $this->assertEquals($author->getId(), $lastHistoryItem->getCreatedBy()->getId());
+        $this->assertEquals($status, $lastHistoryItem->getStatus());
     }
 
     /**
@@ -96,6 +119,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertInstanceOf(CustomerEntity::class, $result->getCustomer());
         $this->assertEquals($result->getCustomer()->getId(), $customer->getId());
         $this->assertEquals($form->getTitle(), $result->getTitle());
+        $this->assertLastHistoryItem($result, $author, TicketEntity::STATUS_NEW);
 
         $this->assertCount(1, $result->getMessage());
 
@@ -173,6 +197,7 @@ class TicketManagerTest extends WebTestCase
 
         $this->assertEquals(TicketNewMessageEvent::NEW_QUESTION, $eventTriggered);
 
+
         // обнулить флаг для дальнейших тестов
         $eventTriggered = null;
 
@@ -191,6 +216,8 @@ class TicketManagerTest extends WebTestCase
         $this->assertNull($ticket->getVoidedAt());
         $this->assertEquals(TicketEntity::STATUS_WAIT, $ticket->getCurrentStatus());
 
+        $this->assertLastHistoryItem($ticket, $author, TicketEntity::STATUS_WAIT);
+
         // проверка по ответа по тикету
         $form = new TicketMessageType();
         $form->setText('testing ticket answer');
@@ -208,9 +235,101 @@ class TicketManagerTest extends WebTestCase
         $this->assertEquals($manager->getId(), $result->getCreatedBy()->getId());
         $this->assertEquals($result->getType(), TicketMessageEntity::TYPE_ANSWER);
 
+        $this->assertLastHistoryItem($ticket, $manager, TicketEntity::STATUS_ANSWERED);
+
         // проверка статуса тикета
         $this->assertInstanceOf(DateTime::class, $ticket->getLastAnswerAt());
         $this->assertInstanceOf(DateTime::class, $ticket->getVoidedAt());
         $this->assertEquals(TicketEntity::STATUS_ANSWERED, $ticket->getCurrentStatus());
+    }
+
+    /**
+     * @covers TicketManager::appointTicketToManager()
+     */
+    public function testAppointTicketToManager()
+    {
+        /** @var UserEntity $managerOther */
+        $managerOther = $this->fixtures->getReference('ticket-manager-other');
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+
+        // установить обработчик события для проверки
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = $this->getContainer()->get('event_dispatcher');
+        $testCase = $this;
+        $eventDispatched = false;
+        $dispatcher->addListener(TicketManagerSetEvent::NAME, function(TicketManagerSetEvent $event) use ($ticket, $managerOther, $testCase, &$eventDispatched) {
+            $testCase->assertInstanceOf(UserEntity::class, $event->getManager());
+            $testCase->assertEquals($managerOther->getId(), $event->getManager()->getId());
+
+            $testCase->assertInstanceOf(TicketEntity::class, $event->getTicket());
+            $testCase->assertEquals($ticket->getId(), $event->getTicket()->getId());
+
+            $eventDispatched = true;
+        });
+
+        $result = $this->manager->appointTicketToManager($ticket, $managerOther);
+
+        $this->assertTrue($eventDispatched);
+        $this->assertTrue($result);
+        $this->assertInstanceOf(UserEntity::class, $ticket->getManagedBy());
+        $this->assertEquals($managerOther->getId(), $ticket->getManagedBy()->getId());
+        $this->assertEquals(TicketEntity::STATUS_IN_PROCESS, $ticket->getCurrentStatus());
+        $this->assertLastHistoryItem($ticket, $managerOther, TicketEntity::STATUS_IN_PROCESS);
+
+        // повторный запрос должен вернуть false
+        $result = $this->manager->appointTicketToManager($ticket, $managerOther);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * @covers TicketManager::closeTicket()
+     */
+    public function testCloseTicket()
+    {
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+        /** @var UserEntity $customerUser */
+        $customerUser = $this->fixtures->getReference('ticket-customer-user');
+
+        // подписка на событие
+        /** @var EventDispatcherInterface $dispatcher */
+        $dispatcher = $this->getContainer()->get('event_dispatcher');
+        $testCase = $this;
+        $eventDispatched = false;
+        $dispatcher->addListener(TicketClosedEvent::NAME, function(TicketClosedEvent $event) use ($ticket, $customerUser, $testCase, &$eventDispatched) {
+            $testCase->assertInstanceOf(UserEntity::class, $event->getAuthor());
+            $testCase->assertEquals($customerUser->getId(), $event->getAuthor()->getId());
+
+            $testCase->assertInstanceOf(TicketEntity::class, $event->getTicket());
+            $testCase->assertEquals($ticket->getId(), $event->getTicket()->getId());
+            $eventDispatched = true;
+        });
+
+        $result = $this->manager->closeTicket($ticket, $customerUser);
+
+        $this->assertTrue($eventDispatched);
+        $this->assertTrue($result);
+
+        $this->assertEquals(TicketEntity::STATUS_CLOSED, $ticket->getCurrentStatus());
+        $this->assertLastHistoryItem($ticket, $customerUser, TicketEntity::STATUS_CLOSED);
+
+        // повторно закрыть тикет нельзя
+        $eventDispatched = false;
+        $result = $this->manager->closeTicket($ticket, $customerUser);
+
+        $this->assertFalse($result);
+        $this->assertFalse($eventDispatched);
+
+        // закрытие тикета без участия пользвоателя
+        $ticket->setCurrentStatus(TicketEntity::STATUS_ANSWERED);
+        $eventDispatched = false;
+        $result = $this->manager->closeTicket($ticket, $customerUser);
+        $this->assertTrue($result);
+        $this->assertTrue($eventDispatched);
+
+        $this->assertEquals(TicketEntity::STATUS_CLOSED, $ticket->getCurrentStatus());
+        $this->assertLastHistoryItem($ticket, $customerUser, TicketEntity::STATUS_CLOSED);
     }
 }

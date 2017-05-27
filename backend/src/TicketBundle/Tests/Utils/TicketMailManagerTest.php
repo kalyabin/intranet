@@ -66,10 +66,8 @@ class TicketMailManagerTest extends WebTestCase
         $this->assertInternalType('array', $result);
         // должно письмо уйти всем админам
         $this->assertCount(2, $result);
-        $this->assertArraySubset([
-            $manager->getEmail(),
-            $managerOther->getEmail(),
-        ], $result);
+        $this->assertContains($manager->getEmail(), $result);
+        $this->assertContains($managerOther->getEmail(), $result);
 
         $this->assertLastMessage($ticket);
     }
@@ -114,6 +112,9 @@ class TicketMailManagerTest extends WebTestCase
         $this->assertLastMessage($ticket, $user->getEmail());
     }
 
+    /**
+     * @covers TicketMailManager::sendNewQuestionToManager()
+     */
     public function testSendNewQuestionToManager()
     {
         /** @var TicketEntity $ticket */
@@ -133,10 +134,8 @@ class TicketMailManagerTest extends WebTestCase
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
-        $this->assertArraySubset([
-            $manager->getEmail(),
-            $managerOther->getEmail()
-        ], $result);
+        $this->assertContains($manager->getEmail(), $result);
+        $this->assertContains($managerOther->getEmail(), $result);
 
         // установить другого менеджера, сообщение должно уйти только ему
         $ticket->setManagedBy($managerOther);
@@ -148,5 +147,54 @@ class TicketMailManagerTest extends WebTestCase
         $this->assertEquals($managerOther->getEmail(), $result[0]);
 
         $this->assertLastMessage($ticket, $managerOther->getEmail());
+    }
+
+    /**
+     * @covers TicketMailManager::sendSetManagerToUser()
+     */
+    public function testSendSetManagerToUser()
+    {
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+        /** @var UserEntity $managerOther */
+        $managerOther = $this->fixtures->getReference('ticket-manager');
+        /** @var UserEntity $customerUser */
+        $customerUser = $this->fixtures->getReference('ticket-customer-user');
+
+        $result = $this->manager->sendSetManagerToUser($ticket, $managerOther);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertContains($customerUser->getEmail(), $result);
+
+        $lastMessage = $this->manager->getLastMessage();
+
+        $this->assertInstanceOf(\Swift_Message::class, $lastMessage);
+        $this->assertArrayHasKey($customerUser->getEmail(), $lastMessage->getTo());
+        $this->assertContains($ticket->getNumber(), $lastMessage->getBody());
+        $this->assertContains($managerOther->getName(), $lastMessage->getBody());
+    }
+
+    /**
+     * @covers TicketMailManager::sendClosedToUser()
+     */
+    public function testSendClosedToUser()
+    {
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+        /** @var UserEntity $customerUser */
+        $customerUser = $this->fixtures->getReference('ticket-customer-user');
+
+        $result = $this->manager->sendClosedToUser($ticket);
+
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertContains($customerUser->getEmail(), $result);
+
+        $lastMessage = $this->manager->getLastMessage();
+
+        $this->assertInstanceOf(\Swift_Message::class, $lastMessage);
+        $this->assertArrayHasKey($customerUser->getEmail(), $lastMessage->getTo());
+        $this->assertContains($ticket->getNumber(), $lastMessage->getBody());
     }
 }

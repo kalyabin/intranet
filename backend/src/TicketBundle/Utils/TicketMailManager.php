@@ -8,6 +8,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Templating\EngineInterface;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
+use TicketBundle\Event\TicketClosedEvent;
+use TicketBundle\Event\TicketManagerSetEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
 use UserBundle\Entity\Repository\UserRepository;
@@ -78,9 +80,11 @@ class TicketMailManager implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TicketNewEvent::NAME         => 'onNewTicket',
-            TicketNewMessageEvent::NEW_ANSWER   => 'onNewAnswer',
+            TicketNewEvent::NAME => 'onNewTicket',
+            TicketNewMessageEvent::NEW_ANSWER => 'onNewAnswer',
             TicketNewMessageEvent::NEW_QUESTION => 'onNewQuestion',
+            TicketManagerSetEvent::NAME => 'onManagerSet',
+            TicketClosedEvent::NAME => 'onClosedTicket',
         ];
     }
 
@@ -191,6 +195,33 @@ class TicketMailManager implements EventSubscriberInterface
     }
 
     /**
+     * Получить всех пользователей контрагента, участвующих в тикете (задающих вопросы по тикету)
+     *
+     * @param TicketEntity $ticket
+     *
+     * @return UserEntity[]
+     */
+    protected function getAllCustomerUsersByTicket(TicketEntity $ticket): array
+    {
+        /** @var UserEntity[] $result */
+        $result = [];
+        $ids = [];
+
+        foreach ($ticket->getMessage() as $item) {
+            /** @var TicketMessageEntity $item */
+            if ($item->getType() == TicketMessageEntity::TYPE_QUESTION) {
+                $user = $item->getCreatedBy();
+                if ($user && !in_array($user->getId(), $ids)) {
+                    $ids[] = $user->getId();
+                    $result[] = $user;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Отправить ответ по заявке всем пользователям, которые задавали по ней вопросы
      *
      * @param TicketEntity $ticket
@@ -201,18 +232,6 @@ class TicketMailManager implements EventSubscriberInterface
     public function sendNewAnswerToUser(TicketEntity $ticket, TicketMessageEntity $ticketMessage): array
     {
         $subject = 'Заявка №' . $ticket->getNumber() . ': поступил новый ответ';
-
-        // ответ поступает всем пользователям, задававшим вопросы по заявке
-        $emails = [];
-        foreach ($ticket->getMessage() as $item) {
-            /** @var TicketMessageEntity $item */
-            if ($item->getType() == TicketMessageEntity::TYPE_QUESTION) {
-                $user = $item->getCreatedBy();
-                if ($user && !in_array($user->getEmail(), $emails)) {
-                    $emails[] = $user->getEmail();
-                }
-            }
-        }
 
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
@@ -225,8 +244,77 @@ class TicketMailManager implements EventSubscriberInterface
                 'text/html'
             );
 
-        foreach ($emails as $email) {
-            $this->sendMessage($message, $email);
+        $emails = [];
+
+        // ответ поступает всем пользователям, задававшим вопросы по заявке
+        foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
+            $this->sendMessage($message, $user->getEmail());
+            $emails[] = $user->getEmail();
+        }
+
+        return $emails;
+    }
+
+
+    /**
+     * Отправить всем пользователям контрагента письмо с информацией об установке нового менеджера по тикету
+     *
+     * @param TicketEntity $ticket Тикет
+     * @param UserEntity $manager Новый менеджер
+     *
+     * @return string[] E-mailы на которые отправлено письмо
+     */
+    public function sendSetManagerToUser(TicketEntity $ticket, UserEntity $manager): array
+    {
+        $subject = 'Заявка №' . $ticket->getNumber() . ': назначен менеджер';
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setBody(
+                $this->templating->render('@ticket_emails/set_manager_to_user.html.twig', [
+                    'ticket' => $ticket,
+                    'category' => $ticket->getCategory(),
+                    'manager' => $manager
+                ]),
+                'text/html'
+            );
+
+        // ответ поступает всем пользователям, задававшим вопросы по заявке
+        $emails = [];
+        foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
+            $this->sendMessage($message, $user->getEmail());
+            $emails[] = $user->getEmail();
+        }
+
+        return $emails;
+    }
+
+    /**
+     * Отправить пользователям письмо о закрытии заявки
+     *
+     * @param TicketEntity $ticket
+     *
+     * @return string[] E-mailы на которые отправлено письмо
+     */
+    public function sendClosedToUser(TicketEntity $ticket)
+    {
+        $subject = 'Заявка №' . $ticket->getNumber() . ': заявка закрыта';
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setBody(
+                $this->templating->render('@ticket_emails/closed_to_user.html.twig', [
+                    'ticket' => $ticket,
+                    'category' => $ticket->getCategory()
+                ]),
+                'text/html'
+            );
+
+        // ответ поступает всем пользователям, задававшим вопросы по заявке
+        $emails = [];
+        foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
+            $this->sendMessage($message, $user->getEmail());
+            $emails[] = $user->getEmail();
         }
 
         return $emails;
@@ -312,6 +400,26 @@ class TicketMailManager implements EventSubscriberInterface
      */
     public function onNewQuestion(TicketNewMessageEvent $event)
     {
-        // TODO: реализовать логику
+        $this->sendNewQuestionToManager($event->getTicket(), $event->getMessage());
+    }
+
+    /**
+     * Событие на установку менеджера по тикету
+     *
+     * @param TicketManagerSetEvent $event
+     */
+    public function onManagerSet(TicketManagerSetEvent $event)
+    {
+        $this->sendSetManagerToUser($event->getTicket(), $event->getManager());
+    }
+
+    /**
+     * Событие на закрытие тикета
+     *
+     * @param TicketClosedEvent $event
+     */
+    public function onClosedTicket(TicketClosedEvent $event)
+    {
+        $this->sendClosedToUser($event->getTicket());
     }
 }
