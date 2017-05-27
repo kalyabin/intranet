@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * - ролью менеджера, которая разрешает просмотр и работу менеджера внутри категории
  * - ролью арендатора, которая разрешает просмотр и отправку заявок арендатором.
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="TicketBundle\Entity\Repository\TicketCategoryRepository")
  * @ORM\Table(name="ticket_category")
  *
  * @package TicketBundle\Entity

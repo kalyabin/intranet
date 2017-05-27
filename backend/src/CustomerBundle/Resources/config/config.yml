@@ -1,5 +1,6 @@
 parameters:
     customer.manager_controller: CustomerBundle\Controller\ManagerController
+    customer.customer_voter: CustomerBundle\Security\CustomerVoter
 
 services:
     # Администраторское управление контрагентами
@@ -8,3 +9,9 @@ services:
         arguments: ['@doctrine.orm.entity_manager']
         calls:
             - [ setContainer, [ '@service_container' ] ]
+
+    # проверка права доступа для пользователей
+    customer.customer_voter:
+        class: '%customer.customer_voter%'
+        tags:
+            - { name: security.voter }

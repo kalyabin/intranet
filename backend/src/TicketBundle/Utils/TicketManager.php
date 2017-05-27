@@ -321,4 +321,11 @@ class TicketManager
 
         return $entity;
     }
+
+    public function getUserAvailableCategories(UserEntity $user): array
+    {
+        $result = [];
+
+        return $result;
+    }
 }
