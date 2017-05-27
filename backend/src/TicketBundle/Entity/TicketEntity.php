@@ -46,6 +46,11 @@ class TicketEntity
     const STATUS_CLOSED = 'closed';
 
     /**
+     * Переоткрытая заявка
+     */
+    const STATUS_REOPENED = 'reopened';
+
+    /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="bigint", nullable=false)

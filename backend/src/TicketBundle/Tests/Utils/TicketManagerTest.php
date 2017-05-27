@@ -214,9 +214,8 @@ class TicketManagerTest extends WebTestCase
         // проверка статуса тикета
         $this->assertInstanceOf(DateTime::class, $ticket->getLastQuestionAt());
         $this->assertNull($ticket->getVoidedAt());
-        $this->assertEquals(TicketEntity::STATUS_WAIT, $ticket->getCurrentStatus());
-
-        $this->assertLastHistoryItem($ticket, $author, TicketEntity::STATUS_WAIT);
+        // новая заявка остается новой, пока не получит ответ менеджера
+        $this->assertEquals(TicketEntity::STATUS_NEW, $ticket->getCurrentStatus());
 
         // проверка по ответа по тикету
         $form = new TicketMessageType();

@@ -189,6 +189,8 @@ class TicketManager
             ->setText($message->getText())
             ->setCreatedBy($author);
 
+        $status = $ticket->getCurrentStatus();
+
         if ($type == TicketMessageEntity::TYPE_ANSWER) {
             // время автоматической очистки сообщения
             $date = new \DateTime();
@@ -200,20 +202,28 @@ class TicketManager
                 ->setManagedBy($author)
                 ->setVoidedAt($date);
 
-            $this->setTicketStatus($ticket, $author, TicketEntity::STATUS_ANSWERED);
+            $status = TicketEntity::STATUS_ANSWERED;
         } else {
             // очистить время автоматической очистки сообщения
             $ticket
                 ->setLastQuestionAt(new \DateTime())
                 ->setVoidedAt(null);
 
-            $this->setTicketStatus($ticket, $author, TicketEntity::STATUS_WAIT);
+            $status = TicketEntity::STATUS_WAIT;
+
+            if ($ticket->getCurrentStatus() == TicketEntity::STATUS_NEW) {
+                // заявка, на которую еще не поступали ответы должна остаться новой
+                $status = TicketEntity::STATUS_NEW;
+            } else if ($ticket->getCurrentStatus() == TicketEntity::STATUS_CLOSED) {
+                // закрытая заявка должна стать переоткрытой - самый жесткий случай
+                $status = TicketEntity::STATUS_REOPENED;
+            }
         }
 
+        $this->setTicketStatus($ticket, $author, $status);
+
         $this->entityManager->persist($ticket);
-
         $this->entityManager->persist($entity);
-
         $this->entityManager->flush();
 
         // событие в зависимости от типа сообщения
@@ -233,9 +243,16 @@ class TicketManager
      * @param TicketEntity $ticket Тикет
      * @param UserEntity $author Инициатор смены статуса
      * @param string $status Код статуса
+     *
+     * @return bool
      */
-    protected function setTicketStatus(TicketEntity $ticket, UserEntity $author, string $status)
+    protected function setTicketStatus(TicketEntity $ticket, UserEntity $author, string $status): bool
     {
+        if ($ticket->getCurrentStatus() === $status) {
+            // статус не был изменен
+            return false;
+        }
+
         $ticket->setCurrentStatus($status);
 
         $historyItem = new TicketHistoryEntity();
@@ -247,6 +264,8 @@ class TicketManager
             ->setStatus($status);
 
         $ticket->addHistory($historyItem);
+
+        return true;
     }
 
     /**
