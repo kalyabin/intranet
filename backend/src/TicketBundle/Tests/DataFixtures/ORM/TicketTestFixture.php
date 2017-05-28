@@ -50,7 +50,7 @@ class TicketTestFixture extends AbstractFixture
         $manager->persist($userManager);
 
         $role = new UserRoleEntity();
-        $role->setCode('ROLE_SUPERADMIN');
+        $role->setCode('ROLE_IT_MANAGEMENT');
 
         $userManagerOther = new UserEntity();
         $userManagerOther

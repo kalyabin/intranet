@@ -17,6 +17,7 @@ use TicketBundle\Entity\Repository\TicketCategoryRepository;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Entity\TicketMessageEntity;
 use TicketBundle\Form\Type\TicketMessageType;
 use TicketBundle\Form\Type\TicketType;
 use TicketBundle\Utils\TicketManager;
@@ -122,7 +123,7 @@ class TicketController extends Controller
         if (!$ticket) {
             throw $this->createNotFoundException('Заявка не найдена');
         }
-        $this->denyAccessUnlessGranted($access == 'create' ? 'create' : $access, $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
+        $this->denyAccessUnlessGranted($access == 'create' ? 'create' : 'view', $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
         $this->denyAccessUnlessGranted($access, $ticket, 'У вас нет прав производить данное действие');
 
         return $ticket;
@@ -280,13 +281,13 @@ class TicketController extends Controller
     /**
      * Создать сообщение внутри тикета
      *
-     * @Method({"PUT"})
+     * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{id}",
+     *     "/ticket/{category}/{ticket}/message",
      *     name="ticket.message",
      *     options={"expose": true}, requirements={
      *          "category": "\w+",
-     *          "id": "\d+"
+     *          "ticket": "\d+"
      *     }
      * )
      *
@@ -318,7 +319,7 @@ class TicketController extends Controller
         $response->jsonData = [
             'ticket' => $ticket,
             'message' => $message,
-            'success' => $message instanceof TicketCategoryEntity && $message->getId() > 0
+            'success' => $message instanceof TicketMessageEntity && $message->getId() > 0
         ];
         $response->handleForm($form);
         return $response;
@@ -329,11 +330,11 @@ class TicketController extends Controller
      *
      * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{id}/close",
+     *     "/ticket/{category}/{ticket}/close",
      *     name="ticket.close",
      *     options={"expose": true}, requirements={
      *          "category": "\w+",
-     *          "id": "\d+"
+     *          "ticket": "\d+"
      *     }
      * )
      *
@@ -363,7 +364,7 @@ class TicketController extends Controller
      *
      * @Security("has_role('ROLE_TICKET_ADMIN_MANAGEMENT')")
      * @Method({"GET"})
-     * @Route("/ticket/{category}/managers", options={"expose": true}, requirements={"category": "\w+"})
+     * @Route("/ticket/{category}/managers", name="ticket.managers", options={"expose": true}, requirements={"category": "\w+"})
      *
      * @param string $category
      *
@@ -397,12 +398,12 @@ class TicketController extends Controller
      *
      * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{id}/assign",
+     *     "/ticket/{category}/{ticket}/assign",
      *     name="ticket.assign",
      *     options={"expose": true},
      *     requirements={
      *          "category": "\w+",
-     *          "id": "\d+"
+     *          "ticket": "\d+"
      *     }
      * )
      *
@@ -425,7 +426,7 @@ class TicketController extends Controller
             $this->denyAccessUnlessGranted('ROLE_TICKET_ADMIN_MANAGEMENT');
             // проверить есть ли такой пользователь с таким правом доступа или нет
             $user = null;
-            $roles = $this->rolesManager->getParentRoles($ticket->getCategory()->getId());
+            $roles = $this->rolesManager->getParentRoles($ticket->getCategory()->getManagerRole());
             $res = $this->userRepository->findByRole($roles, UserEntity::STATUS_ACTIVE);
             foreach ($res as $users) {
                 foreach ($users as $item) {
