@@ -92,18 +92,26 @@ class UserRepository extends EntityRepository
      * Получить всех пользователей с правом доступом role.
      *
      * @param string|string[] $role Право доступа или массив прав доступа
+     * @param int $status Статус пользователей (по умолчанию - null, не важно)
      *
      * @return IterableResult
      */
-    public function findByRole($role): IterableResult
+    public function findByRole($role, ?int $status = null): IterableResult
     {
         $role = is_array($role) ? $role : [$role];
 
-        return $this->createQueryBuilder('u')
+        $queryBuilder = $this->createQueryBuilder('u')
             ->distinct()
             ->join('u.role', 'r')
             ->where('r.code IN (:role)')
-            ->setParameter('role', $role)
+            ->setParameter('role', $role);
+
+        if (!is_null($status)) {
+            $queryBuilder->andWhere('u.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        return $queryBuilder
             ->groupBy('u.id')
             ->getQuery()
             ->iterate();

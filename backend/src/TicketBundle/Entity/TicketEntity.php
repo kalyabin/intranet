@@ -18,7 +18,7 @@ use UserBundle\Entity\UserEntity;
  * @ORM\Entity(repositoryClass="TicketBundle\Entity\Repository\TicketRepository")
  * @ORM\Table(name="ticket")
  */
-class TicketEntity
+class TicketEntity implements \JsonSerializable
 {
     /**
      * Статус заявки - новая
@@ -527,5 +527,30 @@ class TicketEntity
     public function getMessage(): Collection
     {
         return $this->message;
+    }
+
+    /**
+     * Сериализация для REST
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        $dateFormat = 'Y-m-d H:i:s';
+
+        return [
+            'id' => $this->getId(),
+            'createdAt' => $this->getCreatedAt()->format($dateFormat),
+            'createdBy' => $this->getCreatedBy(),
+            'managedBy' => $this->getManagedBy(),
+            'category' => $this->getCategory(),
+            'number' => $this->getNumber(),
+            'currentStatus' => $this->getCurrentStatus(),
+            'lastQuestionAt' => $this->getLastQuestionAt() ? $this->getLastQuestionAt()->format($dateFormat) : null,
+            'lastAnswerAt' => $this->getLastAnswerAt() ? $this->getLastAnswerAt()->format($dateFormat) : null,
+            'voidedAt' => $this->getVoidedAt() ? $this->getVoidedAt()->format($dateFormat) : null,
+            'customer' => $this->getCustomer(),
+            'title' => $this->getTitle(),
+        ];
     }
 }

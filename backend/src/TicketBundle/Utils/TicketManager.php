@@ -166,6 +166,22 @@ class TicketManager
     }
 
     /**
+     * Получить тип сообщения на основе типа пользователя
+     *
+     * @param UserEntity $user
+     *
+     * @return string
+     */
+    public function getMessageTypeByUser(UserEntity $user): string
+    {
+        if ($user->getUserType() == UserEntity::TYPE_MANAGER) {
+            return TicketMessageEntity::TYPE_ANSWER;
+        }
+
+        return TicketMessageEntity::TYPE_QUESTION;
+    }
+
+    /**
      * Создание сообщения по заявке.
      *
      * Если тип сообщения - ответ, то заполняет поле voided_at и last_answer_at, меняет на соответствующий статус.
@@ -221,6 +237,8 @@ class TicketManager
         }
 
         $this->setTicketStatus($ticket, $author, $status);
+
+        $ticket->addMessage($entity);
 
         $this->entityManager->persist($ticket);
         $this->entityManager->persist($entity);
@@ -320,12 +338,5 @@ class TicketManager
         $this->eventDispatcher->dispatch(TicketNewEvent::NAME, $event);
 
         return $entity;
-    }
-
-    public function getUserAvailableCategories(UserEntity $user): array
-    {
-        $result = [];
-
-        return $result;
     }
 }

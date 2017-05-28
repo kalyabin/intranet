@@ -16,12 +16,12 @@ use UserBundle\Entity\UserEntity;
 class TicketCategoryVoter extends Voter
 {
     /**
-     * Просмотр тикетов
+     * Просмотр тикетов тикетов внутри категории
      */
     const VIEW = 'view';
 
     /**
-     * Создание тикетов
+     * Создание тикетов внутри категории
      */
     const CREATE = 'create';
 

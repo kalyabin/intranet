@@ -100,4 +100,24 @@ class TicketRepository extends EntityRepository
 
         return $queryBuilder;
     }
+
+    /**
+     * Поиск тикета по идентификатору и категории
+     *
+     * @param int $id
+     * @param string $category
+     *
+     * @return null|TicketEntity
+     */
+    public function findOneByIdAndCategory(int $id, string $category): ?TicketEntity
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id and t.category = :category')
+            ->setParameters([
+                'id' => $id,
+                'category' => $category
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

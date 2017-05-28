@@ -13,7 +13,7 @@ use UserBundle\Entity\UserEntity;
  *
  * @package TicketBundle\Entity
  */
-class TicketHistoryEntity
+class TicketHistoryEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -154,5 +154,20 @@ class TicketHistoryEntity
     {
         $this->status = $status;
         return $this;
+    }
+
+    /**
+     * Сериализация для REST
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'createdBy' => $this->getCreatedBy(),
+            'status' => $this->getStatus(),
+        ];
     }
 }

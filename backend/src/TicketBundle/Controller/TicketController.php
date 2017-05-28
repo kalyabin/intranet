@@ -17,8 +17,10 @@ use TicketBundle\Entity\Repository\TicketCategoryRepository;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
+use TicketBundle\Form\Type\TicketMessageType;
 use TicketBundle\Form\Type\TicketType;
 use TicketBundle\Utils\TicketManager;
+use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Utils\RolesManager;
 
@@ -48,6 +50,11 @@ class TicketController extends Controller
     protected $ticketCategoryRepository;
 
     /**
+     * @var UserRepository
+     */
+    protected $userRepository;
+
+    /**
      * @var CustomerRepository
      */
     protected $customerRepository;
@@ -71,6 +78,52 @@ class TicketController extends Controller
         $this->ticketRepository = $entityManager->getRepository(TicketEntity::class);
         $this->ticketCategoryRepository = $entityManager->getRepository(TicketCategoryEntity::class);
         $this->customerRepository = $entityManager->getRepository(CustomerEntity::class);
+        $this->userRepository = $entityManager->getRepository(UserEntity::class);
+    }
+
+    /**
+     * Поиск категории.
+     *
+     * Если у пользователя нет доступа к этой категории - генерирует 403-ю ошибку.
+     * Если категория не найдена - генерирует 404-ю ошибку.
+     *
+     * @param string $id
+     *
+     * @return TicketCategoryEntity
+     */
+    protected function findCategory(string $id): TicketCategoryEntity
+    {
+        $category = $this->ticketCategoryRepository->findOneById($id);
+        if (!$category) {
+            throw $this->createNotFoundException('Категория не найдена');
+        }
+        $this->denyAccessUnlessGranted('create', $category, 'У вас нет права для просмотра данной очереди');
+
+        return $category;
+    }
+
+    /**
+     * Получение тикета.
+     *
+     * Если у пользователя нет доступа к данному тикету - генерирует 403-ю ошибку.
+     * Если тикет на найден - генерирует 404-ю ошибку.
+     *
+     * @param string $category Идентификатор категории
+     * @param int $id Идентификатор тикета
+     * @param string $access Право доступа к тикету (по умолчанию - просмотр)
+     *
+     * @return TicketEntity
+     */
+    protected function findTicket(string $category, int $id, string $access = 'view'): TicketEntity
+    {
+        $ticket = $this->ticketRepository->findOneByIdAndCategory($id, $category);
+        if (!$ticket) {
+            throw $this->createNotFoundException('Заявка не найдена');
+        }
+        $this->denyAccessUnlessGranted('view', $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
+        $this->denyAccessUnlessGranted($access, $ticket, 'У вас нет прав производить данное действие');
+
+        return $ticket;
     }
 
     /**
@@ -115,19 +168,13 @@ class TicketController extends Controller
      */
     public function listAction(string $category, Request $request): ListJsonResponse
     {
-        $categoryEntity = $this->ticketCategoryRepository->findOneById($category);
-
-        if (!$categoryEntity) {
-            throw $this->createNotFoundException('Категория не найдена');
-        }
-
-        $this->denyAccessUnlessGranted('view', $categoryEntity, 'У вас нет доступа к данной очереди');
+        $category = $this->findCategory($category);
 
         // фильтр по контрагенту
-        $customerId = (int) $request->get('customer', null);
-        if ($customerId) {
+        $customer = (int) $request->get('customer', null);
+        if ($customer) {
             // получить контрагента и проверить право доступа к нему
-            $customer = $this->customerRepository->findOneById($customerId);
+            $customer = $this->customerRepository->findOneById($customer);
 
             if (!$customer) {
                 throw $this->createNotFoundException('Арендатор не найден');
@@ -147,13 +194,13 @@ class TicketController extends Controller
         $offset = max(0, $offset);
 
         $totalCount = (int) $this->ticketRepository
-            ->findAllByFilter($categoryEntity->getId(), $customerId, $opened)
+            ->findAllByFilter($category->getId(), $customer, $opened)
             ->select('count(t.id)')
             ->getQuery()
             ->getSingleScalarResult();
 
         $list = $this->ticketRepository
-            ->findAllByFilter($categoryEntity->getId(), $customerId, $opened)
+            ->findAllByFilter($category->getId(), $customer, $opened)
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
             ->getQuery()
@@ -166,7 +213,7 @@ class TicketController extends Controller
     /**
      * Создать новый тикет
      *
-     * @Method({"GET"})
+     * @Method({"POST"})
      * @Route("/ticket/{category}", name="ticket.create", options={"expose": true}, requirements={"category": "\w+"})
      *
      * @param string $category Категория в которой создать тикет
@@ -176,11 +223,7 @@ class TicketController extends Controller
      */
     public function createTicketAction(string $category, Request $request): FormValidationJsonResponse
     {
-        $categoryEntity = $this->ticketCategoryRepository->findOneById($category);
-        if (!$categoryEntity) {
-            throw $this->createNotFoundException('Категория не найдена');
-        }
-        $this->denyAccessUnlessGranted('create', $categoryEntity);
+        $category = $this->findCategory($category);
 
         $formType = new TicketType();
         $form = $this->createForm(TicketType::class, $formType);
@@ -189,7 +232,7 @@ class TicketController extends Controller
         $ticket = null;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $ticket = $this->ticketManager->createTicket($formType, $categoryEntity, $this->getUser());
+            $ticket = $this->ticketManager->createTicket($formType, $category, $this->getUser());
         }
 
         $response = new FormValidationJsonResponse();
@@ -199,5 +242,208 @@ class TicketController extends Controller
         ];
         $response->handleForm($form);
         return $response;
+    }
+
+    /**
+     * Просмотр тикета
+     *
+     * @Method({"GET"})
+     * @Route(
+     *     "/ticket/{category}/{id}",
+     *     name="ticket.details",
+     *     options={"expose": true}, requirements={
+     *          "category": "\w+",
+     *          "id": "\d+"
+     *     }
+     * )
+     *
+     * @param string $category Идентификатор категории
+     * @param int $ticket Идентификатор тикета внутри категории
+     *
+     * @return JsonResponse
+     */
+    public function detailsAction(string $category, int $ticket): JsonResponse
+    {
+        $ticket = $this->findTicket($category, $ticket, 'view');
+
+        return new JsonResponse([
+            'ticket' => $ticket,
+            'messages' => $ticket->getMessage()->getValues(),
+            'history' => $ticket->getHistory()->getValues(),
+        ]);
+    }
+
+    /**
+     * Создать сообщение внутри тикета
+     *
+     * @Method({"PUT"})
+     * @Route(
+     *     "/ticket/{category}/{id}",
+     *     name="ticket.details",
+     *     options={"expose": true}, requirements={
+     *          "category": "\w+",
+     *          "id": "\d+"
+     *     }
+     * )
+     *
+     * @param string $category Идентификатор категории тикета
+     * @param int $ticket Идентификатор тикета
+     * @param Request $request
+     *
+     * @return FormValidationJsonResponse
+     */
+    public function messageAction(string $category, int $ticket, Request $request): FormValidationJsonResponse
+    {
+        $ticket = $this->findTicket($category, $ticket, 'message');
+
+        $messageType = new TicketMessageType();
+        $form = $this->createForm(TicketMessageType::class, $messageType);
+        $form->handleRequest($request);
+
+        $message = null;
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UserEntity $user */
+            $user = $this->getUser();
+
+            // тип сообщения в зависимости от типа пользователя
+            $type = $this->ticketManager->getMessageTypeByUser($user);
+            $message = $this->ticketManager->createTicketMessage($ticket, $messageType, $type, $user);
+        }
+
+        $response = new FormValidationJsonResponse();
+        $response->jsonData = [
+            'ticket' => $ticket,
+            'message' => $message,
+            'success' => $message instanceof TicketCategoryEntity && $message->getId() > 0
+        ];
+        $response->handleForm($form);
+        return $response;
+    }
+
+    /**
+     * Закрытие тикета
+     *
+     * @Method({"POST"})
+     * @Route(
+     *     "/ticket/{category}/{id}/close",
+     *     name="ticket.details",
+     *     options={"expose": true}, requirements={
+     *          "category": "\w+",
+     *          "id": "\d+"
+     *     }
+     * )
+     *
+     * @param string $category Категория тикета
+     * @param int $ticket Идентификатор тикета внутри категории
+     *
+     * @return JsonResponse
+     */
+    public function closeAction(string $category, int $ticket): JsonResponse
+    {
+        $ticket = $this->findTicket($category, $ticket, 'update');
+
+        /** @var UserEntity $user */
+        $user = $this->getUser();
+        $success = $this->ticketManager->closeTicket($ticket, $user);
+
+        return new JsonResponse([
+            'ticket' => $ticket,
+            'success' => $success,
+        ]);
+    }
+
+    /**
+     * Получить список менеджеров, занимающихся управлением определенной категорией тикетов.
+     *
+     * Доступ только для администратора тикетной системы.
+     *
+     * @Security("has_role('TICKET_ADMIN_MANAGEMENT')")
+     * @Method({"GET"})
+     * @Route("/ticket/{category}/managers", options={"expose": true}, requirements={"category": "\w+"})
+     *
+     * @param string $category
+     *
+     * @return JsonResponse
+     */
+    public function managersAction(string $category): JsonResponse
+    {
+        $category = $this->findCategory($category);
+        $roles = $this->rolesManager->getParentRoles($category->getManagerRole());
+        $res = $this->userRepository->findByRole($roles, UserEntity::STATUS_ACTIVE);
+
+        /** @var UserEntity[] $list */
+        $list = [];
+
+        foreach ($res as $users) {
+            foreach ($users as $user) {
+                $list[] = $user;
+            }
+        }
+
+        return new JsonResponse([
+            'list' => $list
+        ]);
+    }
+
+    /**
+     * Назначить ответственного менеджера для тикета.
+     *
+     * По умолчанию назначаемый менеджер - текущий пользователь.
+     * Если текущий пользователь является администратором тикетной системы, то он может назначать других менеджеров.
+     *
+     * @Method({"POST"})
+     * @Route(
+     *     "/ticket/{category}/{id}/assign",
+     *     name="ticket.assign",
+     *     options={"expose": true},
+     *     requirements={
+     *          "category": "\w+",
+     *          "id": "\d+"
+     *     }
+     * )
+     *
+     * @param string $category Идентификатор тикетной категории
+     * @param int $ticket Идентификатор тикета
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function assignAction(string $category, int $ticket, Request $request): JsonResponse
+    {
+        $ticket = $this->findTicket($category, $ticket, 'assign');
+
+        // назначаемый менеджер (по умолчанию - текущий пользователь)
+        $user = $this->getUser();
+        $setNewUser = (int) $request->get('managerId', null);
+        if ($setNewUser) {
+            // назначение другого пользователя для тикета
+            // может делать только администратор тикетной системы
+            $this->denyAccessUnlessGranted('TICKET_ADMIN_MANAGEMENT');
+            // проверить есть ли такой пользователь с таким правом доступа или нет
+            $user = null;
+            $roles = $this->rolesManager->getParentRoles($ticket->getCategory()->getId());
+            $res = $this->userRepository->findByRole($roles, UserEntity::STATUS_ACTIVE);
+            foreach ($res as $users) {
+                foreach ($users as $item) {
+                    /** @var UserEntity $item */
+                    if ($item->getId() == $setNewUser) {
+                        $user = $item;
+                        break;
+                    }
+                }
+            }
+
+            if (!$user) {
+                throw $this->createNotFoundException('Менеджер заявок не найден');
+            }
+        }
+
+        $success = $this->ticketManager->appointTicketToManager($ticket, $user);
+
+        return new JsonResponse([
+            'ticket' => $ticket,
+            'success' => $success,
+            'user' => $user,
+        ]);
     }
 }

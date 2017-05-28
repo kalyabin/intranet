@@ -15,7 +15,7 @@ use UserBundle\Entity\UserEntity;
  *
  * @package TicketBundle\Entity
  */
-class TicketMessageEntity
+class TicketMessageEntity implements \JsonSerializable
 {
     /**
      * Тип сообщения - ответ
@@ -207,5 +207,21 @@ class TicketMessageEntity
     public function getTicket(): ?TicketEntity
     {
         return $this->ticket;
+    }
+
+    /**
+     * Сериализация для REST
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'createdBy' => $this->getCreatedBy(),
+            'type' => $this->getType(),
+            'text' => $this->getText(),
+        ];
     }
 }
