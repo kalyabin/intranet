@@ -14,6 +14,7 @@ use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
+use UserBundle\Utils\RolesManager;
 
 /**
  * Мейлер для событий тикетной системы
@@ -48,19 +49,26 @@ class TicketMailManager implements EventSubscriberInterface
     protected $userRepository;
 
     /**
+     * @var RolesManager Менеджер для работы с ролями
+     */
+    protected $rolesManager;
+
+    /**
      * TicketMailManager constructor.
      *
      * @param \Swift_Mailer $mailer Мейлер для отправки почты
      * @param EngineInterface $templating Движок для шаблонизации twig
      * @param ObjectManager $entityManager Менеджер для работы с БД
+     * @param RolesManager $rolesManager Менеджер для работы с ролями
      * @param null|string $from E-mail отправителя (по умолчанию - без отправителя)
      */
-    public function __construct(\Swift_Mailer $mailer, EngineInterface $templating, ObjectManager $entityManager, ?string $from = null)
+    public function __construct(\Swift_Mailer $mailer, EngineInterface $templating, ObjectManager $entityManager, RolesManager $rolesManager, ?string $from = null)
     {
         $this->mailer = $mailer;
         $this->templating = $templating;
         $this->from = $from;
         $this->userRepository = $entityManager->getRepository(UserEntity::class);
+        $this->rolesManager = $rolesManager;
     }
 
     /**
@@ -136,7 +144,6 @@ class TicketMailManager implements EventSubscriberInterface
     public function sendNewTicketToManager(TicketEntity $ticket, TicketMessageEntity $ticketMessage): array
     {
         $category = $ticket->getCategory();
-        $managerRole = $category->getManagerRole();
 
         $subject = $category->getName() . ': Получена новая заявка №' . $ticket->getNumber();
         // сформировать письмо
@@ -151,6 +158,10 @@ class TicketMailManager implements EventSubscriberInterface
                 'text/html'
             );
 
+        // получить все роли, в том числе и родительские для указанной
+        $managerRole = $this->rolesManager->getParentRoles($category->getManagerRole());
+
+        // пользователи по ролям
         $batchList = $this->userRepository->findByRole($managerRole);
 
         $result = [];
@@ -355,7 +366,8 @@ class TicketMailManager implements EventSubscriberInterface
             $emails[] = $ticket->getManagedBy()->getEmail();
         } else {
             // иначе заявка отправляется всем ответственным
-            $batchList = $this->userRepository->findByRole($category->getManagerRole());
+            $managerRole = $this->rolesManager->getParentRoles($category->getManagerRole());
+            $batchList = $this->userRepository->findByRole($managerRole);
 
             foreach ($batchList as $users) {
                 foreach ($users as $user) {

@@ -84,7 +84,7 @@ class UserManagerTest extends WebTestCase
 
         $password = 'testpassword';
         $email = 'test@test.ru';
-        $roleCode = 'CUSTOMER_ADMIN';
+        $roleCode = 'ROLE_CUSTOMER_ADMIN';
 
         $user
             ->setName('Tester')
@@ -148,7 +148,7 @@ class UserManagerTest extends WebTestCase
 
         // сначала просто меняем роли, при этом событие на изменение пароля не должно прийти
         $role = new UserRoleEntity();
-        $role->setCode('CUSTOMER_ADMIN');
+        $role->setCode('ROLE_CUSTOMER_ADMIN');
 
         $this->assertInstanceOf(UserEntity::class, $this->manager->updateUserByAdmin($user));
         $this->assertFalse($eventTriggered);

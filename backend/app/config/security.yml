@@ -21,26 +21,26 @@ security:
         # DOCUMENT_CUSTOMER - просмотр собственных документов
         # RENT_CUSTOMER - заказ в службе аренды
         # STORAGE_CUSTOMER - заказ на складе
-        SUPERADMIN:
-            - USER_MANAGEMENT
-            - RENT_MANAGEMENT
-            - STORAGE_MANAGEMENT
-            - DOCUMENT_MANAGEMENT
-            - IT_MANAGEMENT
-            - FINANCE_MANAGEMENT
-            - MAINTAINCE_MANAGEMENT
-            - BOOKER_MANAGEMENT
-            - TICKET_ADMIN_MANAGEMENT
+        ROLE_SUPERADMIN:
+            - ROLE_USER_MANAGEMENT
+            - ROLE_RENT_MANAGEMENT
+            - ROLE_STORAGE_MANAGEMENT
+            - ROLE_DOCUMENT_MANAGEMENT
+            - ROLE_IT_MANAGEMENT
+            - ROLE_FINANCE_MANAGEMENT
+            - ROLE_MAINTAINCE_MANAGEMENT
+            - ROLE_BOOKER_MANAGEMENT
+            - ROLE_TICKET_ADMIN_MANAGEMENT
 
-        CUSTOMER_ADMIN:
-            - USER_CUSTOMER
-            - FINANCE_CUSTOMER
-            - MAINTAINCE_CUSTOMER
-            - DOCUMENT_CUSTOMER
-            - RENT_CUSTOMER
-            - STORAGE_CUSTOMER
-            - IT_CUSTOMER
-            - BOOKER_CUSTOMER
+        ROLE_CUSTOMER_ADMIN:
+            - ROLE_USER_CUSTOMER
+            - ROLE_FINANCE_CUSTOMER
+            - ROLE_MAINTAINCE_CUSTOMER
+            - ROLE_DOCUMENT_CUSTOMER
+            - ROLE_RENT_CUSTOMER
+            - ROLE_STORAGE_CUSTOMER
+            - ROLE_IT_CUSTOMER
+            - ROLE_BOOKER_CUSTOMER
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:

@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @Route(service="customer.manager_controller")
  *
- * @Security("has_role('USER_MANAGEMENT')")
+ * @Security("has_role('ROLE_USER_MANAGEMENT')")
  *
  * @package CustomerBundle\Controller
  */

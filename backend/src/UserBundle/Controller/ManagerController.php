@@ -27,7 +27,7 @@ use UserBundle\Utils\UserManager;
  *
  * @Route(service="user.manager_controller")
  *
- * @Security("has_role('USER_MANAGEMENT')")
+ * @Security("has_role('ROLE_USER_MANAGEMENT')")
  *
  * @package UserBundle\Controller
  */

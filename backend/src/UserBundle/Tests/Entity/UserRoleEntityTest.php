@@ -50,13 +50,13 @@ class UserRoleEntityTest extends WebTestCase
 
         $role
             ->setUser($user)
-            ->setCode('SUPERADMIN');
+            ->setCode('ROLE_SUPERADMIN');
 
         $this->em->persist($role);
         $this->em->flush();
 
         $this->assertInstanceOf(UserEntity::class, $role->getUser());
-        $this->assertEquals('SUPERADMIN', $role->getCode());
+        $this->assertEquals('ROLE_SUPERADMIN', $role->getCode());
 
         // установка ролей через модель user
         $role = new UserRoleEntity();

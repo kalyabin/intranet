@@ -577,8 +577,8 @@ class UserEntity implements UserInterface, \JsonSerializable
     /**
      * Проверка ролей контрагента.
      *
-     * Если есть роль IT_CUSTOMER, то проверить доступ к IT-аутсорсингу по договору
-     * Если есть роль BOOKER_CUSTOMER, то проверить доступ к SMART-бухгалтеру по договору
+     * Если есть роль ROLE_IT_CUSTOMER, то проверить доступ к IT-аутсорсингу по договору
+     * Если есть роль ROLE_BOOKER_CUSTOMER, то проверить доступ к SMART-бухгалтеру по договору
      *
      * @Assert\Callback()
      *
@@ -590,11 +590,11 @@ class UserEntity implements UserInterface, \JsonSerializable
             return;
         }
 
-        if (in_array('IT_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowItDepartment()) {
+        if (in_array('ROLE_IT_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowItDepartment()) {
             $context->addViolation('Данный арендатор не имеет прав пользоваться IT услугами');
         }
 
-        if (in_array('BOOKER_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowBookerDepartment()) {
+        if (in_array('ROLE_BOOKER_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowBookerDepartment()) {
             $context->addViolation('Данный арендатор не имеет прав пользоваться услугами SMART-бухгалтера');
         }
     }

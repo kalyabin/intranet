@@ -74,35 +74,35 @@ class RolesManagerTest extends WebTestCase
      */
     public function testGetChildRoles()
     {
-        // по коду USER_MANAGEMENT должны получить USER_MANAGEMENT и SUPERADMIN, т.к. SUPERADMIN обладает ролью USER_MANAGEMENT
-        $result = $this->rolesManager->getParentRoles('USER_MANAGEMENT');
+        // по коду ROLE_USER_MANAGEMENT должны получить ROLE_USER_MANAGEMENT и ROLE_SUPERADMIN, т.к. ROLE_SUPERADMIN обладает ролью ROLE_USER_MANAGEMENT
+        $result = $this->rolesManager->getParentRoles('ROLE_USER_MANAGEMENT');
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
         $this->assertArraySubset([
-            'USER_MANAGEMENT',
-            'SUPERADMIN'
+            'ROLE_USER_MANAGEMENT',
+            'ROLE_SUPERADMIN'
         ], $result);
 
-        // по коду USER_MANAGEMENT и IT_MANAGEMENT должны получить SUPERADMIN, USER_MANAGEMENT, IT_MANAGEMENT
-        $result = $this->rolesManager->getParentRoles(['USER_MANAGEMENT', 'IT_MANAGEMENT']);
+        // по коду ROLE_USER_MANAGEMENT и ROLE_IT_MANAGEMENT должны получить ROLE_SUPERADMIN, ROLE_USER_MANAGEMENT, ROLE_IT_MANAGEMENT
+        $result = $this->rolesManager->getParentRoles(['ROLE_USER_MANAGEMENT', 'ROLE_IT_MANAGEMENT']);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(3, $result);
         $this->assertArraySubset([
-            'USER_MANAGEMENT',
-            'SUPERADMIN',
-            'IT_MANAGEMENT',
+            'ROLE_USER_MANAGEMENT',
+            'ROLE_SUPERADMIN',
+            'ROLE_IT_MANAGEMENT',
         ], $result);
 
-        // по коду FINANCE_CUSTOMER - FINANCE_CUSTOMER и CUSTOMER_ADMIN
-        $result = $this->rolesManager->getParentRoles(['FINANCE_CUSTOMER']);
+        // по коду ROLE_FINANCE_CUSTOMER - ROLE_FINANCE_CUSTOMER и ROLE_CUSTOMER_ADMIN
+        $result = $this->rolesManager->getParentRoles(['ROLE_FINANCE_CUSTOMER']);
 
         $this->assertInternalType('array', $result);
         $this->assertCount(2, $result);
         $this->assertArraySubset([
-            'FINANCE_CUSTOMER',
-            'CUSTOMER_ADMIN',
+            'ROLE_FINANCE_CUSTOMER',
+            'ROLE_CUSTOMER_ADMIN',
         ], $result);
     }
 }

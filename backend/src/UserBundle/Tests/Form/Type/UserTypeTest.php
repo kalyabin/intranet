@@ -62,7 +62,7 @@ class UserTypeTest extends FormWebTestCase
                     'userType' => UserEntity::TYPE_CUSTOMER,
                     'role' => [
                         [
-                            'code' => 'CUSTOMER_ADMIN'
+                            'code' => 'ROLE_CUSTOMER_ADMIN'
                         ],
                     ],
                     'customer' => $this->getCustomer()->getId()
@@ -76,10 +76,10 @@ class UserTypeTest extends FormWebTestCase
                     'userType' => UserEntity::TYPE_CUSTOMER,
                     'role' => [
                         [
-                            'code' => 'USER_CUSTOMER'
+                            'code' => 'ROLE_USER_CUSTOMER'
                         ],
                         [
-                            'code' => 'FINANCE_CUSTOMER'
+                            'code' => 'ROLE_FINANCE_CUSTOMER'
                         ]
                     ],
                     'customer' => $this->getCustomer()->getId()
@@ -158,10 +158,10 @@ class UserTypeTest extends FormWebTestCase
                     'userType' => UserEntity::TYPE_CUSTOMER,
                     'role' => [
                         [
-                            'code' => 'IT_CUSTOMER'
+                            'code' => 'ROLE_IT_CUSTOMER'
                         ],
                         [
-                            'code' => 'BOOKER_CUSTOMER'
+                            'code' => 'ROLE_BOOKER_CUSTOMER'
                         ],
                     ],
                     'customer' => $this->getCustomer()->getId()

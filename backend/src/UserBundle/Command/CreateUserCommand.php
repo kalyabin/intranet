@@ -115,9 +115,9 @@ class CreateUserCommand extends ContainerAwareCommand
         $role = new UserRoleEntity();
 
         if ($type == UserEntity::TYPE_CUSTOMER) {
-            $role->setCode('CUSTOMER_ADMIN');
+            $role->setCode('ROLE_CUSTOMER_ADMIN');
         } else {
-            $role->setCode('SUPERADMIN');
+            $role->setCode('ROLE_SUPERADMIN');
         }
 
         $user->addRole($role);

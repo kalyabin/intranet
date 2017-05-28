@@ -75,6 +75,7 @@ services:
         calls:
             - [ setContainer, [ '@service_container' ] ]
 
+    # Менеджер пользователей
     user.manager_controller:
         class: '%user.manager_controller%'
         arguments: ['@user.manager', '@user.roles_manager']

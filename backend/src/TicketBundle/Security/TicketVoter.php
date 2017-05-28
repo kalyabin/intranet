@@ -61,7 +61,7 @@ class TicketVoter extends Voter
      */
     protected function supports($attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::VIEW, self::MESSAGE, self::UPDATE])) {
+        if (!in_array($attribute, [self::VIEW, self::MESSAGE, self::UPDATE, self::ASSIGN])) {
             return false;
         }
 

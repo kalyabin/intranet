@@ -29,6 +29,7 @@ use UserBundle\Utils\RolesManager;
  * Как со стороны менеджера, так и со стороны арендатора.
  *
  * @Security("is_authenticated()")
+ * @Route(service="ticket.ticket_controller")
  *
  * @package TicketBundle\Controller
  */
@@ -88,16 +89,17 @@ class TicketController extends Controller
      * Если категория не найдена - генерирует 404-ю ошибку.
      *
      * @param string $id
+     * @param string $access Право доступа: просмотр, редактирование создание
      *
      * @return TicketCategoryEntity
      */
-    protected function findCategory(string $id): TicketCategoryEntity
+    protected function findCategory(string $id, string $access = 'view'): TicketCategoryEntity
     {
         $category = $this->ticketCategoryRepository->findOneById($id);
         if (!$category) {
             throw $this->createNotFoundException('Категория не найдена');
         }
-        $this->denyAccessUnlessGranted('create', $category, 'У вас нет права для просмотра данной очереди');
+        $this->denyAccessUnlessGranted($access, $category, 'У вас нет права для просмотра данной очереди');
 
         return $category;
     }
@@ -120,7 +122,7 @@ class TicketController extends Controller
         if (!$ticket) {
             throw $this->createNotFoundException('Заявка не найдена');
         }
-        $this->denyAccessUnlessGranted('view', $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
+        $this->denyAccessUnlessGranted($access == 'create' ? 'create' : $access, $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
         $this->denyAccessUnlessGranted($access, $ticket, 'У вас нет прав производить данное действие');
 
         return $ticket;
@@ -146,7 +148,9 @@ class TicketController extends Controller
             }
         }
 
-        return new JsonResponse($result);
+        return new JsonResponse([
+            'list' => $result
+        ]);
     }
 
     /**
@@ -223,7 +227,7 @@ class TicketController extends Controller
      */
     public function createTicketAction(string $category, Request $request): FormValidationJsonResponse
     {
-        $category = $this->findCategory($category);
+        $category = $this->findCategory($category, 'create');
 
         $formType = new TicketType();
         $form = $this->createForm(TicketType::class, $formType);
@@ -249,11 +253,11 @@ class TicketController extends Controller
      *
      * @Method({"GET"})
      * @Route(
-     *     "/ticket/{category}/{id}",
+     *     "/ticket/{category}/{ticket}",
      *     name="ticket.details",
      *     options={"expose": true}, requirements={
      *          "category": "\w+",
-     *          "id": "\d+"
+     *          "ticket": "\d+"
      *     }
      * )
      *
@@ -279,7 +283,7 @@ class TicketController extends Controller
      * @Method({"PUT"})
      * @Route(
      *     "/ticket/{category}/{id}",
-     *     name="ticket.details",
+     *     name="ticket.message",
      *     options={"expose": true}, requirements={
      *          "category": "\w+",
      *          "id": "\d+"
@@ -326,7 +330,7 @@ class TicketController extends Controller
      * @Method({"POST"})
      * @Route(
      *     "/ticket/{category}/{id}/close",
-     *     name="ticket.details",
+     *     name="ticket.close",
      *     options={"expose": true}, requirements={
      *          "category": "\w+",
      *          "id": "\d+"
@@ -357,7 +361,7 @@ class TicketController extends Controller
      *
      * Доступ только для администратора тикетной системы.
      *
-     * @Security("has_role('TICKET_ADMIN_MANAGEMENT')")
+     * @Security("has_role('ROLE_TICKET_ADMIN_MANAGEMENT')")
      * @Method({"GET"})
      * @Route("/ticket/{category}/managers", options={"expose": true}, requirements={"category": "\w+"})
      *
@@ -418,7 +422,7 @@ class TicketController extends Controller
         if ($setNewUser) {
             // назначение другого пользователя для тикета
             // может делать только администратор тикетной системы
-            $this->denyAccessUnlessGranted('TICKET_ADMIN_MANAGEMENT');
+            $this->denyAccessUnlessGranted('ROLE_TICKET_ADMIN_MANAGEMENT');
             // проверить есть ли такой пользователь с таким правом доступа или нет
             $user = null;
             $roles = $this->rolesManager->getParentRoles($ticket->getCategory()->getId());

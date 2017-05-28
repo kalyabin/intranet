@@ -112,7 +112,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->generateSalt();
 
         $role = new UserRoleEntity();
-        $role->setCode('SUPERADMIN');
+        $role->setCode('ROLE_SUPERADMIN');
 
         $superadmin->addRole($role);
 

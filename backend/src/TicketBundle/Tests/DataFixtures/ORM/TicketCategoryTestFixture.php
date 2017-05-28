@@ -20,8 +20,8 @@ class TicketCategoryTestFixture extends AbstractFixture
         $entity
             ->setId('it-department')
             ->setName('IT-аутсорсинг')
-            ->setManagerRole('IT_MANAGEMENT')
-            ->setCustomerRole('IT_CUSTOMER');
+            ->setManagerRole('ROLE_IT_MANAGEMENT')
+            ->setCustomerRole('ROLE_IT_CUSTOMER');
 
         $manager->persist($entity);
 

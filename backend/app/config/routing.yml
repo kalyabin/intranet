@@ -12,3 +12,8 @@ customer:
     resource: "@CustomerBundle/Controller/"
     type: annotation
     prefix: /api/
+
+ticket:
+    resource: "@TicketBundle/Controller/"
+    type: annotation
+    prefix: /api/

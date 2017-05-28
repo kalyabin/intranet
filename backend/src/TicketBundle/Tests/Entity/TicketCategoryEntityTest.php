@@ -45,8 +45,8 @@ class TicketCategoryEntityTest extends WebTestCase
 
         $id = 'testing';
         $name = 'IT-аутсорсинг';
-        $managerRole = 'IT_MANAGER';
-        $customerRole = 'IT_CUSTOMER';
+        $managerRole = 'ROLE_IT_MANAGER';
+        $customerRole = 'ROLE_IT_CUSTOMER';
 
         $entity
             ->setId($id)

@@ -75,7 +75,7 @@ class ManagerControllerTest extends WebTestCase
                 'userType' => UserEntity::TYPE_CUSTOMER,
                 'role' => [
                     [
-                        'code' => 'CUSTOMER_ADMIN'
+                        'code' => 'ROLE_CUSTOMER_ADMIN'
                     ]
                 ],
                 'customer' => $customer->getId()
@@ -133,7 +133,7 @@ class ManagerControllerTest extends WebTestCase
                 'status' => UserEntity::STATUS_ACTIVE,
                 'role' => [
                     [
-                        'code' => 'CUSTOMER_ADMIN'
+                        'code' => 'ROLE_CUSTOMER_ADMIN'
                     ]
                 ],
                 'customer' => $user->getCustomer()->getId(),

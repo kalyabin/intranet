@@ -43,9 +43,9 @@ class TicketCategoryVoter extends Voter
     /**
      * @inheritdoc
      */
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::VIEW, self::CREATE, self::UPDATE])) {
+        if (!in_array($attribute, [self::VIEW, self::CREATE])) {
             return false;
         }
 
@@ -67,7 +67,7 @@ class TicketCategoryVoter extends Voter
      *
      * @return boolean
      */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): boolean
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         /** @var UserEntity $user */
         $user = $token->getUser();
@@ -82,9 +82,9 @@ class TicketCategoryVoter extends Voter
         } else if ($user->getUserType() == UserEntity::TYPE_CUSTOMER && $user->getCustomer()) {
             // проверка IT-аутсорсинга и SMART-бухгалтера
             // если по договору для контрагента эта услуга не доступна - не даём пользоваться данной категорией при любом раскладе
-            if ($subject->getCustomerRole() == 'IT_CUSTOMER' && !$user->getCustomer()->getAllowItDepartment()) {
+            if ($subject->getCustomerRole() == 'ROLE_IT_CUSTOMER' && !$user->getCustomer()->getAllowItDepartment()) {
                 return false;
-            } else if ($subject->getCustomerRole() == 'BOOKER_CUSTOMER' && !$user->getCustomer()->getAllowBookerDepartment()) {
+            } else if ($subject->getCustomerRole() == 'ROLE_BOOKER_CUSTOMER' && !$user->getCustomer()->getAllowBookerDepartment()) {
                 return false;
             }
 

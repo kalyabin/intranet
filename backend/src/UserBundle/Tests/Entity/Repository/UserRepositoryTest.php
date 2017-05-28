@@ -124,7 +124,7 @@ class UserRepositoryTest extends WebTestCase
         $superadmin = $this->fixtures->getReference('superadmin-user');
 
         // поиск заблокированных администраторов
-        $result = $this->repository->findByRole('SUPERADMIN', UserEntity::STATUS_LOCKED);
+        $result = $this->repository->findByRole('ROLE_SUPERADMIN', UserEntity::STATUS_LOCKED);
 
         $this->assertInstanceOf(IterableResult::class, $result);
 
@@ -134,7 +134,7 @@ class UserRepositoryTest extends WebTestCase
         }
 
         // поиск активных администраторов
-        $result = $this->repository->findByRole('SUPERADMIN', UserEntity::STATUS_ACTIVE);
+        $result = $this->repository->findByRole('ROLE_SUPERADMIN', UserEntity::STATUS_ACTIVE);
 
         $this->assertInstanceOf(IterableResult::class, $result);
 

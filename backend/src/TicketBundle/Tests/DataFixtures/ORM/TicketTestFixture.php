@@ -27,15 +27,15 @@ class TicketTestFixture extends AbstractFixture
 
         $category
             ->setName('testing')
-            ->setManagerRole('SUPERADMIN')
-            ->setCustomerRole('CUSTOMER_ADMIN')
+            ->setManagerRole('ROLE_IT_MANAGEMENT')
+            ->setCustomerRole('ROLE_IT_CUSTOMER')
             ->setId('testing');
 
         $manager->persist($category);
 
         // пользователи
         $role = new UserRoleEntity();
-        $role->setCode('SUPERADMIN');
+        $role->setCode('ROLE_SUPERADMIN');
 
         $userManager = new UserEntity();
         $userManager
@@ -50,7 +50,7 @@ class TicketTestFixture extends AbstractFixture
         $manager->persist($userManager);
 
         $role = new UserRoleEntity();
-        $role->setCode('SUPERADMIN');
+        $role->setCode('ROLE_SUPERADMIN');
 
         $userManagerOther = new UserEntity();
         $userManagerOther
@@ -64,11 +64,26 @@ class TicketTestFixture extends AbstractFixture
 
         $manager->persist($userManagerOther);
 
+        $role = new UserRoleEntity();
+        $role->setCode('ROLE_DOCUMENT_MANAGER');
+
+        $userDeniedManager = new UserEntity();
+        $userDeniedManager
+            ->setName('testing ticket manager second')
+            ->setStatus(UserEntity::STATUS_ACTIVE)
+            ->setUserType(UserEntity::TYPE_MANAGER)
+            ->addRole($role)
+            ->setEmail('ticket-manager-denied@test.ru')
+            ->setPassword('testingpassword')
+            ->generateSalt();
+
+        $manager->persist($userDeniedManager);
+
         $customer = new CustomerEntity();
 
         $customer
             ->setName('testing ticket customer')
-            ->setAllowBookerDepartment(true)
+            ->setAllowItDepartment(true)
             ->setAllowBookerDepartment(true)
             ->setCurrentAgreement('testing');
 
@@ -79,7 +94,7 @@ class TicketTestFixture extends AbstractFixture
         $userCustomer = new UserEntity();
 
         $role = new UserRoleEntity();
-        $role->setCode('CUSTOMER_ADMIN');
+        $role->setCode('ROLE_CUSTOMER_ADMIN');
 
         $userCustomer
             ->setName('testing ticket customer')
@@ -146,13 +161,43 @@ class TicketTestFixture extends AbstractFixture
 
         $manager->persist($historyItem);
 
+        $otherCustomer = new CustomerEntity();
+
+        $otherCustomer
+            ->setName('testing ticket customer')
+            ->setAllowItDepartment(false)
+            ->setAllowBookerDepartment(false)
+            ->setCurrentAgreement('testing');
+
+        $manager->persist($otherCustomer);
+
+        $otherCustomerUser = new UserEntity();
+
+        $role = new UserRoleEntity();
+        $role->setCode('ROLE_CUSTOMER_ADMIN');
+
+        $otherCustomerUser
+            ->setName('testing ticket customer')
+            ->setStatus(UserEntity::STATUS_ACTIVE)
+            ->setUserType(UserEntity::TYPE_CUSTOMER)
+            ->addRole($role)
+            ->setCustomer($otherCustomer)
+            ->setEmail('ticket-customer+other@test.ru')
+            ->setPassword('testingpassword')
+            ->generateSalt();
+
+        $manager->persist($otherCustomerUser);
+
         $manager->flush();
 
         $this->addReference('ticket-category', $category);
         $this->addReference('ticket-customer', $customer);
+        $this->addReference('ticket-other-customer', $otherCustomer);
         $this->addReference('ticket-manager', $userManager);
         $this->addReference('ticket-manager-other', $userManagerOther);
+        $this->addReference('ticket-manager-denied', $userDeniedManager);
         $this->addReference('ticket-customer-user', $userCustomer);
+        $this->addReference('ticket-other-customer-user', $otherCustomerUser);
         $this->addReference('ticket-message', $message);
         $this->addReference('ticket-answer', $answer);
         $this->addReference('ticket-history-item', $historyItem);

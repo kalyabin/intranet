@@ -5,6 +5,7 @@ parameters:
     ticket.default_from_email: 'mail@domain.ltd'
     ticket.ticket_controller: 'TicketBundle\Controller\TicketController'
     ticket.category_voter: 'TicketBundle\Security\TicketCategoryVoter'
+    ticket.ticket_voter: 'TicketBundle\Security\TicketVoter'
 
 services:
     # API для управления заявками и сообщениями
@@ -15,7 +16,7 @@ services:
     # API для управления писем по заявкам
     ticket.mailer:
         class: '%ticket.mailer%'
-        arguments: ['@mailer', '@templating', '@doctrine.orm.entity_manager', '%ticket.default_from_email%']
+        arguments: ['@mailer', '@templating', '@doctrine.orm.entity_manager', '@user.roles_manager', '%ticket.default_from_email%']
         tags:
             - { name: kernel.event_subscriber }
 
@@ -23,10 +24,21 @@ services:
     ticket.ticket_controller:
         class: '%ticket.ticket_controller%'
         arguments: [ '@ticket.manager', '@user.roles_manager', '@doctrine.orm.entity_manager' ]
+        calls:
+            - [ setContainer, ['@service_container'] ]
 
     # проверка прав доступа к категории тикетов
     ticket.category_voter:
         class: '%ticket.category_voter%'
         arguments: [ '@security.access.decision_manager' ]
+        public: false
+        tags:
+            - { name: security.voter }
+
+    # проверка прав доступа к тикетов
+    ticket.ticket_voter:
+        class: '%ticket.ticket_voter%'
+        arguments: [ '@security.access.decision_manager' ]
+        public: false
         tags:
             - { name: security.voter }

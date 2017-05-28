@@ -27,7 +27,7 @@ class CustomerVoter extends Voter
      *
      * @return bool
      */
-    public function supports($attribute, $subject): boolean
+    public function supports($attribute, $subject): bool
     {
         if (!$subject instanceof CustomerEntity) {
             return false;
@@ -49,7 +49,7 @@ class CustomerVoter extends Voter
      *
      * @return bool
      */
-    public function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    public function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         /** @var UserEntity $user */
         $user = $token->getUser();
