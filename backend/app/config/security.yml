@@ -12,6 +12,7 @@ security:
         # BOOKER_MANAGEMENT - управление тикетной системы SMART-бухгалтера
         # STORAGE_MANAGEMENT - управление складом
         # DOCUMENT_MANAGEMENT - управление документами
+        # TICKET_ADMIN_MANAGEMENT - администратор тикетной системы
         # USER_CUSTOMER - управление собственными пользователями
         # IT_CUSTOMER - пользование IT-аутсорсингом (доступ опциональный по договору)
         # FINANCE_CUSTOMER - пользование тикетной системой финансовой службы
@@ -29,6 +30,7 @@ security:
             - FINANCE_MANAGEMENT
             - MAINTAINCE_MANAGEMENT
             - BOOKER_MANAGEMENT
+            - TICKET_ADMIN_MANAGEMENT
 
         CUSTOMER_ADMIN:
             - USER_CUSTOMER

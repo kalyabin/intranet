@@ -94,6 +94,7 @@ class RolesManager
                 'FINANCE_MANAGEMENT',
                 'MAINTAINCE_MANAGEMENT',
                 'BOOKER_MANAGEMENT',
+                'TICKET_ADMIN_MANAGEMENT',
             ],
         ];
     }
@@ -108,6 +109,7 @@ class RolesManager
         return [
             'SUPERADMIN' => 'Супер администратор (доступны все права сотрудников)',
             'CUSTOMER_ADMIN' => 'Администратор арендатора (доступны все права арендатора)',
+            'TICKET_ADMIN_MANAGEMENT' => 'Администратор тикетной системы (просмотр и назначение ответственных по заявкам)',
 
             'USER_CUSTOMER' => 'Создание пользователей арендатора',
             'FINANCE_CUSTOMER' => 'Отправка заявок "Финансовые вопросы"',

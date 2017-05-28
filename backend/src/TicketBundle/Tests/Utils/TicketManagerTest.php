@@ -50,10 +50,10 @@ class TicketManagerTest extends WebTestCase
      * Проверка последнего статуса тикета
      *
      * @param TicketEntity $ticket
-     * @param UserEntity $author
      * @param string $status
+     * @param UserEntity|null $author
      */
-    protected function assertLastHistoryItem(TicketEntity $ticket, UserEntity $author, string $status)
+    protected function assertLastHistoryItem(TicketEntity $ticket, string $status, ?UserEntity $author = null)
     {
         $this->assertNotEmpty($ticket->getHistory());
 
@@ -62,7 +62,9 @@ class TicketManagerTest extends WebTestCase
 
         $this->assertInstanceOf(TicketHistoryEntity::class, $lastHistoryItem);
         $this->assertInstanceOf(UserEntity::class, $lastHistoryItem->getCreatedBy());
-        $this->assertEquals($author->getId(), $lastHistoryItem->getCreatedBy()->getId());
+        if ($author) {
+            $this->assertEquals($author->getId(), $lastHistoryItem->getCreatedBy()->getId());
+        }
         $this->assertEquals($status, $lastHistoryItem->getStatus());
     }
 
@@ -119,7 +121,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertInstanceOf(CustomerEntity::class, $result->getCustomer());
         $this->assertEquals($result->getCustomer()->getId(), $customer->getId());
         $this->assertEquals($form->getTitle(), $result->getTitle());
-        $this->assertLastHistoryItem($result, $author, TicketEntity::STATUS_NEW);
+        $this->assertLastHistoryItem($result, TicketEntity::STATUS_NEW, $author);
 
         $this->assertCount(1, $result->getMessage());
 
@@ -234,7 +236,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertEquals($manager->getId(), $result->getCreatedBy()->getId());
         $this->assertEquals($result->getType(), TicketMessageEntity::TYPE_ANSWER);
 
-        $this->assertLastHistoryItem($ticket, $manager, TicketEntity::STATUS_ANSWERED);
+        $this->assertLastHistoryItem($ticket, TicketEntity::STATUS_ANSWERED, $manager);
 
         // проверка статуса тикета
         $this->assertInstanceOf(DateTime::class, $ticket->getLastAnswerAt());
@@ -274,7 +276,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertInstanceOf(UserEntity::class, $ticket->getManagedBy());
         $this->assertEquals($managerOther->getId(), $ticket->getManagedBy()->getId());
         $this->assertEquals(TicketEntity::STATUS_IN_PROCESS, $ticket->getCurrentStatus());
-        $this->assertLastHistoryItem($ticket, $managerOther, TicketEntity::STATUS_IN_PROCESS);
+        $this->assertLastHistoryItem($ticket, TicketEntity::STATUS_IN_PROCESS, $managerOther);
 
         // повторный запрос должен вернуть false
         $result = $this->manager->appointTicketToManager($ticket, $managerOther);
@@ -312,7 +314,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertTrue($result);
 
         $this->assertEquals(TicketEntity::STATUS_CLOSED, $ticket->getCurrentStatus());
-        $this->assertLastHistoryItem($ticket, $customerUser, TicketEntity::STATUS_CLOSED);
+        $this->assertLastHistoryItem($ticket, TicketEntity::STATUS_CLOSED, $customerUser);
 
         // повторно закрыть тикет нельзя
         $eventDispatched = false;
@@ -329,6 +331,6 @@ class TicketManagerTest extends WebTestCase
         $this->assertTrue($eventDispatched);
 
         $this->assertEquals(TicketEntity::STATUS_CLOSED, $ticket->getCurrentStatus());
-        $this->assertLastHistoryItem($ticket, $customerUser, TicketEntity::STATUS_CLOSED);
+        $this->assertLastHistoryItem($ticket, TicketEntity::STATUS_CLOSED, $customerUser);
     }
 }
