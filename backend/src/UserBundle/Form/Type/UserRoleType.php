@@ -47,7 +47,8 @@ class UserRoleType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => UserRoleEntity::class,
-            'cascade_validation' => true
+            'cascade_validation' => true,
+            'allow_extra_fields' => true,
         ]);
     }
 }

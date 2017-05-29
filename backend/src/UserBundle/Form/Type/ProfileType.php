@@ -33,7 +33,8 @@ class ProfileType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data' => UserEntity::class
+            'data' => UserEntity::class,
+            'allow_extra_fields' => true,
         ]);
     }
 }

@@ -72,7 +72,8 @@ class ChangeEmailType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data' => self::class
+            'data' => self::class,
+            'allow_extra_fields' => true,
         ]);
     }
 }

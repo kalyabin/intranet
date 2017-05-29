@@ -53,6 +53,7 @@ class RegistrationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => UserEntity::class,
             'cascade_validation' => true,
+            'allow_extra_fields' => true,
         ]);
     }
 }

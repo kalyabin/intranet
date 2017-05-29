@@ -41,6 +41,7 @@ class RememberPasswordType extends AbstractType
         $resolver->setDefaults([
             'data_class' => self::class,
             'cascade_validation' => true,
+            'allow_extra_fields' => true,
         ]);
     }
 }
