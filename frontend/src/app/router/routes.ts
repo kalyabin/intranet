@@ -51,7 +51,7 @@ export const routes: Array<RouteConfig> = [
                 name: 'manager_user_list',
                 component: ManagerUserList,
                 meta: {
-                    needRole: 'USER_MANAGEMENT',
+                    needRole: 'ROLE_USER_MANAGEMENT',
                     pageTitle: 'Управление пользователями'
                 }
             },
@@ -60,7 +60,7 @@ export const routes: Array<RouteConfig> = [
                 name: 'manager_customer_list',
                 component: ManagerCustomerList,
                 meta: {
-                    needRole: 'USER_MANAGEMENT',
+                    needRole: 'ROLE_USER_MANAGEMENT',
                     pageTitle: 'Управление арендаторами'
                 }
             }

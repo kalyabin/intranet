@@ -18,52 +18,54 @@ export const sideBarMenus: Array<SideBarMenuItem> = [
         routeName: 'manager_user_list',
         faIcon: 'fa-users',
         menuName: 'Пользователи',
-        role: 'USER_MANAGEMENT',
+        role: 'ROLE_USER_MANAGEMENT',
     },
     {
         routeName: 'manager_customer_list',
         faIcon: 'fa-newspaper-o',
         menuName: 'Арендаторы',
-        role: 'USER_MANAGEMENT'
+        role: 'ROLE_USER_MANAGEMENT'
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-building',
-        menuName: 'Служба аренды'
+        menuName: 'Служба аренды',
+        role: 'ROLE_RENT_MANAGEMENT'
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-shopping-basket',
         menuName: 'Управление складом',
-        role: 'STORAGE_MANAGEMENT',
+        role: 'ROLE_STORAGE_MANAGEMENT',
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-laptop',
         menuName: 'Заявки IT-аутсорсинг',
-        role: 'IT_MANAGEMENT',
+        role: 'ROLE_IT_MANAGEMENT',
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-calculator',
         menuName: 'Заявки SMART-бухгалтер',
-        role: 'BOOKER_MANAGEMENT',
+        role: 'ROLE_BOOKER_MANAGEMENT',
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-money',
         menuName: 'Финансовые вопросы',
-        role: 'FINANCE_MANAGEMENT',
+        role: 'ROLE_FINANCE_MANAGEMENT',
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-wrench',
         menuName: 'Служба эксплуатации',
+        role: 'ROLE_MAINTAINCE_MANAGEMENT',
     },
     {
         routeName: 'auth_index',
         faIcon: 'fa-file',
         menuName: 'Управление документами',
-        role: 'DOCUMENT_MANAGEMENT',
+        role: 'ROLE_DOCUMENT_MANAGEMENT',
     },
 ];
