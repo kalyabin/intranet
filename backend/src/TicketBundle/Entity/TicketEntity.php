@@ -150,6 +150,7 @@ class TicketEntity implements \JsonSerializable
 
     /**
      * @ORM\OneToMany(targetEntity="TicketBundle\Entity\TicketMessageEntity", mappedBy="ticket", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt" = "ASC"})
      *
      * @var ArrayCollection Сообщения по тикету
      */
@@ -157,6 +158,7 @@ class TicketEntity implements \JsonSerializable
 
     /**
      * @ORM\OneToMany(targetEntity="TicketBundle\Entity\TicketHistoryEntity", mappedBy="ticket", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt" = "ASC"})
      *
      * @var ArrayCollection История по тикету
      */

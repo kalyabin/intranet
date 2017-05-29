@@ -331,9 +331,11 @@ class TicketControllerTest extends WebTestCase
         $this->entityManager->clear(TicketEntity::class);
 
         $ticket = $this->ticketRepository->findOneByIdAndCategory($ticket->getId(), $ticket->getCategory()->getId());
+        $lastMessage = $ticket->getMessage()->getValues()[$ticket->getMessage()->count() - 1];
 
         $this->assertArraySubset([
             'ticket' => json_decode(json_encode($ticket), true),
+            'message' => json_decode(json_encode($lastMessage), true)
         ], $jsonData);
 
         $this->assertArrayHasKey('message', $jsonData);
@@ -468,10 +470,15 @@ class TicketControllerTest extends WebTestCase
             'managerId' => $managedBy->getId()
         ]);
 
-        $this->assertTrue($jsonData['success']);
-        $this->assertArrayHasKey('ticket', $jsonData);
-        $this->assertArrayHasKey('id', $jsonData['ticket']);
-        $this->assertEquals($ticket->getId(), $jsonData['ticket']['id']);
+        // проверить данные о тикете
+        $this->entityManager->clear(TicketEntity::class);
+
+        $ticket = $this->ticketRepository->findOneByIdAndCategory($ticket->getId(), $ticket->getCategory()->getId());
+
+        $this->assertArraySubset([
+            'success' => true,
+            'ticket' => json_decode(json_encode($ticket), true)
+        ], $jsonData);
         $this->assertArrayHasKey('user', $jsonData);
         $this->assertArrayHasKey('id', $jsonData['user']);
         $this->assertEquals($managedBy->getId(), $jsonData['user']['id']);
