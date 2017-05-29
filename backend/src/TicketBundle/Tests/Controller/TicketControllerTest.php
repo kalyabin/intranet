@@ -329,6 +329,7 @@ class TicketControllerTest extends WebTestCase
 
         // проверить данные о тикете
         $this->entityManager->clear(TicketEntity::class);
+        $this->entityManager->clear(TicketCategoryEntity::class);
 
         $ticket = $this->ticketRepository->findOneByIdAndCategory($ticket->getId(), $ticket->getCategory()->getId());
         $lastMessage = $ticket->getMessage()->getValues()[$ticket->getMessage()->count() - 1];

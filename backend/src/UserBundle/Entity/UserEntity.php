@@ -56,6 +56,20 @@ class UserEntity implements UserInterface, \JsonSerializable
     private $id;
 
     /**
+     * @ORM\Column(type="datetime", name="created_at", nullable=false)
+     *
+     * @var \DateTime Дата создания пользователя
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime", name="last_login_at", nullable=true)
+     *
+     * @var \DateTime Дата последней авторизации
+     */
+    private $lastLoginAt;
+
+    /**
      * @ORM\Column(type="string", length=50, name="user_type", nullable=false)
      *
      * @Assert\NotBlank()
@@ -172,6 +186,54 @@ class UserEntity implements UserInterface, \JsonSerializable
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Установка даты создания пользователя
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return UserEntity
+     */
+    public function setCreatedAt(\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Получить дату создания пользователя
+     *
+     * @return \DateTime|null
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Установка даты последней авторизации
+     *
+     * @param \DateTime $lastLoginAt
+     *
+     * @return UserEntity
+     */
+    public function setLastLoginAt(\DateTime $lastLoginAt): self
+    {
+        $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
+    }
+
+    /**
+     * Получить дату последней авторизации
+     *
+     * @return \DateTime|null
+     */
+    public function getLastLoginAt(): ?\DateTime
+    {
+        return $this->lastLoginAt;
     }
 
     /**

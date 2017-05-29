@@ -103,11 +103,12 @@ class UserManager
             throw new InvalidArgumentException('User already registered');
         }
 
-        $user->setStatus(UserEntity::STATUS_NEED_ACTIVATION);
+        $user
+            ->setCreatedAt(new \DateTime())
+            ->setStatus(UserEntity::STATUS_NEED_ACTIVATION)
+            ->generateSalt();
 
         $checker = $this->createCheckerByType(UserCheckerEntity::TYPE_ACTIVATION_CODE, $user);
-
-        $user->generateSalt();
 
         // закодировать пароль
         $this->encodeUserPassword($user, $user->getPassword());
@@ -358,9 +359,10 @@ class UserManager
             throw new InvalidArgumentException('User already exists');
         }
 
-        $user->setStatus(UserEntity::STATUS_ACTIVE);
-
-        $user->generateSalt();
+        $user
+            ->setCreatedAt(new \DateTime())
+            ->setStatus(UserEntity::STATUS_ACTIVE)
+            ->generateSalt();
 
         // закодировать пароль
         // но запомнить исходную версию для отправки в e-mail

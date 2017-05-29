@@ -52,6 +52,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $activeUser = new UserEntity();
 
         $activeUser
+            ->setCreatedAt(new \DateTime())
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setName('Testing user')
             ->setEmail('testing@test.ru')
@@ -66,6 +67,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $inactiveUser = new UserEntity();
 
         $inactiveUser
+            ->setCreatedAt(new \DateTime())
             ->setStatus(UserEntity::STATUS_NEED_ACTIVATION)
             ->setName('Need activation user')
             ->setEmail('inactive@test.ru')
@@ -90,6 +92,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $lockedUser = new UserEntity();
 
         $lockedUser
+            ->setCreatedAt(new \DateTime())
             ->setStatus(UserEntity::STATUS_LOCKED)
             ->setName('Locked user')
             ->setEmail('locked@test.ru')
@@ -104,6 +107,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $superadmin = new UserEntity();
 
         $superadmin
+            ->setCreatedAt(new \DateTime())
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setName('superadmin')
             ->setEmail('superadmin@test.ru')

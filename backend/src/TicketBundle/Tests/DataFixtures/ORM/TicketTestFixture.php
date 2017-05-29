@@ -39,6 +39,7 @@ class TicketTestFixture extends AbstractFixture
 
         $userManager = new UserEntity();
         $userManager
+            ->setCreatedAt(new \DateTime())
             ->setName('testing ticket manager')
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setUserType(UserEntity::TYPE_MANAGER)
@@ -54,6 +55,7 @@ class TicketTestFixture extends AbstractFixture
 
         $userManagerOther = new UserEntity();
         $userManagerOther
+            ->setCreatedAt(new \DateTime())
             ->setName('testing ticket manager second')
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setUserType(UserEntity::TYPE_MANAGER)
@@ -69,6 +71,7 @@ class TicketTestFixture extends AbstractFixture
 
         $userDeniedManager = new UserEntity();
         $userDeniedManager
+            ->setCreatedAt(new \DateTime())
             ->setName('testing ticket manager second')
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setUserType(UserEntity::TYPE_MANAGER)
@@ -97,6 +100,7 @@ class TicketTestFixture extends AbstractFixture
         $role->setCode('ROLE_CUSTOMER_ADMIN');
 
         $userCustomer
+            ->setCreatedAt(new \DateTime())
             ->setName('testing ticket customer')
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setUserType(UserEntity::TYPE_CUSTOMER)
@@ -177,6 +181,7 @@ class TicketTestFixture extends AbstractFixture
         $role->setCode('ROLE_CUSTOMER_ADMIN');
 
         $otherCustomerUser
+            ->setCreatedAt(new \DateTime())
             ->setName('testing ticket customer')
             ->setStatus(UserEntity::STATUS_ACTIVE)
             ->setUserType(UserEntity::TYPE_CUSTOMER)

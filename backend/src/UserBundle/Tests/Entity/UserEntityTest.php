@@ -55,13 +55,25 @@ class UserEntityTest extends WebTestCase
         $status = UserEntity::STATUS_ACTIVE;
         $type = UserEntity::TYPE_CUSTOMER;
 
+        $this->assertNull($model->getEmail());
+        $this->assertNull($model->getName());
+        $this->assertNull($model->getPassword());
+        $this->assertNull($model->getUserType());
+        $this->assertNull($model->getCustomer());
+        $this->assertNull($model->getCreatedAt());
+        $this->assertNull($model->getLastLoginAt());
+
         $model
+            ->setCreatedAt(new \DateTime())
+            ->setLastLoginAt(new \DateTime())
             ->setEmail($email)
             ->setName($name)
             ->setPassword($password)
             ->setStatus($status)
             ->setUserType($type);
 
+        $this->assertInstanceOf(\DateTime::class, $model->getLastLoginAt());
+        $this->assertInstanceOf(\DateTime::class, $model->getCreatedAt());
         $this->assertEmpty($model->getRoles());
         $this->assertEquals($email, $model->getEmail());
         $this->assertEquals($name, $model->getName());
