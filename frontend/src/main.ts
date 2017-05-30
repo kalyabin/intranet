@@ -10,7 +10,6 @@ import {ModalWindow} from "./app/components/modal-window";
 import {XPanel} from "./app/components/x-panel";
 import {Tabs} from "./app/components/tabs";
 import {TabPane} from "./app/components/tab-pane";
-import Component from "vue-class-component";
 
 /**
  * Точка входа приложения
@@ -34,14 +33,6 @@ Vue.component('tab-pane', TabPane);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
-
-Component.registerHooks([
-    'mounted',
-    'beforeRouteLeave',
-    'beforeRouteEnter',
-    'beforeUpdate',
-    'beforeDestroy',
-]);
 
 export const app = new Vue({
     template: '<router-view></router-view>',

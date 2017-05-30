@@ -2,7 +2,7 @@ import {BackendService, backendService} from "./backend.service";
 import {CustomerInterface} from "./model/customer.interface";
 import {AxiosResponse} from "axios";
 import {CustomerResponseInterface} from "./response/customer-response.interface";
-import {CustomerListInterface} from "./response/customer-list.interface";
+import {ListInterface} from "./response/list.interface";
 
 /**
  * Сервис для менеджера арендаторов
@@ -15,15 +15,14 @@ export class CustomerManager {
     /**
      * Список контрагентов с постраничной навигацией
      */
-    list(pageNum: number = 0, pageSize: number = 150): Promise<CustomerListInterface> {
+    list(pageNum: number = 0, pageSize: number = 150): Promise<ListInterface<CustomerInterface>> {
         return this.backendService
             .makeRequest('GET', 'manager/customer', {
                 pageNum: pageNum,
                 pageSize: pageSize
             })
             .then((response: AxiosResponse) => {
-                let data: CustomerListInterface = <CustomerListInterface>response.data;
-                return data;
+                return response.data as ListInterface<CustomerInterface>;
             });
     }
 

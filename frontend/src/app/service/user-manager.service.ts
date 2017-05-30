@@ -1,10 +1,11 @@
 import {BackendService, backendService} from "./backend.service";
 import {AxiosResponse} from "axios";
-import {UserListInterface} from "./response/user-list.interface";
 import {UserRequestInterface} from "./request/user-request.interface";
 import {UserResponseInterface} from "./response/user-response.interface";
 import {UserDetailsInterface} from "./model/user-datails.interface";
 import {RolesResponseInterface} from "./response/roles-response.interface";
+import {ListInterface} from "./response/list.interface";
+import {UserInterface} from "./model/user.interface";
 
 /**
  * Сервис для менеджера пользователей
@@ -17,15 +18,14 @@ export class UserManagerService {
     /**
      * Список пользователей с постраничной навигацией
      */
-    list(pageNum: number = 0, pageSize: number = 150): Promise<UserListInterface> {
+    list(pageNum: number = 0, pageSize: number = 150): Promise<ListInterface<UserInterface>> {
         return this.backendService
             .makeRequest('GET', 'manager/user', {
                 pageNum: pageNum,
                 pageSize: pageSize
             })
             .then((response: AxiosResponse) => {
-                let data: UserListInterface = <UserListInterface>response.data;
-                return data;
+                return response.data as ListInterface<UserInterface>;
             });
     }
 

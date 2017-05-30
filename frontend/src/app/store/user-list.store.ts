@@ -1,7 +1,7 @@
 import {UserInterface} from "../service/model/user.interface";
 import Vuex from "vuex";
 import {userManagerService} from "../service/user-manager.service";
-import {UserListInterface} from "../service/response/user-list.interface";
+import {ListInterface} from "../service/response/list.interface";
 
 /**
  * Список пользователей для менеджера
@@ -71,7 +71,7 @@ export const userListStore = new Vuex.Store({
                 let fetchItems = () => {
                     userManagerService
                         .list(currentPage, 1)
-                        .then((response: UserListInterface) => {
+                        .then((response: ListInterface<UserInterface>) => {
                             action.commit('addUsers', response.list);
                             cnt += response.list.length;
                             currentPage = response.pageNum + 1;
@@ -118,11 +118,11 @@ export const userListStore = new Vuex.Store({
          * Получить пользователя по идентификатору
          */
         getUser: (action, userId: number) => {
-            return new Promise<UserInterface[]>((resolve, reject) => {
+            return new Promise<UserInterface>((resolve, reject) => {
                 action.dispatch('fetchList').then(() => {
                     for (let user of action.state.list) {
                         if (user.id == userId) {
-                            resolve([user]);
+                            resolve(user);
                             return;
                         }
                     }

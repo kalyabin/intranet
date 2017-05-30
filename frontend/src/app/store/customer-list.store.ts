@@ -1,7 +1,7 @@
 import {CustomerInterface} from "../service/model/customer.interface";
 import Vuex from "vuex";
 import {customerManagerService} from "../service/customer-manager.service";
-import {CustomerListInterface} from "../service/response/customer-list.interface";
+import {ListInterface} from "../service/response/list.interface";
 
 /**
  * Список контрагентов для менеджера
@@ -40,7 +40,7 @@ export const customerListStore = new Vuex.Store({
         /**
          * Удаление контрагента
          */
-        removeCustomer: (state: CustomerListInterface, id: number) => {
+        removeCustomer: (state: CustomerListStateInterface, id: number) => {
             for (let i in state.list) {
                 if (id && state.list[i].id == id) {
                     state.list.splice(parseInt(i), 1);
@@ -67,7 +67,7 @@ export const customerListStore = new Vuex.Store({
                 let pageNum = 0;
                 let cnt = 0;
                 let fetchCustomers = () => {
-                    customerManagerService.list(pageNum).then((response: CustomerListInterface) => {
+                    customerManagerService.list(pageNum).then((response: ListInterface<CustomerInterface>) => {
                         action.commit('addCustomers', response.list);
                         pageNum++;
                         cnt += response.list.length;
@@ -85,11 +85,11 @@ export const customerListStore = new Vuex.Store({
          * Получить контрагента по идентификатору
          */
         getCustomer: (action, customerId) => {
-            return new Promise<CustomerInterface[]>((resolve, reject) => {
+            return new Promise<CustomerInterface>((resolve, reject) => {
                 action.dispatch('fetchList').then(() => {
                     for (let customer of action.state.list) {
                         if (customer.id == customerId) {
-                            resolve([customer]);
+                            resolve(customer);
                             return;
                         }
                     }

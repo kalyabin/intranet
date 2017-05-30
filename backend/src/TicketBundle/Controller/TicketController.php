@@ -188,6 +188,16 @@ class TicketController extends Controller
             $this->denyAccessUnlessGranted('view', $customer, 'У вас нет доступа для просмотра данного арендатора');
         }
 
+        // если текущий пользователь - арендатор, то он может видеть только свои тикеты
+        /** @var UserEntity $user */
+        $user = $this->getUser();
+        if ($user->getUserType() == UserEntity::TYPE_CUSTOMER) {
+            $customer = $user->getCustomer() ? $user->getCustomer()->getId() : null;
+            if (!$customer) {
+                $this->createAccessDeniedException('У вас нет доступа для просмотра списка заявок');
+            }
+        }
+
         $opened = $request->get('opened', true);
         $opened = $opened == 1 || $opened === true;
 

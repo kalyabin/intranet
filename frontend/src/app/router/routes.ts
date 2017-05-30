@@ -7,6 +7,7 @@ import {AccessDenied} from "../page/error/access-denied";
 import {Index} from "../page/index";
 import {ManagerUserList} from "../page/manager/user/list";
 import {ManagerCustomerList} from "../page/manager/customer/list";
+import {ManagerTicketList} from "../page/manager/ticket/list";
 
 /**
  * Правила роутинга
@@ -62,6 +63,15 @@ export const routes: Array<RouteConfig> = [
                 meta: {
                     needRole: 'ROLE_USER_MANAGEMENT',
                     pageTitle: 'Управление арендаторами'
+                }
+            },
+            {
+                path: '/auth/manager/ticket/:category',
+                name: 'manager_ticket_list',
+                component: ManagerTicketList,
+                meta: {
+                    needAuth: true,
+                    pageTitle: 'Тикетная система'
                 }
             }
         ]

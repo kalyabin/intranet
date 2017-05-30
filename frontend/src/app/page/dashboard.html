@@ -16,7 +16,7 @@
                         <ul class="nav side-menu">
                             <li v-for="menuItem in sideBarMenu">
                                 <router-link
-                                    :to="{name: menuItem.routeName}"
+                                    :to="menuItem.route"
                                     v-need-role="menuItem.role"
                                 >
                                     <i v-bind:class="'fa ' + menuItem.faIcon"></i>

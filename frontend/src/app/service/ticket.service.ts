@@ -7,6 +7,8 @@ import {TicketDetailsResponseInterface} from "./response/ticket-details-response
 import {TicketMessageRequestInterface} from "./request/ticket-message-request.interface";
 import {TicketMessageResponseInterface} from "./response/ticket-message-response.interface";
 import {UserInterface} from "./model/user.interface";
+import {ListInterface} from "./response/list.interface";
+import {TicketCategoryInterface} from "./model/ticket-category.interface";
 
 /**
  * Сервис для работы с тикетной системой
@@ -19,14 +21,14 @@ export class TicketService {
     /**
      * Список тикетов. Единый метод для менеджеров и арендаторов
      */
-    list(category: string, pageNum: number = 0, pageSize: number = 150): Promise<TicketInterface[]> {
+    list(category: string, pageNum: number = 0, pageSize: number = 150): Promise<ListInterface<TicketInterface>> {
         return this.backendService
             .makeRequest('GET', `ticket/${category}`, {
                 pageNum: pageNum,
                 pageSize: pageSize
             })
             .then((response: AxiosResponse) => {
-                return response.data as TicketInterface[];
+                return response.data as ListInterface<TicketInterface>;
             });
     }
 
@@ -105,6 +107,17 @@ export class TicketService {
             .makeRequest('POST', `ticket/${category}/${ticketId}/assign`, request)
             .then((response: AxiosResponse) => {
                 return response.data as TicketResponseInterface;
+            });
+    }
+
+    /**
+     * Получить категории доступные пользователю
+     */
+    categories(): Promise<TicketCategoryInterface[]> {
+        return this.backendService
+            .makeRequest('GET', 'ticket')
+            .then((response: AxiosResponse) => {
+                return response.data['list'] as TicketCategoryInterface[];
             });
     }
 }

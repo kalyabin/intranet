@@ -149,9 +149,7 @@ export class ManagerUserForm extends Vue {
     onCustomerIdSet(val: number): void {
         customerListStore
             .dispatch('getCustomer', val)
-            .then((customer) => {
-                this.customer = customer[0];
-            })
+            .then(customer => this.customer = customer)
             .catch(() => {
                 this.customer = {
                     name: '',

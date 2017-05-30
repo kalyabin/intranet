@@ -9,6 +9,10 @@ import {Model} from "vue-property-decorator";
 import {SideBarMenuItem, sideBarMenus} from "../sidebar-menu";
 import {pageMetaStore} from "../router/page-meta-store";
 
+Component.registerHooks([
+    'beforeRouteLeave'
+]);
+
 /**
  * Главная страница личного кабинета
  */
