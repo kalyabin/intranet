@@ -542,11 +542,11 @@ class TicketEntity implements \JsonSerializable
 
         return [
             'id' => $this->getId(),
+            'number' => $this->getNumber(),
             'createdAt' => $this->getCreatedAt()->format($dateFormat),
             'createdBy' => $this->getCreatedBy(),
             'managedBy' => $this->getManagedBy(),
-            'category' => $this->getCategory(),
-            'number' => $this->getNumber(),
+            'category' => $this->getCategory()->getId(),
             'currentStatus' => $this->getCurrentStatus(),
             'lastQuestionAt' => $this->getLastQuestionAt() ? $this->getLastQuestionAt()->format($dateFormat) : null,
             'lastAnswerAt' => $this->getLastAnswerAt() ? $this->getLastAnswerAt()->format($dateFormat) : null,
