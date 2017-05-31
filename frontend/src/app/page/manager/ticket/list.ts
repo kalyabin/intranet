@@ -3,6 +3,9 @@ import Component from "vue-class-component";
 import {TicketCategoryInterface} from "../../../service/model/ticket-category.interface";
 import {ticketCategoriesStore} from "../../../store/ticket-categories.store";
 import {pageMetaStore} from "../../../router/page-meta-store";
+import {Model} from "vue-property-decorator";
+import {ticketListStore} from "../../../store/ticket-list.store";
+import {TicketInterface} from "../../../service/model/ticket.interface";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -15,13 +18,28 @@ Component.registerHooks([
  * Внутрь компонента необходимо передавать категорию тикета.
  */
 @Component({
-    template: require('./list.html')
+    template: require('./list.html'),
+    store: ticketListStore
 })
 export class ManagerTicketList extends Vue {
     /**
      * Категория тикетной системы
      */
-    category: TicketCategoryInterface;
+    @Model() category: TicketCategoryInterface;
+
+    /**
+     * Список тикетов
+     */
+    get list(): TicketInterface[] {
+        return this.$store.state.list as TicketInterface[];
+    }
+
+    /**
+     * При выходе из компонента очистить список тикетов
+     */
+    beforeDestroy(): void {
+        this.$store.commit('clear');
+    }
 
     /**
      * Установка категории
@@ -31,6 +49,11 @@ export class ManagerTicketList extends Vue {
 
         pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
         pageMetaStore.commit('setPageTitle', `${category.name}`);
+
+        // рендер списка тикетов
+        this.$store.dispatch('clear').then(() => {
+            this.$store.dispatch('fetchList', this.category.id);
+        });
     }
 
     /**

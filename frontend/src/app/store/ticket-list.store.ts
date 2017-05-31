@@ -76,7 +76,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
                 let cnt = 0;
                 let fetchTickets = () => {
                     ticketService.list(category, pageNum).then((response: ListInterface<TicketInterface>) => {
-                        action.commit('addCustomers', response.list);
+                        action.commit('addTickets', response.list);
                         pageNum++;
                         cnt += response.list.length;
                         if (response.totalCount > cnt) {

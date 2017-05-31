@@ -1,1 +1,57 @@
-<div></div>
+<div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Открытые заявки</h2>
+            <!--<ul class="navbar-right panel_toolbox">-->
+                <!--<li>-->
+                    <!--<a @click.prevent="openDialog(null)" class="collapse-link btn btn-primary">-->
+                        <!--<i class="fa fa-plus"></i>-->
+                        <!--Добавить-->
+                    <!--</a>-->
+                <!--</li>-->
+            <!--</ul>-->
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <table ref="table" class="table table-striped projects">
+                    <thead>
+                    <tr>
+                        <th style="width: 10%">#</th>
+                        <th style="width: 40%">Заявка</th>
+                        <th style="width: 30%">Ответственный</th>
+                        <th>Статус</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr v-for="ticket in list" style="cursor: pointer;">
+                        <td>
+                            {{ticket.number}}
+                        </td>
+                        <td>
+                            <a>{{ticket.title}}</a><br />
+                            <small>{{ticket.createdAt | dateFormat}}</small><br />
+                            <small>
+                                <i class="fa fa-user"></i>
+                                <span v-if="ticket.createdBy && !ticket.customer">
+                                    {{ticket.createdBy.name}}
+                                </span>
+                                <span v-else-if="ticket.customer && ticket.createdBy">
+                                    {{ticket.createdBy.name}}<br />({{ticket.customer.name}})
+                                </span>
+                                <span v-else-if="ticket.customer">
+                                    {{ticket.customer.name}}
+                                </span>
+                            </small>
+                        </td>
+                        <td>
+                            {{ticket.status | ticketStatus}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

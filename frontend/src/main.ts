@@ -10,6 +10,8 @@ import {ModalWindow} from "./app/components/modal-window";
 import {XPanel} from "./app/components/x-panel";
 import {Tabs} from "./app/components/tabs";
 import {TabPane} from "./app/components/tab-pane";
+import {ticketStatusFilter} from "./app/filter/ticket-status.filter";
+import {dateFormatFilter} from "./app/filter/date-format.filter";
 
 /**
  * Точка входа приложения
@@ -33,6 +35,10 @@ Vue.component('tab-pane', TabPane);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
+
+// используемые фильтры
+Vue.filter('ticketStatus', ticketStatusFilter);
+Vue.filter('dateFormat', dateFormatFilter);
 
 export const app = new Vue({
     template: '<router-view></router-view>',

@@ -164,7 +164,7 @@ class TicketController extends Controller
      * - pageSize - количество элементов на странице.
      *
      * @Method({"GET"})
-     * @Route("/ticket/{category}", name="ticket.list", options={"expose": true}, requirements={"category": "\w+"})
+     * @Route("/ticket/{category}", name="ticket.list", options={"expose": true}, requirements={"category": "[\w|-]+"})
      *
      * @param string $category
      * @param Request $request
@@ -229,7 +229,7 @@ class TicketController extends Controller
      * Создать новый тикет
      *
      * @Method({"POST"})
-     * @Route("/ticket/{category}", name="ticket.create", options={"expose": true}, requirements={"category": "\w+"})
+     * @Route("/ticket/{category}", name="ticket.create", options={"expose": true}, requirements={"category": "[\w|-]+"})
      *
      * @param string $category Категория в которой создать тикет
      * @param Request $request
@@ -267,7 +267,7 @@ class TicketController extends Controller
      *     "/ticket/{category}/{ticket}",
      *     name="ticket.details",
      *     options={"expose": true}, requirements={
-     *          "category": "\w+",
+     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
@@ -296,7 +296,7 @@ class TicketController extends Controller
      *     "/ticket/{category}/{ticket}/message",
      *     name="ticket.message",
      *     options={"expose": true}, requirements={
-     *          "category": "\w+",
+     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
@@ -343,7 +343,7 @@ class TicketController extends Controller
      *     "/ticket/{category}/{ticket}/close",
      *     name="ticket.close",
      *     options={"expose": true}, requirements={
-     *          "category": "\w+",
+     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
@@ -374,7 +374,7 @@ class TicketController extends Controller
      *
      * @Security("has_role('ROLE_TICKET_ADMIN_MANAGEMENT')")
      * @Method({"GET"})
-     * @Route("/ticket/{category}/managers", name="ticket.managers", options={"expose": true}, requirements={"category": "\w+"})
+     * @Route("/ticket/{category}/managers", name="ticket.managers", options={"expose": true}, requirements={"category": "[\w|-]+"})
      *
      * @param string $category
      *
@@ -412,7 +412,7 @@ class TicketController extends Controller
      *     name="ticket.assign",
      *     options={"expose": true},
      *     requirements={
-     *          "category": "\w+",
+     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
