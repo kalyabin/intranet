@@ -4,7 +4,7 @@
             <h2>Открытые заявки</h2>
             <ul class="navbar-right panel_toolbox">
                 <li>
-                    <router-link :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'collapse-link btn btn-primary': true}">
+                    <router-link v-need-user-type="'customer'" :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'collapse-link btn btn-primary': true}">
                         <i class="fa fa-plus"></i>
                         Создать новую заявку
                     </router-link>
