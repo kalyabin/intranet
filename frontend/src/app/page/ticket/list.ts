@@ -1,11 +1,13 @@
 import Vue from "vue";
 import Component from "vue-class-component";
-import {TicketCategoryInterface} from "../../../service/model/ticket-category.interface";
-import {ticketCategoriesStore} from "../../../store/ticket-categories.store";
-import {pageMetaStore} from "../../../router/page-meta-store";
+import {TicketCategoryInterface} from "../../service/model/ticket-category.interface";
+import {ticketCategoriesStore} from "../../store/ticket-categories.store";
+import {pageMetaStore} from "../../router/page-meta-store";
 import {Model} from "vue-property-decorator";
-import {ticketListStore} from "../../../store/ticket-list.store";
-import {TicketInterface} from "../../../service/model/ticket.interface";
+import {ticketListStore} from "../../store/ticket-list.store";
+import {TicketInterface} from "../../service/model/ticket.interface";
+import {authUserStore} from "../../store/auth-user.store";
+import {UserType} from "../../service/model/user.interface";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -15,23 +17,46 @@ Component.registerHooks([
 /**
  * Список тикетов.
  *
+ * Компонент единый для всех: для арендаторов и менеджеров.
+ * Для менеджеров скрывается кнопка добавления тикета,
+ * для арендаторов скрывается статистика и возможность смены менеджера.
+ *
  * Внутрь компонента необходимо передавать категорию тикета.
  */
 @Component({
     template: require('./list.html'),
     store: ticketListStore
 })
-export class ManagerTicketList extends Vue {
+export class TicketList extends Vue {
     /**
      * Категория тикетной системы
      */
-    @Model() category: TicketCategoryInterface;
+    @Model() category: TicketCategoryInterface = null;
 
     /**
      * Список тикетов
      */
     get list(): TicketInterface[] {
         return this.$store.state.list as TicketInterface[];
+    }
+
+    /**
+     * Получить ссылку на форму создания нового тикета
+     */
+    get createLinkRoute() {
+        return {
+            name: 'ticket_customer_list',
+            params: {
+                category: this.category ? this.category.id : ''
+            }
+        };
+    }
+
+    /**
+     * Получить тип пользователя
+     */
+    get userType(): UserType {
+        return authUserStore.state.userData.userType;
     }
 
     /**
@@ -45,15 +70,17 @@ export class ManagerTicketList extends Vue {
      * Установка категории
      */
     setCategory(category: TicketCategoryInterface): void{
-        this.category = category;
-
         pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
         pageMetaStore.commit('setPageTitle', `${category.name}`);
 
         // рендер списка тикетов
-        this.$store.dispatch('clear').then(() => {
-            this.$store.dispatch('fetchList', this.category.id);
-        });
+        if (!this.category || this.category.id != category.id) {
+            this.$store.dispatch('clear').then(() => {
+                this.$store.dispatch('fetchList', this.category.id);
+            });
+        }
+
+        this.category = category;
     }
 
     /**

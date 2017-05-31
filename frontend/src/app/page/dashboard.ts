@@ -6,8 +6,9 @@ import {authUserService} from "../service/auth-user.service";
 import {router} from "../router/router";
 import {authUserStore} from "../store/auth-user.store";
 import {Model} from "vue-property-decorator";
-import {SideBarMenuItem, sideBarMenus} from "../sidebar-menu";
+import {SideBarMenuItem, managerSideBarMenu, customerSideBarMenu} from "../sidebar-menu";
 import {pageMetaStore} from "../router/page-meta-store";
+import {AuthInterface} from "../service/response/auth.interface";
 
 Component.registerHooks([
     'beforeRouteLeave'
@@ -59,13 +60,16 @@ export class Dashboard extends Vue {
     }
 
     mounted(): void {
-        authUserStore.dispatch('fetchData');
+        authUserStore.dispatch('fetchData').then(() => {
+            let userType = authUserStore.state.userData.userType;
+
+            this.sideBarMenu = userType == 'manager' ? managerSideBarMenu : customerSideBarMenu;
+        });
 
         if (this.menuToggled) {
             $('body').addClass('nav-md');
         }
         $('body').addClass('footer_fixed');
-        this.sideBarMenu = sideBarMenus;
         this.fixContentHeight();
         $(window).on('resize', () => this.fixContentHeight());
     }

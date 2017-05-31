@@ -4,6 +4,7 @@ import {Model} from "vue-property-decorator";
 import {authUserService} from "../../service/auth-user.service";
 import {router} from "../../router/router";
 import {LoginInterface} from "../../service/model/login.interface";
+import {AuthInterface} from "../../service/response/auth.interface";
 
 /**
  * Форма авторизации
@@ -48,9 +49,11 @@ export class LoginForm extends Vue {
             this.awaitOfSubmit = true;
             authUserService.login(this.username, this.password).then((result: LoginInterface) => {
                 if (result.loggedIn) {
-                    authUserService.checkAuth().then(() => {
+                    authUserService.checkAuth().then((data: AuthInterface) => {
                         this.awaitOfSubmit = false;
-                        router.push({name: 'dashboard'});
+                        router.push({
+                            name: data.user.userType == 'customer' ? 'cabinet' : 'dashboard'
+                        });
                     }, () => this.awaitOfSubmit = false);
                     return;
                 }

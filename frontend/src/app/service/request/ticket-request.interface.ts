@@ -10,5 +10,5 @@ export interface TicketRequestInterface {
     /**
      * Сообщение
      */
-    message: string;
+    text: string;
 }

@@ -6,6 +6,7 @@ import Vuex from "vuex";
 export interface PageMetaStateInterface {
     pageTitle: string;
     title: string;
+    pageLoader: boolean;
 }
 
 /**
@@ -14,7 +15,8 @@ export interface PageMetaStateInterface {
 export const pageMetaStore = new Vuex.Store({
    state:  <PageMetaStateInterface>{
        pageTitle: '',
-       title: ''
+       title: '',
+       pageLoader: false,
    },
     mutations: {
         setPageTitle: (state: PageMetaStateInterface, pageTitle: string) => {
@@ -22,6 +24,12 @@ export const pageMetaStore = new Vuex.Store({
         },
         setTitle: (state: PageMetaStateInterface, title: string) => {
             state.title = title;
-        }
+        },
+        showPageLoader: (state: PageMetaStateInterface) => {
+            state.pageLoader = true;
+        },
+        hidePageLoader: (state: PageMetaStateInterface) => {
+            state.pageLoader = false;
+        },
     }
 });

@@ -12,6 +12,9 @@ import {Tabs} from "./app/components/tabs";
 import {TabPane} from "./app/components/tab-pane";
 import {ticketStatusFilter} from "./app/filter/ticket-status.filter";
 import {dateFormatFilter} from "./app/filter/date-format.filter";
+import {NeedUserTypeDirective} from "./app/directive/need-user-type.directive";
+import {pageMetaStore} from "./app/router/page-meta-store";
+import {ticketStatusColorFilter} from "./app/filter/ticket-status-color.filter";
 
 /**
  * Точка входа приложения
@@ -35,12 +38,19 @@ Vue.component('tab-pane', TabPane);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
+Vue.directive('need-user-type', NeedUserTypeDirective);
 
 // используемые фильтры
 Vue.filter('ticketStatus', ticketStatusFilter);
+Vue.filter('ticketStatusColor', ticketStatusColorFilter);
 Vue.filter('dateFormat', dateFormatFilter);
 
 export const app = new Vue({
-    template: '<router-view></router-view>',
-    router: router
+    template: require('./main.html'),
+    router: router,
+    computed: {
+        pageLoader: (): boolean => {
+            return pageMetaStore.state.pageLoader;
+        }
+    }
 }).$mount('#app');

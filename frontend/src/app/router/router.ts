@@ -2,6 +2,7 @@ import VueRouter, {Route} from "vue-router";
 import {routes} from './routes';
 import {authUserStore} from "../store/auth-user.store";
 import {pageMetaStore} from "./page-meta-store";
+import {UserType} from "../service/model/user.interface";
 
 /**
  * Конфигурация роутера
@@ -19,9 +20,11 @@ export const router = new VueRouter({
 router.beforeEach((to: Route, from: Route, next) => {
     authUserStore.dispatch('fetchData').then(() => {
         let isAuth = authUserStore.state.isAuth;
+        let userData = authUserStore.state.userData;
         let needAuth = !!(to.meta && to.meta['needAuth']);
         let needNotAuth = !!(to.meta && to.meta['needNotAuth']);
         let needRole = to.meta && to.meta['needRole'] ? to.meta['needRole'] : '';
+        let needType = to.meta && to.meta['needType'] ? to.meta['needType'] : '';
 
         // проверка необходимых ролей
         let hasRole = (role: string): boolean => {
@@ -29,13 +32,19 @@ router.beforeEach((to: Route, from: Route, next) => {
             return !!(roles && roles.indexOf(role) != -1);
         };
 
+        // проверить необходимый тип пользователя
+        let hasType = (type: string): boolean => {
+            let userType = type as UserType;
+            return userData.userType == userType;
+        };
+
         if (isAuth && needNotAuth) {
             // авторизованному пользователю на этой странице делать нечего
-            next({name: 'dashboard'});
+            next({name: userData.userType == 'customer' ? 'cabinet' : 'dashboard'});
         } else if (!isAuth && (needAuth || needRole)) {
             // требуется авторизовация
             next({name: 'login'});
-        } else if (needRole && !hasRole(needRole)) {
+        } else if ((needRole && !hasRole(needRole)) || (needType && !hasType(needType))) {
             // роль для просмотра страницы не совпадает
             next({name: '403'});
         } else {
