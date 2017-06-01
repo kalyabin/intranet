@@ -9,6 +9,7 @@ import {ManagerUserList} from "../page/manager/user/list";
 import {ManagerCustomerList} from "../page/manager/customer/list";
 import {TicketList} from "../page/ticket/list";
 import {TicketForm} from "../page/ticket/ticket-form";
+import {TicketDetails} from "../page/ticket/details";
 
 /**
  * Правила роутинга
@@ -61,7 +62,16 @@ export const routes: Array<RouteConfig> = [
                     needType: 'customer',
                     pageTitle: 'Тикетная система'
                 }
-            }
+            },
+            {
+                path: '/auth/cabinet/ticket/:category/:ticket',
+                name: 'cabinet_ticket_details',
+                component: TicketDetails,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Заявка'
+                },
+            },
         ],
     },
     {
@@ -104,6 +114,15 @@ export const routes: Array<RouteConfig> = [
                     needType: 'manager',
                     pageTitle: 'Тикетная система'
                 }
+            },
+            {
+                path: '/auth/manager/ticket/:category/:ticket',
+                name: 'manager_ticket_details',
+                component: TicketDetails,
+                meta: {
+                    needType: 'manager',
+                    pageTitle: 'Заявка'
+                },
             },
         ]
     },

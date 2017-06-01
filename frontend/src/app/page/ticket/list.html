@@ -23,7 +23,7 @@
                     </thead>
 
                     <tbody>
-                    <tr v-for="ticket in list" style="cursor: pointer;">
+                    <tr v-for="ticket in list" style="cursor: pointer;" @click="openTicket(ticket)">
                         <td>
                             {{ticket.number}}<br />
                             <small v-bind:class="ticket.currentStatus | ticketStatusColor">

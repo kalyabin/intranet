@@ -8,6 +8,7 @@ import {ticketListStore} from "../../store/ticket-list.store";
 import {TicketInterface} from "../../service/model/ticket.interface";
 import {authUserStore} from "../../store/auth-user.store";
 import {UserType} from "../../service/model/user.interface";
+import {router} from "../../router/router";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -64,6 +65,19 @@ export class TicketList extends Vue {
      */
     beforeDestroy(): void {
         this.$store.commit('clear');
+    }
+
+    /**
+     * Открыть страницу тикета
+     */
+    openTicket(ticket: TicketInterface): void {
+        router.push({
+            name: this.userType == 'customer' ? 'cabinet_ticket_details' : 'manager_ticket_details',
+            params: <any>{
+                category: this.category.id,
+                ticket: ticket.id
+            }
+        });
     }
 
     /**
