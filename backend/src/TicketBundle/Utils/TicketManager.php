@@ -205,9 +205,10 @@ class TicketManager
             ->setText($message->getText())
             ->setCreatedBy($author);
 
-        $status = $ticket->getCurrentStatus();
-
-        if ($type == TicketMessageEntity::TYPE_ANSWER) {
+        // смена статуса в зависимости от типа автора сообщения
+        // только в том случае, если не требуется закрытие тикета
+        // в случае закрытия тикета вызывается другой метод
+        if ($type == TicketMessageEntity::TYPE_ANSWER && !$message->getCloseTicket()) {
             // время автоматической очистки сообщения
             $date = new \DateTime();
             $date->add(new \DateInterval('PT' . $this->answeredTicketLifetime . 'M'));
@@ -219,7 +220,9 @@ class TicketManager
                 ->setVoidedAt($date);
 
             $status = TicketEntity::STATUS_ANSWERED;
-        } else {
+
+            $this->setTicketStatus($ticket, $author, $status);
+        } else if (!$message->getCloseTicket()) {
             // очистить время автоматической очистки сообщения
             $ticket
                 ->setLastQuestionAt(new \DateTime())
@@ -234,9 +237,9 @@ class TicketManager
                 // закрытая заявка должна стать переоткрытой - самый жесткий случай
                 $status = TicketEntity::STATUS_REOPENED;
             }
-        }
 
-        $this->setTicketStatus($ticket, $author, $status);
+            $this->setTicketStatus($ticket, $author, $status);
+        }
 
         $ticket->addMessage($entity);
 
@@ -251,6 +254,11 @@ class TicketManager
             TicketNewMessageEvent::NEW_QUESTION;
 
         $this->eventDispatcher->dispatch($eventType, $event);
+
+        // если требуется закрытие тикета
+        if ($message->getCloseTicket()) {
+            $this->closeTicket($ticket, $author);
+        }
 
         return $entity;
     }

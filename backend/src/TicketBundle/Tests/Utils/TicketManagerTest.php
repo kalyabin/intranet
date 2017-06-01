@@ -242,6 +242,18 @@ class TicketManagerTest extends WebTestCase
         $this->assertInstanceOf(DateTime::class, $ticket->getLastAnswerAt());
         $this->assertInstanceOf(DateTime::class, $ticket->getVoidedAt());
         $this->assertEquals(TicketEntity::STATUS_ANSWERED, $ticket->getCurrentStatus());
+
+        // закрытие тикета сообщением
+        $form->setCloseTicket(true);
+
+        $result = $this->manager->createTicketMessage($ticket, $form, TicketMessageEntity::TYPE_ANSWER, $manager);
+
+        $this->assertEquals(TicketNewMessageEvent::NEW_ANSWER, $eventTriggered);
+        $this->assertInstanceOf(TicketMessageEntity::class, $result);
+        $this->assertGreaterThan(0, $result->getId());
+        $this->assertInstanceOf(TicketEntity::class, $result->getTicket());
+        $this->assertEquals($result->getTicket()->getId(), $ticket->getId());
+        $this->assertEquals(TicketEntity::STATUS_CLOSED, $ticket->getCurrentStatus());
     }
 
     /**

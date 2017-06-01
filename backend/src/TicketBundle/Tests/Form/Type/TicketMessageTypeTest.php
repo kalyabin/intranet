@@ -50,6 +50,13 @@ class TicketMessageTypeTest extends FormWebTestCase
                 ],
                 'errorKeys' => ['text']
             ],
+            [
+                'data' => [
+                    'text' => 'txt',
+                    'closeTicket' => [],
+                ],
+                'errorKeys' => ['closeTicket'],
+            ],
         ];
     }
 
@@ -62,6 +69,30 @@ class TicketMessageTypeTest extends FormWebTestCase
             [
                 'data' => [
                     'text' => 'valid text data',
+                ],
+            ],
+            [
+                'data' => [
+                    'text' => 'valid text data',
+                    'closeTicket' => '1',
+                ],
+            ],
+            [
+                'data' => [
+                    'text' => 'valid text data',
+                    'closeTicket' => '0',
+                ],
+            ],
+            [
+                'data' => [
+                    'text' => 'valid text data',
+                    'closeTicket' => true,
+                ],
+            ],
+            [
+                'data' => [
+                    'text' => 'valid text data',
+                    'closeTicket' => false,
                 ],
             ],
         ];
