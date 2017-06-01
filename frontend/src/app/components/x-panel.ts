@@ -30,10 +30,12 @@ export class XPanel extends Vue {
         if (this.visible) {
             $(this.$refs['content']).slideUp(200, () => {
                 this.visible = false;
+                this.$emit('on-toggled', this.visible);
             });
         } else {
             $(this.$refs['content']).slideDown(200, () => {
                 this.visible = true;
+                this.$emit('on-toggled', this.visible);
             });
         }
     }

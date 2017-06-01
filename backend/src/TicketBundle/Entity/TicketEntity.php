@@ -540,10 +540,16 @@ class TicketEntity implements \JsonSerializable
     {
         $dateFormat = 'Y-m-d H:i:s';
 
+        // дата обновления тикета
+        $lastQuestionAt = $this->lastQuestionAt ? $this->lastQuestionAt->getTimestamp() : $this->createdAt->getTimestamp();
+        $lastAnswerAt = $this->lastAnswerAt ? $this->lastAnswerAt->getTimestamp() : 0;
+        $updatedAt = $lastAnswerAt > $lastQuestionAt ? date($dateFormat, $lastAnswerAt) : date($dateFormat, $lastQuestionAt);
+
         return [
             'id' => $this->getId(),
             'number' => $this->getNumber(),
             'createdAt' => $this->getCreatedAt()->format($dateFormat),
+            'updatedAt' => $updatedAt,
             'createdBy' => $this->getCreatedBy(),
             'managedBy' => $this->getManagedBy(),
             'category' => $this->getCategory()->getId(),

@@ -11,6 +11,8 @@ import {TicketDetailsResponseInterface} from "../../service/response/ticket-deta
 import {ticketService} from "../../service/ticket.service";
 import {ticketCategoriesStore} from "../../store/ticket-categories.store";
 import {pageMetaStore} from "../../router/page-meta-store";
+import {TicketMessageForm} from "./message-form";
+import {XPanel} from "../../components/x-panel";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -22,7 +24,10 @@ Component.registerHooks([
  */
 @Component({
     template: require('./details.html'),
-    store: ticketListStore
+    store: ticketListStore,
+    components: {
+        'message-form': TicketMessageForm
+    }
 })
 export class TicketDetails extends Vue {
     /**
@@ -41,7 +46,27 @@ export class TicketDetails extends Vue {
     @Model() history: Array<{
         createdAt: string,
         type: 'message' | 'status',
-        item: TicketHistoryInterface | TicketMessageInterface}> = [];
+        item: TicketHistoryInterface | TicketMessageInterface
+    }> = [];
+
+    /**
+     * Показать форму заполнения сообщени
+     */
+    @Model() showMessageForm: boolean = false;
+
+    /**
+     * Обновление данных после создания сообщения
+     */
+    updateData(): void {
+        let messagePanel = <XPanel>this.$refs['message-panel'];
+        messagePanel.visible = true;
+        messagePanel.toggle();
+
+        ticketService.ticketDetails(this.category.id, this.ticket.id)
+            .then((response: TicketDetailsResponseInterface) => {
+                this.setData(response);
+            }, () => {});
+    }
 
     /**
      * Установка и формирование данных
@@ -67,21 +92,37 @@ export class TicketDetails extends Vue {
         }
 
         // сортировка истории по дате и типу
-        this.history = this.history.sort((itemA, itemB) => {
+        this.history = this.history.sort((itemA: {
+            createdAt: string,
+            type: 'message' | 'status',
+            item: TicketHistoryInterface | TicketMessageInterface
+        }, itemB: {
+            createdAt: string,
+            type: 'message' | 'status',
+            item: TicketHistoryInterface | TicketMessageInterface
+        }) => {
             let dateA = moment(itemA.createdAt);
             let dateB = moment(itemB.createdAt);
-            if (dateB.isBefore(itemA)) {
+
+            // статус заявки "Новая" всегда должна идти первой
+            if (itemB.type == 'status' && itemB.item['status'] == 'new') {
+                return 1;
+            } else if (itemA.type == 'status' && itemA.item['status'] == 'new') {
+                return -1;
+            }
+
+            if (dateB.isBefore(dateA)) {
                 // А младше B
                 return 1;
             } else if (dateB.isAfter(dateA)) {
                 // B младше A
                 return -1;
             } else if (dateB.isSame(dateA) && itemA.type == 'message') {
-                // сообщения идут перед статусами
-                return -1;
-            } else if (dateB.isSame(dateA) && itemA.type == 'status') {
-                // статусы идут после сообщений
+                // сообщения идут после статуса
                 return 1;
+            } else if (dateB.isSame(dateA) && itemA.type == 'status') {
+                // статусы идут перед сообщений
+                return -1;
             } else {
                 return 0;
             }

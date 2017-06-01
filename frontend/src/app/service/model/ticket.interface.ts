@@ -26,6 +26,11 @@ export interface TicketInterface {
     createdAt: string;
 
     /**
+     * Дата последнег редактирования тикета в формате Y-m-d H:i:s
+     */
+    updatedAt: string;
+
+    /**
      * Пользователь создавший тикет: может отсутствовать, если был удален
      */
     createdBy?: UserInterface;

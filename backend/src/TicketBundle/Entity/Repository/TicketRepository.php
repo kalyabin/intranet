@@ -73,9 +73,14 @@ class TicketRepository extends EntityRepository
 
         if ($opened) {
             // фильтр по открым заявкам
+            // открыте либо по статусу "не закрыта", либо по дате закрытия - не старше 1 недели
+            $lastQuestionAt = new \DateTime();
+            $lastQuestionAt->add(new \DateInterval('P7D'));
+
             $queryBuilder
-                ->andWhere('t.currentStatus <> :status')
-                ->setParameter('status', TicketEntity::STATUS_CLOSED);
+                ->andWhere('(t.currentStatus <> :status OR t.lastQuestionAt <= :lastQuestionAt)')
+                ->setParameter('status', TicketEntity::STATUS_CLOSED)
+                ->setParameter('lastQuestionAt', $lastQuestionAt);
         } else {
             // фильтр по закрытым заявкам
             $queryBuilder

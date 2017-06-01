@@ -16,16 +16,15 @@
         </div>
         <div class="row">
             <div class="col-sm-12" v-if="ticket">
-                <p><strong>Заголовок: </strong> {{ticket.title}}</p>
+                <p><span :class="ticket.currentStatus | ticketStatusColor">{{ticket.currentStatus | ticketStatus}}</span> {{ticket.title}}</p>
                 <ul class="messages">
                     <li v-for="item in history">
                         <!-- TODO: автары пока не готовы -->
                         <img src="images/img.jpg" class="avatar" alt="Avatar">
                         <div class="message_wrapper">
-                            <h4 class="heading" v-if="item.item.createdBy">{{item.item.createdBy.name}} <small>{{item.item.createdAt | dateFormat('D MMM в HH:mm')}}</small></h4>
+                            <h5 class="heading" v-if="item.item.createdBy">{{item.item.createdBy.name}} <small>{{item.item.createdAt | dateFormat('D MMM в HH:mm')}}</small></h5>
                             <blockquote class="message" v-if="item.type == 'message'">{{item.item.text}}</blockquote>
                             <blockquote class="message" v-if="item.type == 'status'">
-                                Статус заявки был изменен на
                                 <span :class="item.item.status | ticketStatusColor">{{item.item.status | ticketStatus}}</span>
                             </blockquote>
                         </div>
@@ -34,4 +33,10 @@
             </div>
         </div>
     </div>
+
+    <x-panel ref="message-panel" :title="'Оставить сообщение / Закрыть заявку'" :toggled="false" @on-toggled="showMessageForm = $event">
+        <div slot>
+            <message-form v-if="showMessageForm" @ticket-changed="updateData" :category="category" :ticket="ticket"></message-form>
+        </div>
+    </x-panel>
 </div>

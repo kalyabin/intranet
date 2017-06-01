@@ -2,6 +2,7 @@
     <div class="x_title" @click="toggle">
         <h2>{{title}}</h2>
         <ul class="nav navbar-right panel_toolbox">
+            <li><slot name="buttons"></slot></li>
             <li><a class="collapse-link"><i :class="{'fa': true, 'fa-chevron-up': visible, 'fa-chevron-down': !visible}"></i></a></li>
         </ul>
         <div class="clearfix"></div>

@@ -2,6 +2,7 @@ import Vuex from "vuex";
 import {TicketInterface} from "../service/model/ticket.interface";
 import {ticketService} from "../service/ticket.service";
 import {ListInterface} from "../service/response/list.interface";
+import * as moment from "moment";
 
 /**
  * Состояние списка
@@ -82,6 +83,26 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
                         if (response.totalCount > cnt) {
                             fetchTickets();
                         } else {
+                            // отсортировать тикеты
+                            action.state.list = action.state.list.sort((itemA: TicketInterface, itemB: TicketInterface) => {
+                                // закрытие заявки идут ниже
+                                if (itemA.currentStatus == 'closed' && itemA.currentStatus != itemB.currentStatus) {
+                                    return 1;
+                                } else if (itemB.currentStatus == 'closed' && itemB.currentStatus != itemA.currentStatus) {
+                                    return -1;
+                                }
+
+                                let dateA = moment(itemA.updatedAt);
+                                let dateB = moment(itemB.updatedAt);
+
+                                if (dateA.isBefore(dateB)) {
+                                    return -1;
+                                } else if (dateB.isBefore(dateA)) {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
+                            });
                             resolve();
                         }
                     }).catch(() => reject());

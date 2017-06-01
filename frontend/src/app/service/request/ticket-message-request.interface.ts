@@ -2,5 +2,13 @@
  * Запрос на создание сообщение по тикету
  */
 export interface TicketMessageRequestInterface {
-    message: string;
+    /**
+     * Текст сообщения
+     */
+    text: string;
+
+    /**
+     * Флаг необходимости закрытия тикета
+     */
+    closeTicket: boolean;
 }

@@ -62,7 +62,7 @@ export class TicketService {
     createMessage(category: string, ticketId: number, message: TicketMessageRequestInterface): Promise<TicketMessageResponseInterface> {
         return this.backendService
             .makeRequest('POST', `ticket/${category}/${ticketId}/message`, {
-                'ticket-message': message
+                'ticket_message': message
             })
             .then((response: AxiosResponse) => {
                 return response.data as TicketMessageResponseInterface;
