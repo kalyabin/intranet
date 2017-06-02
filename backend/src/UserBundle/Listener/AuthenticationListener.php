@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -127,7 +128,7 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
     {
         $exception = $event->getException();
 
-        if ($exception instanceof AuthenticationCredentialsNotFoundException || $exception instanceof AccessDeniedException) {
+        if ($exception instanceof AuthenticationCredentialsNotFoundException || $exception instanceof AccessDeniedException || $exception instanceof AccountStatusException) {
             $isAuth = $this->tokenStorage->getToken()->getUser() instanceof UserInterface;
 
             $response = new JsonResponse([

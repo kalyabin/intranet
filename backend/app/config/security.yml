@@ -54,7 +54,6 @@ security:
 
     access_control:
         - { path: ^/api/check_auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/check_auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/profile/change_email/confirmation, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/profile/change_password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/remember_password/remember, roles: IS_AUTHENTICATED_ANONYMOUSLY }
@@ -78,3 +77,4 @@ security:
                 check_path: login.simple_check
                 success_handler: authentication_listener
                 failure_handler: authentication_listener
+#                always_use_default_target_path: false
