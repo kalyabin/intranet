@@ -73,7 +73,7 @@ export class AuthUserService {
             .makeRequest('POST', 'login/check', {
                 _username: username,
                 _password: password
-            })
+            }, false)
             .then((response: AxiosResponse) => {
                 let data = <LoginInterface>response.data;
                 return data;

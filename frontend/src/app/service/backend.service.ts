@@ -29,11 +29,23 @@ export class BackendService {
     /**
      * Выполнить запрос
      */
-    makeRequest(method: string, uri: string, data?: any): AxiosPromise {
+    makeRequest(method: string, uri: string, data?: any, asPayload: boolean = true): AxiosPromise {
         let headers = {};
 
         if (this.csrfToken) {
             headers['X-CSRF-Token'] = this.csrfToken;
+        }
+
+        if (!asPayload) {
+            headers['Content-Type'] = 'multipart/form-data';
+
+            let newData = new FormData();
+
+            for (let key of Object.keys(data)) {
+                newData.append(key, data[key]);
+            }
+
+            data = newData;
         }
 
         let retrieveCsrfToken = (response: AxiosResponse) => {
