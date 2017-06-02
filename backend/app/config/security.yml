@@ -52,6 +52,15 @@ security:
     encoders:
         UserBundle\Entity\UserEntity: sha512
 
+    access_control:
+        - { path: ^/api/check_auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/check_auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/profile/change_email/confirmation, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/profile/change_password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/remember_password/remember, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/change_password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:

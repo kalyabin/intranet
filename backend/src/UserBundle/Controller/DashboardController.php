@@ -9,19 +9,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Translation\Translator;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Form\Type\ChangeEmailType;
 use UserBundle\Form\Type\ChangePasswordType;
 use UserBundle\Form\Type\ProfileType;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\Repository\UserCheckerRepository;
-use UserBundle\Utils\RolesManager;
 use UserBundle\Utils\UserManager;
 
 /**
@@ -167,7 +163,7 @@ class DashboardController extends Controller
      *
      * @Method({"POST"})
      * @Route("/profile/change_email", options={"expose" : true}, name="user.change_email")
-     * @Security("is_authenticated()")
+     * @Security("is_fully_authenticated()")
      *
      * @param Request $request
      *
@@ -207,7 +203,7 @@ class DashboardController extends Controller
      *
      * @Method({"POST"})
      * @Route("/profile/change_password", options={"expose" : true}, name="user.change_password")
-     * @Security("is_authenticated()")
+     * @Security("is_fully_authenticated()")
      *
      * @param Request $request
      *
@@ -243,7 +239,7 @@ class DashboardController extends Controller
      *
      * @Method({"POST"})
      * @Route("/profile/update", options={"expose" : true}, name="user.profile_update")
-     * @Security("is_authenticated()")
+     * @Security("is_fully_authenticated()")
      *
      * @param Request $request
      *
@@ -284,7 +280,7 @@ class DashboardController extends Controller
      * Данный метод возвращает обновленный токен CSRF для дальнейшей работы веб-приложения без перезагрузки страницы.
      *
      * @Route("/logout", options={"expose" : true}, name="user.logout")
-     * @Security("is_authenticated()")
+     * @Security("is_fully_authenticated()")
      *
      * @return JsonResponse
      */

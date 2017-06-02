@@ -29,7 +29,7 @@ use UserBundle\Utils\RolesManager;
  * Контроллер для работы с тикетами.
  * Как со стороны менеджера, так и со стороны арендатора.
  *
- * @Security("is_authenticated()")
+ * @Security("is_fully_authenticated()")
  * @Route(service="ticket.ticket_controller")
  *
  * @package TicketBundle\Controller
