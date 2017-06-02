@@ -5,7 +5,6 @@ parameters:
     user.mailer: UserBundle\Utils\UserSystemMailManager
     user.manager: UserBundle\Utils\UserManager
     user.roles_manager: UserBundle\Utils\RolesManager
-    user.provider: UserBundle\Security\UserProvider
     user.simple_authenticator: UserBundle\Security\SimpleAuthenticator
     user.registration_controller: UserBundle\Controller\RegistrationController
     user.login_controller: UserBundle\Controller\LoginController
@@ -21,6 +20,8 @@ services:
     authentication_listener:
         class: '%authentication_listener%'
         arguments: ['@translator', '@security.token_storage']
+        calls:
+            - [ setContainer, ['@service_container'] ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onAccessDenied, priority: 1000 }
 
@@ -55,12 +56,6 @@ services:
         class: '%user.manager%'
         arguments:
             ['@security.encoder_factory', '@doctrine.orm.entity_manager', '@event_dispatcher']
-
-    # Провайдер пользователей (для авторизации)
-    user.provider:
-        class: '%user.provider%'
-        arguments:
-            ['@user.manager']
 
     # Авторизатор пользователей по простому логин-паролю
     user.simple_authenticator:

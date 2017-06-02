@@ -7,12 +7,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use UserBundle\Controller\Response\SimpleAuthenticationJsonResponse;
-use UserBundle\Entity\UserEntity;
-use UserBundle\Form\Type\RegistrationType;
-use UserBundle\Form\Type\RememberPasswordType;
-use UserBundle\Security\Exception\SimpleAuthenticatorMessageException;
+use UserBundle\Controller\Response\AuthenticationJsonResponse;
 
 /**
  * Авторизация пользователя
@@ -29,18 +27,18 @@ class LoginController extends Controller
      * @Method({"POST"})
      * @Route("/login/check", options={"expose" : true}, name="login.simple_check")
      *
-     * @return SimpleAuthenticationJsonResponse
+     * @return AuthenticationJsonResponse
      */
-    public function simpleLoginCheckAction(): SimpleAuthenticationJsonResponse
+    public function simpleLoginCheckAction(): AuthenticationJsonResponse
     {
-        $response = new SimpleAuthenticationJsonResponse();
+        $response = new AuthenticationJsonResponse();
 
         /** @var AuthenticationUtils $authenticationUtils */
         $authenticationUtils = $this->get('security.authentication_utils');
 
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        if ($error instanceof SimpleAuthenticatorMessageException) {
+        if ($error instanceof BadCredentialsException || $error instanceof AuthenticationException) {
             $response->handleFailure($error);
         } else {
             $response->handleFailRequest();

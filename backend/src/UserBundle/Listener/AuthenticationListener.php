@@ -2,22 +2,24 @@
 
 namespace UserBundle\Listener;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Translation\IdentityTranslator;
-use UserBundle\Controller\Response\SimpleAuthenticationJsonResponse;
-use UserBundle\Security\Exception\SimpleAuthenticatorMessageException;
+use UserBundle\Controller\Response\AuthenticationJsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use UserBundle\Security\Token\SimpleAuthenticatorToken;
 
 /**
  * Слушатель событий авторизации и ошибок авторизации.
@@ -29,7 +31,7 @@ use UserBundle\Security\Token\SimpleAuthenticatorToken;
  *
  * @package UserBundle\Listener
  */
-class AuthenticationListener implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
+class AuthenticationListener implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface, ContainerAwareInterface
 {
     /**
      * @var IdentityTranslator Переводчик
@@ -40,6 +42,11 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      * @var TokenStorageInterface Хранилище авторизованных пользователей
      */
     protected $tokenStorage;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Конструктор
@@ -53,6 +60,14 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * Обработать ошибку авторизации.
      *
      * Если произошла ошибка простой авторизации по логин-паролю - отправить JSON-ответ.
@@ -60,13 +75,14 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      * @param Request $request
      * @param AuthenticationException $exception
      *
-     * @return SimpleAuthenticationJsonResponse|null
+     * @return AuthenticationJsonResponse|null
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): SimpleAuthenticationJsonResponse
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): AuthenticationJsonResponse
     {
-        $response = new SimpleAuthenticationJsonResponse();
+        $response = new AuthenticationJsonResponse();
+        $response->setContainer($this->container);
 
-        if ($exception instanceof SimpleAuthenticatorMessageException) {
+        if ($exception instanceof BadCredentialsException || $exception instanceof AuthenticationException) {
             $response->handleFailure($exception);
         } else {
             $response->handleFailRequest();
@@ -83,13 +99,14 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      * @param Request $request
      * @param TokenInterface $token
      *
-     * @return SimpleAuthenticationJsonResponse
+     * @return AuthenticationJsonResponse
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token): SimpleAuthenticationJsonResponse
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): AuthenticationJsonResponse
     {
-        $response = new SimpleAuthenticationJsonResponse();
+        $response = new AuthenticationJsonResponse();
+        $response->setContainer($this->container);
 
-        if ($token instanceof SimpleAuthenticatorToken) {
+        if ($token instanceof UsernamePasswordToken) {
             $response->handleSuccess($token);
             return $response;
         } else {

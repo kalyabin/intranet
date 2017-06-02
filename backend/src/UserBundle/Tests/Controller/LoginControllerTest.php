@@ -96,7 +96,7 @@ class LoginControllerTest extends WebTestCase
             'loggedIn' => false,
             'isLocked' => true,
             'isNeedActivation' => false,
-            'userId' => null,
+            'userId' => $lockedUser->getId(),
             'errorMessage' => 'Ваш аккаунт заблокирован'
         ], $jsonData);
 

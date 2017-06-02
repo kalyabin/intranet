@@ -45,7 +45,9 @@ security:
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
         user_provider:
-            id: user.provider
+            entity:
+                class: UserBundle:UserEntity
+                property: email
 
     encoders:
         UserBundle\Entity\UserEntity: sha512
@@ -62,9 +64,7 @@ security:
             logout:
                 path: /api/logout
                 target: /
-            simple_form:
-                provider: user_provider
-                authenticator: user.simple_authenticator
+            form_login:
                 login_path: login.simple_form
                 check_path: login.simple_check
                 success_handler: authentication_listener

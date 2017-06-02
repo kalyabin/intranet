@@ -6,6 +6,7 @@ use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -19,7 +20,7 @@ use UserBundle\Validator\Constraints\UserEmail;
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\UserRepository")
  * @ORM\Table(name="`user`")
  */
-class UserEntity implements UserInterface, \JsonSerializable
+class UserEntity implements AdvancedUserInterface, \JsonSerializable
 {
     /**
      * Статус пользователя - активен
@@ -490,6 +491,46 @@ class UserEntity implements UserInterface, \JsonSerializable
     public function isLocked(): bool
     {
         return $this->status == self::STATUS_LOCKED;
+    }
+
+    /**
+     * Не просрочен ли доступ
+     *
+     * @return bool
+     */
+    public function isAccountNonExpired(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Не заблокирован ли аккаунт
+     *
+     * @return bool
+     */
+    public function isAccountNonLocked(): bool
+    {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Не был ли пользователь заблокирован во время работы
+     *
+     * @return bool
+     */
+    public function isCredentialsNonExpired(): bool
+    {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Не требуется ли активация аккаунта
+     *
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->status == self::STATUS_ACTIVE;
     }
 
     /**
