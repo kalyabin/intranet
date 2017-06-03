@@ -35,13 +35,13 @@ router.beforeEach((to: Route, from: Route, next) => {
         // проверить необходимый тип пользователя
         let hasType = (type: string): boolean => {
             let userType = type as UserType;
-            return userData.userType == userType;
+            return userData && userData.userType == userType;
         };
 
         if (isAuth && needNotAuth) {
             // авторизованному пользователю на этой странице делать нечего
             next({name: userData.userType == 'customer' ? 'cabinet' : 'dashboard'});
-        } else if (!isAuth && (needAuth || needRole)) {
+        } else if (!isAuth && (needAuth || needRole || needType)) {
             // требуется авторизовация
             next({name: 'login'});
         } else if ((needRole && !hasRole(needRole)) || (needType && !hasType(needType))) {
