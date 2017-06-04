@@ -27,6 +27,7 @@ export class TicketForm extends Vue {
      * Модель заполнеяемого тикета
      */
     @Model() ticket: TicketRequestInterface = {
+        category: '',
         title: '',
         text: ''
     };
@@ -96,25 +97,25 @@ export class TicketForm extends Vue {
             this.awaitOfSubmit = true;
 
             pageMetaStore.commit('showPageLoader');
-            ticketService.createTicket(this.category.id, this.ticket)
-                .then((response: TicketResponseInterface) => {
-                    if (response.success) {
-                        this.$store.dispatch('addTicket', response.ticket)
-                            .then(() => router.push({
-                                name: 'cabinet_ticket_list',
-                                params: {
-                                    category: this.category.id
-                                }
-                            }));
-                    } else {
-                        this.errorMessage = response.firstError;
-                    }
-                    this.awaitOfSubmit = false;
-                    pageMetaStore.commit('hidePageLoader');
-                }, () => {
-                    this.awaitOfSubmit = false;
-                    pageMetaStore.commit('hidePageLoader');
-                });
+            // ticketService.createTicket(this.category.id, this.ticket)
+            //     .then((response: TicketResponseInterface) => {
+            //         if (response.success) {
+            //             this.$store.dispatch('addTicket', response.ticket)
+            //                 .then(() => router.push({
+            //                     name: 'cabinet_ticket_list',
+            //                     params: {
+            //                         category: this.category.id
+            //                     }
+            //                 }));
+            //         } else {
+            //             this.errorMessage = response.firstError;
+            //         }
+            //         this.awaitOfSubmit = false;
+            //         pageMetaStore.commit('hidePageLoader');
+            //     }, () => {
+            //         this.awaitOfSubmit = false;
+            //         pageMetaStore.commit('hidePageLoader');
+            //     });
         }, () => {});
     }
 }

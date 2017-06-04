@@ -1,0 +1,14 @@
+<div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default">{{label}}</button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Раскрыть список</span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li v-for="item in items">
+                <a href="#" @click.prevent="selectItem(item)">{{getItemLabel(item)}}</a>
+            </li>
+        </ul>
+    </div>
+</div>

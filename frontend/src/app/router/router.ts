@@ -53,7 +53,12 @@ router.beforeEach((to: Route, from: Route, next) => {
             let title = to.meta.title || '';
             pageMetaStore.commit('setPageTitle', pageTitle);
             pageMetaStore.commit('setTitle', title);
+            pageMetaStore.commit('showPageLoader');
             next();
         }
     });
+});
+
+router.afterEach(() => {
+    pageMetaStore.commit('hidePageLoader');
 });

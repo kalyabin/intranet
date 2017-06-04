@@ -8,7 +8,8 @@ import {authUserStore} from "../store/auth-user.store";
 import {Model} from "vue-property-decorator";
 import {SideBarMenuItem, managerSideBarMenu, customerSideBarMenu} from "../sidebar-menu";
 import {pageMetaStore} from "../router/page-meta-store";
-import {AuthInterface} from "../service/response/auth.interface";
+import {ticketCategoriesStore} from "../store/ticket-categories.store";
+import {TicketCategoryInterface} from "../service/model/ticket-category.interface";
 
 Component.registerHooks([
     'beforeRouteLeave'
@@ -64,6 +65,32 @@ export class Dashboard extends Vue {
             let userType = authUserStore.state.userData.userType;
 
             this.sideBarMenu = userType == 'manager' ? managerSideBarMenu : customerSideBarMenu;
+
+            // получить подразделы для тикетной системы
+            ticketCategoriesStore
+                .dispatch('fetchList')
+                .then((categories: TicketCategoryInterface[]) => {
+                    // поместить категории в главное меню с заявками
+                    let routeName = userType == 'manager' ? 'manager_ticket_list' : 'customer_ticket_list';
+                    for (let item of this.sideBarMenu) {
+                        if (item.route.name == routeName) {
+                            let key = this.sideBarMenu.indexOf(item);
+                            this.sideBarMenu[key].children = [];
+                            for (let category of categories) {
+                                this.sideBarMenu[key].children.push({
+                                    route: {
+                                        name: routeName,
+                                        params: {
+                                            category: category.id
+                                        }
+                                    },
+                                    menuName: category.name
+                                });
+                            }
+                            break;
+                        }
+                    }
+                });
         });
 
         if (this.menuToggled) {

@@ -62,7 +62,7 @@ export class TicketDetails extends Vue {
         messagePanel.visible = true;
         messagePanel.toggle();
 
-        ticketService.ticketDetails(this.category.id, this.ticket.id)
+        ticketService.ticketDetails(this.ticket.id)
             .then((response: TicketDetailsResponseInterface) => {
                 this.setData(response);
             }, () => {});
@@ -144,7 +144,7 @@ export class TicketDetails extends Vue {
      */
     beforeRouteEnter(to, from, next): void {
         ticketCategoriesStore.dispatch('checkCategory', to.params.category).then((category: TicketCategoryInterface) => {
-            ticketService.ticketDetails(to.params.category, to.params.ticket)
+            ticketService.ticketDetails(to.params.ticket)
                 .then((response: TicketDetailsResponseInterface) => {
                     next(vm => {
                         vm.setData(response);
@@ -159,7 +159,7 @@ export class TicketDetails extends Vue {
      */
     beforeRouteUpdate(to, from, next): void {
         ticketCategoriesStore.dispatch('checkCategory', to.params.category).then((category: TicketCategoryInterface) => {
-            ticketService.ticketDetails(to.params.category, to.params.ticket)
+            ticketService.ticketDetails(to.params.ticket)
                 .then((response: TicketDetailsResponseInterface) => {
                     next(vm => {
                         vm.setData(response);

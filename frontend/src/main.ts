@@ -15,6 +15,7 @@ import {dateFormatFilter} from "./app/filter/date-format.filter";
 import {NeedUserTypeDirective} from "./app/directive/need-user-type.directive";
 import {pageMetaStore} from "./app/router/page-meta-store";
 import {ticketStatusColorFilter} from "./app/filter/ticket-status-color.filter";
+import {Dropdown} from "./app/components/dropdown";
 
 /**
  * Точка входа приложения
@@ -35,6 +36,7 @@ Vue.component('modal-window', ModalWindow);
 Vue.component('x-panel', XPanel);
 Vue.component('tabs', Tabs);
 Vue.component('tab-pane', TabPane);
+Vue.component('dropdown', Dropdown);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);

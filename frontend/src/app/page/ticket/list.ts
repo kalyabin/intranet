@@ -3,7 +3,7 @@ import Component from "vue-class-component";
 import {TicketCategoryInterface} from "../../service/model/ticket-category.interface";
 import {ticketCategoriesStore} from "../../store/ticket-categories.store";
 import {pageMetaStore} from "../../router/page-meta-store";
-import {Model} from "vue-property-decorator";
+import {Model, Watch} from "vue-property-decorator";
 import {ticketListStore} from "../../store/ticket-list.store";
 import {TicketInterface} from "../../service/model/ticket.interface";
 import {authUserStore} from "../../store/auth-user.store";
@@ -30,27 +30,50 @@ Component.registerHooks([
 })
 export class TicketList extends Vue {
     /**
-     * Категория тикетной системы
+     * Выбранная категория
      */
     @Model() category: TicketCategoryInterface = null;
+
+    /**
+     * При изменении категории - получать новый список
+     */
+    @Watch('category') onChangeCategory(category: TicketCategoryInterface) {
+        let categoryId = category ? category.id : null;
+
+        let fetchList = (categoryId: string) => {
+            pageMetaStore.commit('showPageLoader');
+            this.$store.dispatch('clear').then(() => {
+                this.$store.dispatch('fetchList', categoryId).then(() => {
+                    pageMetaStore.commit('hidePageLoader');
+                });
+            });
+        };
+
+        // проверить права на просмотр категории
+        if (categoryId) {
+            ticketCategoriesStore.dispatch('checkCategory', categoryId).then(() => {
+                fetchList(categoryId);
+            }, () => {
+                // если нет доступа к категории - показать все доступные тикеты
+                fetchList(null);
+            });
+        } else {
+            fetchList(null);
+        }
+    }
+
+    /**
+     * Список категорий
+     */
+    get categories(): TicketCategoryInterface[] {
+        return ticketCategoriesStore.state.list as TicketCategoryInterface[];
+    }
 
     /**
      * Список тикетов
      */
     get list(): TicketInterface[] {
         return this.$store.state.list as TicketInterface[];
-    }
-
-    /**
-     * Получить ссылку на форму создания нового тикета
-     */
-    get createLinkRoute() {
-        return {
-            name: 'ticket_customer_list',
-            params: {
-                category: this.category ? this.category.id : ''
-            }
-        };
     }
 
     /**
@@ -68,13 +91,24 @@ export class TicketList extends Vue {
     }
 
     /**
+     * Переход к другой категории
+     */
+    selectCategory(category: TicketCategoryInterface): void {
+        router.push({
+            name: this.userType == 'customer' ? 'cabinet_ticket_list' : 'manager_ticket_list',
+            params: <any>{
+                category: category.id
+            }
+        });
+    }
+
+    /**
      * Открыть страницу тикета
      */
     openTicket(ticket: TicketInterface): void {
         router.push({
             name: this.userType == 'customer' ? 'cabinet_ticket_details' : 'manager_ticket_details',
             params: <any>{
-                category: this.category.id,
                 ticket: ticket.id
             }
         });
@@ -87,13 +121,6 @@ export class TicketList extends Vue {
         pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
         pageMetaStore.commit('setPageTitle', `${category.name}`);
 
-        // рендер списка тикетов
-        if (!this.category || this.category.id != category.id) {
-            this.$store.dispatch('clear').then(() => {
-                this.$store.dispatch('fetchList', this.category.id);
-            });
-        }
-
         this.category = category;
     }
 
@@ -101,30 +128,33 @@ export class TicketList extends Vue {
      * Проверка прав и получение категории тикетной системы
      */
     beforeRouteEnter(to, from, next): void {
-        // проверить возможность просмотра категории текущим пользователем
-        // ticketCategoriesStore хранит в себе все доступные категории для пользователя
-        ticketCategoriesStore.dispatch('checkCategory', to.params.category)
-            .then((category: TicketCategoryInterface) => {
-                next(vm => vm.setCategory(category));
-            }, () => {
-                next({name: '403'});
-            });
+        if (to.params.category) {
+            ticketCategoriesStore.dispatch('checkCategory', to.params.category)
+                .then((category: TicketCategoryInterface) => {
+                    next(vm => vm.setCategory(category));
+                }, () => {
+                    next(vm => vm.setCategory(null))
+                });
+        } else {
+            next(vm => vm.setCategory(null));
+        }
     }
 
     /**
-     * Переход между страницами списков заявок
+     * Проверка прав и получение категории тикетной системы
      */
     beforeRouteUpdate(to, from, next): void {
-        // проверить возможность просмотра категории текущим пользователем
-        // ticketCategoriesStore хранит в себе все доступные категории для пользователя
-        this.category = null;
-
-        ticketCategoriesStore.dispatch('checkCategory', to.params.category)
-            .then((category: TicketCategoryInterface) => {
-                this.setCategory(category);
-                next();
-            }, () => {
-                next({name: '403'});
-            });
+        if (to.params.category) {
+            ticketCategoriesStore.dispatch('checkCategory', to.params.category)
+                .then((category: TicketCategoryInterface) => {
+                    this.setCategory(category);
+                    next();
+                }, () => {
+                    this.setCategory(null);
+                    next();
+                });
+        } else {
+            this.setCategory(null);
+        }
     }
 }

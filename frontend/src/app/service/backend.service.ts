@@ -58,12 +58,19 @@ export class BackendService {
             }
         };
 
-        return this.http.request({
+        let request: AxiosRequestConfig = {
             method: method,
             url: uri,
-            data: data,
             headers: headers
-        })
+        };
+
+        if (method == 'GET') {
+            request.params = data;
+        } else {
+            request.data = data;
+        }
+
+        return this.http.request(request)
         .then((response: AxiosResponse) => {
             // если пришел новый токен - запомнить его в переменной
             retrieveCsrfToken(response);

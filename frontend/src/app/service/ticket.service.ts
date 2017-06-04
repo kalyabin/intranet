@@ -21,9 +21,11 @@ export class TicketService {
     /**
      * Список тикетов. Единый метод для менеджеров и арендаторов
      */
-    list(category: string, pageNum: number = 0, pageSize: number = 150): Promise<ListInterface<TicketInterface>> {
+    list(category: string = null, opened: boolean = true, pageNum: number = 0, pageSize: number = 150): Promise<ListInterface<TicketInterface>> {
         return this.backendService
-            .makeRequest('GET', `ticket/${category}`, {
+            .makeRequest('GET', `ticket`, {
+                category: category,
+                opened: opened ? '1' : '0',
                 pageNum: pageNum,
                 pageSize: pageSize
             })
@@ -35,9 +37,9 @@ export class TicketService {
     /**
      * Создание тикета. Метод может выполнять только арендатор
      */
-    createTicket(category: string, ticket: TicketRequestInterface): Promise<TicketResponseInterface> {
+    createTicket(ticket: TicketRequestInterface): Promise<TicketResponseInterface> {
         return this.backendService
-            .makeRequest('POST', `ticket/${category}`, {
+            .makeRequest('POST', `ticket`, {
                 ticket: ticket
             })
             .then((response: AxiosResponse) => {
@@ -48,9 +50,9 @@ export class TicketService {
     /**
      * Получить детальную информацию о тикете. Единый метод для менеджеров и арендаторов
      */
-    ticketDetails(category: string, ticketId: number): Promise<TicketDetailsResponseInterface> {
+    ticketDetails(ticketId: number): Promise<TicketDetailsResponseInterface> {
         return this.backendService
-            .makeRequest('GET', `ticket/${category}/${ticketId}`)
+            .makeRequest('GET', `ticket/${ticketId}`)
             .then((response: AxiosResponse) => {
                 return response.data as TicketDetailsResponseInterface;
             });
@@ -59,9 +61,9 @@ export class TicketService {
     /**
      * Создание сообщения в тикете. Единый метод для менеджеров и арендаторов.
      */
-    createMessage(category: string, ticketId: number, message: TicketMessageRequestInterface): Promise<TicketMessageResponseInterface> {
+    createMessage(ticketId: number, message: TicketMessageRequestInterface): Promise<TicketMessageResponseInterface> {
         return this.backendService
-            .makeRequest('POST', `ticket/${category}/${ticketId}/message`, {
+            .makeRequest('POST', `ticket/${ticketId}/message`, {
                 'ticket_message': message
             })
             .then((response: AxiosResponse) => {
@@ -72,9 +74,9 @@ export class TicketService {
     /**
      * Закрытие тикета. Метод единый для менеджеров и арендаторов.
      */
-    closeTicket(category: string, ticketId: number): Promise<TicketResponseInterface> {
+    closeTicket(ticketId: number): Promise<TicketResponseInterface> {
         return this.backendService
-            .makeRequest('POST', `ticket/${category}/${ticketId}/close`)
+            .makeRequest('POST', `ticket/${ticketId}/close`)
             .then((response: AxiosResponse) => {
                 return response.data as TicketResponseInterface;
             });
@@ -98,13 +100,13 @@ export class TicketService {
      * Если передан managerId, то назначается менеджер с указанным идентификатором.
      * Опцию managerId может передавать только администратор тикетной системы.
      */
-    assign(category: string, ticketId: number, managerId?: number): Promise<TicketResponseInterface> {
+    assign(ticketId: number, managerId?: number): Promise<TicketResponseInterface> {
         let request = {};
         if (managerId) {
             request['managerId'] = managerId;
         }
         return this.backendService
-            .makeRequest('POST', `ticket/${category}/${ticketId}/assign`, request)
+            .makeRequest('POST', `ticket/${ticketId}/assign`, request)
             .then((response: AxiosResponse) => {
                 return response.data as TicketResponseInterface;
             });
@@ -115,7 +117,7 @@ export class TicketService {
      */
     categories(): Promise<TicketCategoryInterface[]> {
         return this.backendService
-            .makeRequest('GET', 'ticket')
+            .makeRequest('GET', 'ticket/categories')
             .then((response: AxiosResponse) => {
                 return response.data['list'] as TicketCategoryInterface[];
             });

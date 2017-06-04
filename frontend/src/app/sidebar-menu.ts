@@ -2,10 +2,11 @@
  * Элемент меню для левой колонки
  */
 export interface SideBarMenuItem {
-    route: Object;
-    faIcon: string;
+    route: any;
+    faIcon?: string;
     menuName: string;
     role?: string;
+    children?: SideBarMenuItem[];
 }
 
 /**
@@ -22,46 +23,10 @@ export const customerSideBarMenu: Array<SideBarMenuItem> = [
     {
         route: {
             name: 'cabinet_ticket_list',
-            params: {
-                category: 'it-department',
-            },
         },
-        faIcon: 'fa-laptop',
-        menuName: 'IT-аутсорсинг',
-        role: 'ROLE_IT_CUSTOMER',
-    },
-    {
-        route: {
-            name: 'cabinet_ticket_list',
-            params: {
-                category: 'booker-department',
-            },
-        },
-        faIcon: 'fa-calculator',
-        menuName: 'SMART-бухгалтер',
-        role: 'ROLE_BOOKER_CUSTOMER',
-    },
-    {
-        route: {
-            name: 'cabinet_ticket_list',
-            params: {
-                category: 'finance-department',
-            },
-        },
-        faIcon: 'fa-money',
-        menuName: 'Финансовые вопросы',
-        role: 'ROLE_FINANCE_CUSTOMER',
-    },
-    {
-        route: {
-            name: 'cabinet_ticket_list',
-            params: {
-                category: 'maintaince-department'
-            },
-        },
-        faIcon: 'fa-wrench',
-        menuName: 'Служба эксплуатации',
-        role: 'ROLE_MAINTAINCE_CUSTOMER',
+        faIcon: 'fa-question',
+        menuName: 'Заявки',
+        children: []
     },
 ];
 
@@ -94,6 +59,14 @@ export const managerSideBarMenu: Array<SideBarMenuItem> = [
     },
     {
         route: {
+            name: 'manager_ticket_list',
+        },
+        faIcon: 'fa-question',
+        menuName: 'Заявки',
+        children: []
+    },
+    {
+        route: {
             name: 'dashboard_index',
         },
         faIcon: 'fa-building',
@@ -107,50 +80,6 @@ export const managerSideBarMenu: Array<SideBarMenuItem> = [
         faIcon: 'fa-shopping-basket',
         menuName: 'Управление складом',
         role: 'ROLE_STORAGE_MANAGEMENT',
-    },
-    {
-        route: {
-            name: 'manager_ticket_list',
-            params: {
-                category: 'it-department',
-            },
-        },
-        faIcon: 'fa-laptop',
-        menuName: 'Заявки IT-аутсорсинг',
-        role: 'ROLE_IT_MANAGEMENT',
-    },
-    {
-        route: {
-            name: 'manager_ticket_list',
-            params: {
-                category: 'booker-department',
-            },
-        },
-        faIcon: 'fa-calculator',
-        menuName: 'Заявки SMART-бухгалтер',
-        role: 'ROLE_BOOKER_MANAGEMENT',
-    },
-    {
-        route: {
-            name: 'manager_ticket_list',
-            params: {
-                category: 'finance-department',
-            },
-        },
-        faIcon: 'fa-money',
-        menuName: 'Финансовые вопросы',
-        role: 'ROLE_FINANCE_MANAGEMENT',
-    },
-    {
-        route: {
-            name: 'manager_ticket_list',
-            params: {
-                category: 'maintaince-department'
-            },
-        },
-        faIcon: 'fa-wrench',
-        menuName: 'Служба эксплуатации',
-        role: 'ROLE_MAINTAINCE_MANAGEMENT',
     },
     {
         route: {

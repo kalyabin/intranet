@@ -80,6 +80,9 @@
   background: #3E5367;
   display: none;
 }
+.side-menu>li.active>.child_menu {
+  display: block;
+}
 .nav-sm ul.nav.child_menu li {
   padding: 0 10px;
 }

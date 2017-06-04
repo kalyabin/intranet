@@ -58,7 +58,7 @@ export class TicketMessageForm extends Vue {
         this.$validator.validateAll().then(() => {
             pageMetaStore.commit('showPageLoader');
             this.awaitForSubmit = true;
-            ticketService.createMessage(this.category.id, this.ticket.id, {
+            ticketService.createMessage(this.ticket.id, {
                 text: this.text,
                 closeTicket: this.closeTicket
             }).then((response: TicketMessageResponseInterface) => {
@@ -92,7 +92,7 @@ export class TicketMessageForm extends Vue {
 
         pageMetaStore.commit('showPageLoader');
 
-        ticketService.closeTicket(this.category.id, this.ticket.id)
+        ticketService.closeTicket(this.ticket.id)
             .then((response: TicketResponseInterface) => {
                 pageMetaStore.commit('hidePageLoader');
                 this.awaitForSubmit = false;

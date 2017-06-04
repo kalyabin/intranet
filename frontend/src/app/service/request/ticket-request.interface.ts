@@ -3,6 +3,11 @@
  */
 export interface TicketRequestInterface {
     /**
+     * Категория
+     */
+    category: string;
+
+    /**
      * Заголовок
      */
     title: string;

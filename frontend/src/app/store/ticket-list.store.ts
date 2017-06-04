@@ -66,7 +66,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
         /**
          * Заполнить список
          */
-        fetchList: (action, category: string) => {
+        fetchList: (action, category: string = null, opened: boolean = true) => {
             return new Promise((resolve, reject) => {
                 // защита от задвоения данных
                 if (action.state.list.length > 0) {
@@ -76,7 +76,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
                 let pageNum = 0;
                 let cnt = 0;
                 let fetchTickets = () => {
-                    ticketService.list(category, pageNum).then((response: ListInterface<TicketInterface>) => {
+                    ticketService.list(category, opened, pageNum).then((response: ListInterface<TicketInterface>) => {
                         action.commit('addTickets', response.list);
                         pageNum++;
                         cnt += response.list.length;

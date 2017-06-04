@@ -46,12 +46,12 @@ export const routes: Array<RouteConfig> = [
                 component: Index
             },
             {
-                path: '/auth/cabinet/ticket/:category',
+                path: '/auth/cabinet/ticket/:category?',
                 name: 'cabinet_ticket_list',
                 component: TicketList,
                 meta: {
                     needType: 'customer',
-                    pageTitle: 'Тикетная система'
+                    pageTitle: 'Заявки'
                 }
             },
             {
@@ -60,7 +60,7 @@ export const routes: Array<RouteConfig> = [
                 component: TicketForm,
                 meta: {
                     needType: 'customer',
-                    pageTitle: 'Тикетная система'
+                    pageTitle: 'Список заявок'
                 }
             },
             {
@@ -107,12 +107,12 @@ export const routes: Array<RouteConfig> = [
                 }
             },
             {
-                path: '/auth/manager/ticket/:category',
+                path: '/auth/manager/ticket/:category?',
                 name: 'manager_ticket_list',
                 component: TicketList,
                 meta: {
                     needType: 'manager',
-                    pageTitle: 'Тикетная система'
+                    pageTitle: 'Заявки'
                 }
             },
             {
