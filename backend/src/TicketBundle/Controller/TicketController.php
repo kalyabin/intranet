@@ -111,19 +111,17 @@ class TicketController extends Controller
      * Если у пользователя нет доступа к данному тикету - генерирует 403-ю ошибку.
      * Если тикет на найден - генерирует 404-ю ошибку.
      *
-     * @param string $category Идентификатор категории
      * @param int $id Идентификатор тикета
      * @param string $access Право доступа к тикету (по умолчанию - просмотр)
      *
      * @return TicketEntity
      */
-    protected function findTicket(string $category, int $id, string $access = 'view'): TicketEntity
+    protected function findTicket(int $id, string $access = 'view'): TicketEntity
     {
-        $ticket = $this->ticketRepository->findOneByIdAndCategory($id, $category);
+        $ticket = $this->ticketRepository->findOneById($id);
         if (!$ticket) {
             throw $this->createNotFoundException('Заявка не найдена');
         }
-        $this->denyAccessUnlessGranted($access == 'create' ? 'create' : 'view', $ticket->getCategory(), 'У вас нет права для просмотра данной очереди');
         $this->denyAccessUnlessGranted($access, $ticket, 'У вас нет прав производить данное действие');
 
         return $ticket;
@@ -133,7 +131,7 @@ class TicketController extends Controller
      * Получить доступные категории для пользователя
      *
      * @Method({"GET"})
-     * @Route("/ticket", name="ticket.categories", options={"expose": true})
+     * @Route("/ticket/categories", name="ticket.categories", options={"expose": true})
      *
      * @return JsonResponse
      */
@@ -158,22 +156,44 @@ class TicketController extends Controller
      * Получить доступный список тикетов для пользователя.
      *
      * В запросе необходимо передавать:
+     * - category - идентификатор категории (по умолчанию доступные категории для пользователя);
      * - customer - идентификатор котрагента;
      * - opened - флаг для получения только открытых заявок.
      * - page - номер текущей страницы для постраничной навигации
      * - pageSize - количество элементов на странице.
      *
      * @Method({"GET"})
-     * @Route("/ticket/{category}", name="ticket.list", options={"expose": true}, requirements={"category": "[\w|-]+"})
+     * @Route("/ticket", name="ticket.list", options={"expose": true})
      *
-     * @param string $category
      * @param Request $request
      *
      * @return ListJsonResponse
      */
-    public function listAction(string $category, Request $request): ListJsonResponse
+    public function listAction(Request $request): ListJsonResponse
     {
-        $category = $this->findCategory($category);
+        // запрос по категории
+        $category = (string) $request->get('category', null);
+        $categories = [];
+        if ($category) {
+            // проверка права доступа в категорию
+            $category = $this->findCategory($category);
+            if ($category) {
+                $categories[] = $category->getId();
+            }
+        } else {
+            // все доступные категории для пользователя
+            foreach ($this->ticketCategoryRepository->findAll() as $category) {
+                /** @var TicketCategoryEntity $category */
+                if ($this->isGranted('view', $category)) {
+                    $categories[] = $category->getId();
+                }
+            }
+
+            // если нет доступа к категориям - перегенерировать массив с несуществующей категорией
+            if (empty($categories)) {
+                $categories[] = 'dummy category';
+            }
+        }
 
         // фильтр по контрагенту
         $customer = (int) $request->get('customer', null);
@@ -209,18 +229,17 @@ class TicketController extends Controller
         $offset = max(0, $offset);
 
         $totalCount = (int) $this->ticketRepository
-            ->findAllByFilter($category->getId(), $customer, $opened)
+            ->findAllByFilter($categories, $customer, $opened)
             ->select('count(t.id)')
             ->getQuery()
             ->getSingleScalarResult();
 
         $list = $this->ticketRepository
-            ->findAllByFilter($category->getId(), $customer, $opened)
+            ->findAllByFilter($categories, $customer, $opened)
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
             ->getQuery()
             ->getResult();
-
 
         return new ListJsonResponse($list, $pageSize, $pageNum, $totalCount);
     }
@@ -229,17 +248,14 @@ class TicketController extends Controller
      * Создать новый тикет
      *
      * @Method({"POST"})
-     * @Route("/ticket/{category}", name="ticket.create", options={"expose": true}, requirements={"category": "[\w|-]+"})
+     * @Route("/ticket", name="ticket.create", options={"expose": true}, requirements={"category": "[\w|-]+"})
      *
-     * @param string $category Категория в которой создать тикет
      * @param Request $request
      *
      * @return FormValidationJsonResponse
      */
-    public function createTicketAction(string $category, Request $request): FormValidationJsonResponse
+    public function createTicketAction(Request $request): FormValidationJsonResponse
     {
-        $category = $this->findCategory($category, 'create');
-
         $formType = new TicketType();
         $form = $this->createForm(TicketType::class, $formType);
         $form->handleRequest($request);
@@ -247,7 +263,9 @@ class TicketController extends Controller
         $ticket = null;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $ticket = $this->ticketManager->createTicket($formType, $category, $this->getUser());
+            // проверить, что пользователь может создавать тикеты в данной категории
+            $this->denyAccessUnlessGranted('create', $formType->getCategory(), 'У вас нет прав производить данное действие');
+            $ticket = $this->ticketManager->createTicket($formType, $this->getUser());
         }
 
         $response = new FormValidationJsonResponse();
@@ -264,22 +282,20 @@ class TicketController extends Controller
      *
      * @Method({"GET"})
      * @Route(
-     *     "/ticket/{category}/{ticket}",
+     *     "/ticket/{ticket}",
      *     name="ticket.details",
      *     options={"expose": true}, requirements={
-     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
      *
-     * @param string $category Идентификатор категории
      * @param int $ticket Идентификатор тикета внутри категории
      *
      * @return JsonResponse
      */
-    public function detailsAction(string $category, int $ticket): JsonResponse
+    public function detailsAction(int $ticket): JsonResponse
     {
-        $ticket = $this->findTicket($category, $ticket, 'view');
+        $ticket = $this->findTicket($ticket, 'view');
 
         return new JsonResponse([
             'ticket' => $ticket,
@@ -293,23 +309,21 @@ class TicketController extends Controller
      *
      * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{ticket}/message",
+     *     "/ticket/{ticket}/message",
      *     name="ticket.message",
      *     options={"expose": true}, requirements={
-     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
      *
-     * @param string $category Идентификатор категории тикета
      * @param int $ticket Идентификатор тикета
      * @param Request $request
      *
      * @return FormValidationJsonResponse
      */
-    public function messageAction(string $category, int $ticket, Request $request): FormValidationJsonResponse
+    public function messageAction(int $ticket, Request $request): FormValidationJsonResponse
     {
-        $ticket = $this->findTicket($category, $ticket, 'message');
+        $ticket = $this->findTicket($ticket, 'message');
 
         $messageType = new TicketMessageType();
         $form = $this->createForm(TicketMessageType::class, $messageType);
@@ -340,22 +354,20 @@ class TicketController extends Controller
      *
      * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{ticket}/close",
+     *     "/ticket/{ticket}/close",
      *     name="ticket.close",
      *     options={"expose": true}, requirements={
-     *          "category": "[\w|-]+",
      *          "ticket": "\d+"
      *     }
      * )
      *
-     * @param string $category Категория тикета
      * @param int $ticket Идентификатор тикета внутри категории
      *
      * @return JsonResponse
      */
-    public function closeAction(string $category, int $ticket): JsonResponse
+    public function closeAction(int $ticket): JsonResponse
     {
-        $ticket = $this->findTicket($category, $ticket, 'update');
+        $ticket = $this->findTicket($ticket, 'update');
 
         /** @var UserEntity $user */
         $user = $this->getUser();
@@ -408,7 +420,7 @@ class TicketController extends Controller
      *
      * @Method({"POST"})
      * @Route(
-     *     "/ticket/{category}/{ticket}/assign",
+     *     "/ticket/{ticket}/assign",
      *     name="ticket.assign",
      *     options={"expose": true},
      *     requirements={
@@ -417,15 +429,14 @@ class TicketController extends Controller
      *     }
      * )
      *
-     * @param string $category Идентификатор тикетной категории
      * @param int $ticket Идентификатор тикета
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function assignAction(string $category, int $ticket, Request $request): JsonResponse
+    public function assignAction(int $ticket, Request $request): JsonResponse
     {
-        $ticket = $this->findTicket($category, $ticket, 'assign');
+        $ticket = $this->findTicket($ticket, 'assign');
 
         // назначаемый менеджер (по умолчанию - текущий пользователь)
         $user = $this->getUser();

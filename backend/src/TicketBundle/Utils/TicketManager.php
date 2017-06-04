@@ -298,12 +298,11 @@ class TicketManager
      * Создание заявки
      *
      * @param TicketType $ticket Заполненная форма заявки с заголовком и текстом первого сообщения
-     * @param TicketCategoryEntity $category Категория для заявки (очередь)
      * @param UserEntity $author Автор заявки
      *
      * @return TicketEntity
      */
-    public function createTicket(TicketType $ticket, TicketCategoryEntity $category, UserEntity $author): TicketEntity
+    public function createTicket(TicketType $ticket, UserEntity $author): TicketEntity
     {
         $number = $this->generateTicketNumber($author);
         $customer = $author->getCustomer();
@@ -315,7 +314,7 @@ class TicketManager
             ->setCreatedAt(new \DateTime())
             ->setLastQuestionAt(new \DateTime())
             ->setCreatedBy($author)
-            ->setCategory($category)
+            ->setCategory($ticket->getCategory())
             ->setTitle($ticket->getTitle());
 
         $this->setTicketStatus($entity, $author, TicketEntity::STATUS_NEW);

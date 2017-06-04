@@ -110,33 +110,48 @@ class TicketRepositoryTest extends WebTestCase
 
         // поиск по категории
         /** @var TicketEntity[] $result */
-        $result = $this->repository->findAllByFilter('not exists category')->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter(['not exists category'])->getQuery()->getResult();
         $this->assertEmpty($result);
 
-        $result = $this->repository->findAllByFilter($category->getId())->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()])->getQuery()->getResult();
         $this->assertNotEmpty($result);
         $this->assertCount(1, $result);
         $this->assertEquals($ticket->getId(), $result[0]->getId());
 
         // поиск по контрагенту
         /** @var TicketEntity[] $result */
-        $result = $this->repository->findAllByFilter($category->getId(), $allCustomer->getId())->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()], $allCustomer->getId())->getQuery()->getResult();
         $this->assertEmpty($result);
 
-        $result = $this->repository->findAllByFilter($category->getId(), $ticketCustomer->getId())->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()], $ticketCustomer->getId())->getQuery()->getResult();
         $this->assertNotEmpty($result);
         $this->assertCount(1, $result);
         $this->assertEquals($ticket->getId(), $result[0]->getId());
 
         // поиск по статусам
         /** @var TicketEntity[] $result */
-        $result = $this->repository->findAllByFilter($category->getId(), $ticketCustomer->getId(), false)->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()], $ticketCustomer->getId(), false)->getQuery()->getResult();
         $this->assertEmpty($result);
 
-        $result = $this->repository->findAllByFilter($category->getId(), $ticketCustomer->getId(), true)->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()], $ticketCustomer->getId(), true)->getQuery()->getResult();
         $this->assertNotEmpty($result);
         $this->assertCount(1, $result);
         $this->assertEquals($ticket->getId(), $result[0]->getId());
     }
 
+    /**
+     * @depends testRepository
+     *
+     * @covers TicketRepository::findOneById()
+     */
+    public function testFindOneById()
+    {
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+
+        $result = $this->repository->findOneById($ticket->getId());
+
+        $this->assertInstanceOf(TicketEntity::class, $result);
+        $this->assertEquals($result->getId(), $ticket->getId());
+    }
 }

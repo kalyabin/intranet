@@ -1,10 +1,12 @@
 <?php
 
 namespace TicketBundle\Form\Type;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use TicketBundle\Entity\TicketCategoryEntity;
 
 
 /**
@@ -21,6 +23,13 @@ class TicketType extends TicketMessageType
      * @var string Заголовок заявки
      */
     protected $title;
+
+    /**
+     * @Assert\NotBlank()
+     *
+     * @var TicketCategoryEntity Категория тикета
+     */
+    protected $category;
 
     /**
      * Установить заголовок
@@ -47,6 +56,31 @@ class TicketType extends TicketMessageType
     }
 
     /**
+     * Установить категорию
+     *
+     * @param null|TicketCategoryEntity $category
+     *
+     * @return TicketType
+     */
+    public function setCategory($category): self
+    {
+        $this->category = $category instanceof TicketCategoryEntity ?
+            $category : '';
+
+        return $this;
+    }
+
+    /**
+     * Получить категорию
+     *
+     * @return null|TicketCategoryEntity
+     */
+    public function getCategory(): ?TicketCategoryEntity
+    {
+        return $this->category;
+    }
+
+    /**
      * @inheritdoc
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -54,6 +88,11 @@ class TicketType extends TicketMessageType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Заголовок заявки'
+            ])
+            ->add('category', EntityType::class, [
+                'label' => 'Категория',
+                'class' => TicketCategoryEntity::class,
+                'choice_label' => 'name',
             ]);
 
         parent::buildForm($builder, $options);

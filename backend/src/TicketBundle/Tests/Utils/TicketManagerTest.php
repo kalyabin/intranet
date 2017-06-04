@@ -84,6 +84,7 @@ class TicketManagerTest extends WebTestCase
         $form = new TicketType();
 
         $form
+            ->setCategory($category)
             ->setTitle('testing ticket title')
             ->setText('testing ticket text');
 
@@ -105,7 +106,7 @@ class TicketManagerTest extends WebTestCase
             $eventTriggered = true;
         });
 
-        $result = $this->manager->createTicket($form, $category, $author);
+        $result = $this->manager->createTicket($form, $author);
 
         $this->assertTrue($eventTriggered);
         $this->assertInstanceOf(TicketEntity::class, $result);
@@ -136,7 +137,7 @@ class TicketManagerTest extends WebTestCase
         $this->assertEquals($author->getId(), $message->getCreatedBy()->getId());
 
         // повторное создание тикета не генерирует ошибку
-        $newInstance = $this->manager->createTicket($form, $category, $author);
+        $newInstance = $this->manager->createTicket($form, $author);
 
         $this->assertInstanceOf(TicketEntity::class, $newInstance);
         $this->assertGreaterThan(0, $newInstance->getId());

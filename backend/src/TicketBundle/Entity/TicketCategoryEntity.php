@@ -51,12 +51,12 @@ class TicketCategoryEntity implements \JsonSerializable
     protected $managerRole;
 
     /**
-     * @ORM\Column(type="string", length=100, name="customer_role", nullable=false)
+     * @ORM\Column(type="string", length=100, name="customer_role", nullable=true)
      *
      * @Assert\NotBlank()
      * @Assert\Length(max=100)
      *
-     * @var string Роль арендатора для доступа к очереди
+     * @var string Роль арендатора для доступа к очереди. По умолчанию - null, доступ имеют все арендаторы.
      */
     protected $customerRole;
 

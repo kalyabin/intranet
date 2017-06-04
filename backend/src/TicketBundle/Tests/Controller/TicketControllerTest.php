@@ -66,7 +66,7 @@ class TicketControllerTest extends WebTestCase
      *
      * @param string $url
      * @param string $method
-     * @param string|atring[] $allowedUsers Ключ или ключи в фикстурах для разрешенного пользователя
+     * @param string|string[] $allowedUsers Ключ или ключи в фикстурах для разрешенного пользователя
      * @param string|string[] $deniedUsers КЛюч или ключи для запрещенного пользователя в фикстурах
      * @param array|null $invalidData
      * @param array|null $validData
@@ -182,21 +182,14 @@ class TicketControllerTest extends WebTestCase
     {
         /** @var TicketEntity $ticket */
         $ticket = $this->fixtures->getReference('ticket');
-        /** @var TicketCategoryEntity $category */
-        $category = $this->fixtures->getReference('ticket-category');
 
-        $url = $this->getUrl('ticket.list', [
-            'category' => $category->getId()
-        ]);
+        $url = $this->getUrl('ticket.list');
 
         $jsonData = $this->assertAccessToAction($url, 'GET', [
             'superadmin-user',
             'ticket-manager',
             'ticket-customer-user',
-        ], [
-            'ticket-other-customer-user',
-            'ticket-manager-denied',
-        ]);
+        ], []);
 
         $this->assertArraySubset([
             'list' => [
@@ -206,6 +199,20 @@ class TicketControllerTest extends WebTestCase
             'pageNum' => 1,
             'totalCount' => 1,
         ], $jsonData);
+
+        // для указанных пользователей тикетов нет
+        foreach (['ticket-other-customer-user', 'ticket-manager-denied'] as $userIdent) {
+            $jsonData = $this->assertAccessToAction($url, 'GET', [
+                $userIdent
+            ], []);
+
+            $this->assertArraySubset([
+                'list' => [],
+                'pageSize' => 100,
+                'pageNum' => 1,
+                'totalCount' => 0,
+            ], $jsonData);
+        }
     }
 
     /**
@@ -213,13 +220,10 @@ class TicketControllerTest extends WebTestCase
      */
     public function testDetailsAction()
     {
-        /** @var TicketCategoryEntity $category */
-        $category = $this->fixtures->getReference('ticket-category');
         /** @var TicketEntity $ticket */
         $ticket = $this->fixtures->getReference('ticket');
 
         $url = $this->getUrl('ticket.details', [
-            'category' => $category->getId(),
             'ticket' => $ticket->getId(),
         ]);
 
@@ -248,9 +252,7 @@ class TicketControllerTest extends WebTestCase
         /** @var TicketCategoryEntity $category */
         $category = $this->fixtures->getReference('ticket-category');
 
-        $url = $this->getUrl('ticket.create', [
-            'category' => $category->getId(),
-        ]);
+        $url = $this->getUrl('ticket.create');
 
         $jsonData = $this->assertAccessToAction($url, 'POST', [
             'ticket-customer-user',
@@ -259,13 +261,9 @@ class TicketControllerTest extends WebTestCase
             'ticket-manager',
             'superadmin-user',
             'ticket-manager-denied',
-        ], [
+        ], null, [
             'ticket' => [
-                'title' => '',
-                'text' => ''
-            ]
-        ], [
-            'ticket' => [
+                'category' => $category->getId(),
                 'title' => 'testing ticket',
                 'text' => 'testing message'
             ]
@@ -297,7 +295,6 @@ class TicketControllerTest extends WebTestCase
         $ticket = $this->fixtures->getReference('ticket');
 
         $url = $this->getUrl('ticket.message', [
-            'category' => $ticket->getCategory()->getId(),
             'ticket' => $ticket->getId()
         ]);
 
@@ -353,7 +350,6 @@ class TicketControllerTest extends WebTestCase
         $ticket = $this->fixtures->getReference('ticket');
 
         $url = $this->getUrl('ticket.close', [
-            'category' => $ticket->getCategory()->getId(),
             'ticket' => $ticket->getId(),
         ]);
 
@@ -434,7 +430,6 @@ class TicketControllerTest extends WebTestCase
         $ticket = $this->fixtures->getReference('ticket');
 
         $url = $this->getUrl('ticket.assign', [
-            'category' => $ticket->getCategory()->getId(),
             'ticket' => $ticket->getId()
         ]);
 

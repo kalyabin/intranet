@@ -89,7 +89,13 @@ class TicketCategoryVoter extends Voter
             }
 
             // проверка прав доступа
-            return $this->decisionManager->decide($token, [$subject->getCustomerRole()]);
+            $customerRole = $subject->getCustomerRole();
+            if (empty($customerRole)) {
+                // если не указана роль для арендаторов значит доступ имеют все арендаторы
+                return true;
+            } else {
+                return $this->decisionManager->decide($token, [$subject->getCustomerRole()]);
+            }
         }
 
         return false;

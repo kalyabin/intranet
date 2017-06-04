@@ -88,24 +88,21 @@ class TicketVoter extends Voter
         /** @var TicketCategoryEntity $category */
         $category = $subject->getCategory();
 
+        // проверка права доступа к категории
+        if (!$this->decisionManager->decide($token, ['view'], $category)) {
+            return false;
+        }
+
         if ($user->getUserType() == UserEntity::TYPE_MANAGER) {
             // менеджер может делать с тикетом все что угодно, если у него есть право доступа
             // и если он не является автором данного тикета
-            return (
-                $this->decisionManager->decide($token, [$category->getManagerRole()]) &&
-                (!$subject->getCreatedBy() || $user->getId() != $subject->getCreatedBy()->getId())
-            );
+            return !$subject->getCreatedBy() || $user->getId() != $subject->getCreatedBy()->getId();
         } elseif ($user->getUserType() == UserEntity::TYPE_CUSTOMER && $attribute == self::ASSIGN) {
             // арендатор не может назначать менеджеров на тикет
             return false;
         }
 
         // арендатор может делать с тикетом все что угодно, если он является своим
-        // но с правом доступам к категории тикета
-        if (!$this->decisionManager->decide($token, [$category->getCustomerRole()])) {
-            return false;
-        }
-
         if (!$subject->getCustomer()) {
             // если не указан контрагнт, то право доступа имеет автор тикета
             return $subject->getCreatedBy() ?

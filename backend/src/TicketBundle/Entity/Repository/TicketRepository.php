@@ -54,21 +54,21 @@ class TicketRepository extends EntityRepository
     /**
      * Получить все заявки по фильтру
      *
-     * @param string|null $category Категоряи по которой искать (по умолчанию - по всем)
+     * @param array|null $categories Категории по которой искать (по умолчанию - по всем)
      * @param int|null $customer Контрагент по которому искать (по умолчанию - по всем)
      * @param bool|null $opened Статус заявки - открыта (по умолчанию - искать по всем открытым)
      *
      * @return QueryBuilder
      */
-    public function findAllByFilter(?string $category = null, ?int $customer = null, ?bool $opened = true): QueryBuilder
+    public function findAllByFilter(?array $categories = null, ?int $customer = null, ?bool $opened = true): QueryBuilder
     {
         $queryBuilder = $this->createQueryBuilder('t');
 
-        if ($category) {
+        if (!empty($categories)) {
             // фильтр по категории
             $queryBuilder
-                ->andWhere('t.category = :category')
-                ->setParameter('category', $category);
+                ->andWhere('t.category IN(:categories)')
+                ->setParameter('categories', $categories);
         }
 
         if ($opened) {
@@ -122,6 +122,22 @@ class TicketRepository extends EntityRepository
                 'id' => $id,
                 'category' => $category
             ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Поиск тикета по идентификатору
+     *
+     * @param int $id
+     *
+     * @return null|TicketEntity
+     */
+    public function findOneById(int $id): ?TicketEntity
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
     }
