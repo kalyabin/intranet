@@ -6,8 +6,8 @@
                 <li>
                     <dropdown display-prop="name" :item="category" :items="categories" @select="selectCategory"></dropdown>
                 </li>
-                <li>
-                    <router-link v-need-user-type="'customer'" :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'collapse-link btn btn-primary': true}">
+                <li v-need-user-type="'customer'">
+                    <router-link :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'collapse-link btn btn-primary': true}">
                         <i class="fa fa-plus"></i>
                         Создать новую заявку
                     </router-link>
