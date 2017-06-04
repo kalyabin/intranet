@@ -46,7 +46,16 @@ export const routes: Array<RouteConfig> = [
                 component: Index
             },
             {
-                path: '/auth/cabinet/ticket/:category?',
+                path: '/auth/cabinet/ticket',
+                name: 'cabinet_ticket_root',
+                component: TicketList,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Заявки'
+                }
+            },
+            {
+                path: '/auth/cabinet/ticket/:category',
                 name: 'cabinet_ticket_list',
                 component: TicketList,
                 meta: {
@@ -107,7 +116,16 @@ export const routes: Array<RouteConfig> = [
                 }
             },
             {
-                path: '/auth/manager/ticket/:category?',
+                path: '/auth/manager/ticket',
+                name: 'manager_ticket_root',
+                component: TicketList,
+                meta: {
+                    needType: 'manager',
+                    pageTitle: 'Заявки'
+                }
+            },
+            {
+                path: '/auth/manager/ticket/:category',
                 name: 'manager_ticket_list',
                 component: TicketList,
                 meta: {

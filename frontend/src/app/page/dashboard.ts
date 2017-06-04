@@ -71,7 +71,7 @@ export class Dashboard extends Vue {
                 .dispatch('fetchList')
                 .then((categories: TicketCategoryInterface[]) => {
                     // поместить категории в главное меню с заявками
-                    let routeName = userType == 'manager' ? 'manager_ticket_list' : 'customer_ticket_list';
+                    let routeName = userType == 'manager' ? 'manager_ticket_root' : 'customer_ticket_root';
                     for (let item of this.sideBarMenu) {
                         if (item.route.name == routeName) {
                             let key = this.sideBarMenu.indexOf(item);
@@ -79,7 +79,7 @@ export class Dashboard extends Vue {
                             for (let category of categories) {
                                 this.sideBarMenu[key].children.push({
                                     route: {
-                                        name: routeName,
+                                        name: userType == 'manager' ? 'manager_ticket_list' : 'customer_ticket_list',
                                         params: {
                                             category: category.id
                                         }

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
-import {Model, Prop} from "vue-property-decorator";
+import {Model, Prop, Watch} from "vue-property-decorator";
 
 /**
  * Бутстраповский дропдаун
@@ -25,6 +25,10 @@ export class Dropdown extends Vue {
      * Элементы для отображения
      */
     @Prop() items: any[];
+
+    @Watch('item') changeItem(item: any): void {
+        this.currentItem = item;
+    }
 
     /**
      * Получить подпись селекта

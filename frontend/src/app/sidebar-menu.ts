@@ -22,7 +22,7 @@ export const customerSideBarMenu: Array<SideBarMenuItem> = [
     },
     {
         route: {
-            name: 'cabinet_ticket_list',
+            name: 'cabinet_ticket_root',
         },
         faIcon: 'fa-question',
         menuName: 'Заявки',
@@ -59,7 +59,7 @@ export const managerSideBarMenu: Array<SideBarMenuItem> = [
     },
     {
         route: {
-            name: 'manager_ticket_list',
+            name: 'manager_ticket_root',
         },
         faIcon: 'fa-question',
         menuName: 'Заявки',

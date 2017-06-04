@@ -45,8 +45,8 @@ export class TicketList extends Vue {
             this.$store.dispatch('clear').then(() => {
                 this.$store.dispatch('fetchList', categoryId).then(() => {
                     pageMetaStore.commit('hidePageLoader');
-                });
-            });
+                }, () => pageMetaStore.commit('hidePageLoader'));
+            }, () => pageMetaStore.commit('hidePageLoader'));
         };
 
         // проверить права на просмотр категории
@@ -66,7 +66,13 @@ export class TicketList extends Vue {
      * Список категорий
      */
     get categories(): TicketCategoryInterface[] {
-        return ticketCategoriesStore.state.list as TicketCategoryInterface[];
+        let list: TicketCategoryInterface[] = [{
+            id: null,
+            name: 'Все',
+            managerRole: '',
+            customerRole: ''
+        }];
+        return list.concat(ticketCategoriesStore.state.list);
     }
 
     /**
@@ -94,12 +100,20 @@ export class TicketList extends Vue {
      * Переход к другой категории
      */
     selectCategory(category: TicketCategoryInterface): void {
-        router.push({
-            name: this.userType == 'customer' ? 'cabinet_ticket_list' : 'manager_ticket_list',
-            params: <any>{
-                category: category.id
-            }
-        });
+        let route = {};
+        if (category && category.id) {
+            route = {
+                name: this.userType == 'customer' ? 'cabinet_ticket_list' : 'manager_ticket_list',
+                params: <any>{
+                    category: category.id
+                }
+            };
+        } else {
+            route = {
+                name: this.userType == 'customer' ? 'cabinet_ticket_root' : 'manager_ticket_root'
+            };
+        }
+        router.push(route);
     }
 
     /**
@@ -118,8 +132,13 @@ export class TicketList extends Vue {
      * Установка категории
      */
     setCategory(category: TicketCategoryInterface): void{
-        pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
-        pageMetaStore.commit('setPageTitle', `${category.name}`);
+        if (category) {
+            pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
+            pageMetaStore.commit('setPageTitle', `${category.name}`);
+        } else {
+            pageMetaStore.commit('setTitle', `Заявки`);
+            pageMetaStore.commit('setPageTitle', `Заявки`);
+        }
 
         this.category = category;
     }
