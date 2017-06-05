@@ -58,7 +58,6 @@ class CreateCategoryCommand extends ContainerAwareCommand
         $managerRole = $helper->ask($input, $output, $managerRoleQuestion);
 
         $customerRoleQuestion = new Question('Право доступа для арендаторов (код): ');
-        $customerRoleQuestion->setValidator($notEmptyValidator);
 
         $customerRole = $helper->ask($input, $output, $customerRoleQuestion);
 
