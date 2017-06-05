@@ -136,7 +136,7 @@ export class TicketDetails extends Vue {
         this.category = category;
 
         pageMetaStore.commit('setTitle', `#${this.ticket.number} - ${category.name}`);
-        pageMetaStore.commit('setPageTitle', `${category.name}: #${this.ticket.number}`);
+        pageMetaStore.commit('setPageTitle', `Заявки`);
     }
 
     /**

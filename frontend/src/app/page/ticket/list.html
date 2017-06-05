@@ -1,18 +1,15 @@
 <div>
     <div class="x_panel">
         <div class="x_title">
-            <h2>Открытые заявки</h2>
-            <ul class="navbar-right panel_toolbox">
-                <li>
-                    <dropdown display-prop="name" :item="category" :items="categories" @select="selectCategory"></dropdown>
-                </li>
-                <li v-need-user-type="'customer'">
-                    <router-link :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'collapse-link btn btn-primary': true}">
-                        <i class="fa fa-plus"></i>
-                        Создать новую заявку
-                    </router-link>
-                </li>
-            </ul>
+            <div class="pull-left x_title_button">
+                <dropdown display-prop="name" :item="category" :items="categories" @select="selectCategory"></dropdown>
+            </div>
+            <div class="pull-left x_title_button">
+                <router-link :to="createRoute" :class="{'collapse-link btn btn-primary': true}">
+                    <i class="fa fa-plus"></i>
+                    Новая заявка
+                </router-link>
+            </div>
             <div class="clearfix"></div>
         </div>
         <div class="row">
@@ -20,7 +17,6 @@
                 <table ref="table" class="table table-striped projects">
                     <thead>
                     <tr>
-                        <th style="width: 200px">#</th>
                         <th>Заявка</th>
                     </tr>
                     </thead>
@@ -28,14 +24,14 @@
                     <tbody>
                     <tr v-for="ticket in list" style="cursor: pointer;" @click="openTicket(ticket)">
                         <td>
-                            {{ticket.number}}<br />
-                            <small v-bind:class="ticket.currentStatus | ticketStatusColor">
-                                {{ticket.currentStatus | ticketStatus}}
-                            </small>
-                        </td>
-                        <td>
                             <small>{{ticket.createdAt | dateFormat}}</small>
-                            <h4>{{ticket.title}}</h4>
+                            <h4>
+                                {{ticket.number}}
+                                <small v-bind:class="ticket.currentStatus | ticketStatusColor">
+                                    {{ticket.currentStatus | ticketStatus}}
+                                </small>
+                            </h4>
+                            <small>{{ticket.title}}</small>
                             <a>
                                 <i class="fa fa-user"></i>
                                 <small v-if="ticket.createdBy && !ticket.customer">
@@ -54,7 +50,7 @@
                     <tr v-if="list.length == 0">
                         <td colspan="2" class="empty-table-row">
                             <p>Нет открытых заявок в данной категории.</p>
-                            <router-link :to="{name: 'cabinet_ticket_create', params: {category: category ? category.id : ''}}" :class="{'btn btn-primary': true}" v-need-user-type="'customer'">Создать новую заявку</router-link>
+                            <router-link :to="createRoute" :class="{'btn btn-primary': true}" v-need-user-type="'customer'">Новая заявка</router-link>
                         </td>
                     </tr>
                     </tbody>

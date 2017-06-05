@@ -2,8 +2,9 @@
     <div class="x_panel">
         <div class="x_title">
             <h2>
-                Новая заявка в очередь "{{category ? category.name : ''}}"
-                <router-link :to="{name: 'cabinet_ticket_list', params: {category: category ? category.id : ''}}">
+                Новая заявка
+                <span v-if="category && category.id"> в очередь {{category.name}}</span>
+                <router-link :to="categoryRoute">
                     <small>Обратно в список заявок</small>
                 </router-link>
             </h2>
@@ -13,6 +14,27 @@
             <form @submit.prevent="submit" @input="errorMessage = ''">
                 <div v-if="errorMessage" class="alert alert-danger">{{errorMessage}}</div>
                 <div class="col-sm-12">
+                    <div class="form-group" :class="{'has-error': errors.has('category')}">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label
+                                v-for="item in categories"
+                                class="btn" :class="{'btn-default': !category || item.id != category.id, 'btn-primary': category && category.id == item.id}"
+                                data-toggle-class="btn-primary"
+                                data-toggle-passive-class="btn-default"
+                                @click="setCategory(item); ticket.category = item.id"
+                            >
+                                <input
+                                    type="radio"
+                                    name="category"
+                                    v-validate="'required'"
+                                    :value="item.id"
+                                    v-model="ticket.category" />{{item.name}}
+                            </label>
+                        </div>
+                        <p class="help-block" v-if="errors.has('category')">
+                            {{errors.first('category')}}
+                        </p>
+                    </div>
                     <div class="form-group" :class="{'has-error': errors.has('title')}">
                         <label class="control-label">Заголовок</label>
                         <input type="text" v-model="ticket.title" v-validate="'required|max:200'" name="title" class="form-control" />
@@ -30,7 +52,7 @@
                     <div class="form-group">
                         <button type="submit" :disabled="awaitOfSubmit" class="btn btn-success">Отправить заявку</button>
                         <router-link
-                                :to="{name: 'cabinet_ticket_list', params: {category: category ? category.id : ''}}"
+                                :to="categoryRoute"
                                 :class="{'btn btn-default': true}">Отмена</router-link>
                     </div>
                 </div>

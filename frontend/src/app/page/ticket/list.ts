@@ -9,6 +9,7 @@ import {TicketInterface} from "../../service/model/ticket.interface";
 import {authUserStore} from "../../store/auth-user.store";
 import {UserType} from "../../service/model/user.interface";
 import {router} from "../../router/router";
+import {Location} from "vue-router";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -37,7 +38,7 @@ export class TicketList extends Vue {
     /**
      * При изменении категории - получать новый список
      */
-    @Watch('category') onChangeCategory(category: TicketCategoryInterface) {
+    @Watch('category') onChangeCategory(category: TicketCategoryInterface): void {
         let categoryId = category ? category.id : null;
 
         let fetchList = (categoryId: string) => {
@@ -90,6 +91,24 @@ export class TicketList extends Vue {
     }
 
     /**
+     * Получить ссылку на создание нового тикета
+     */
+    get createRoute(): Location {
+        if (this.category && this.category.id) {
+            return {
+                name: 'cabinet_ticket_create',
+                params: {
+                    category: this.category.id
+                }
+            };
+        } else {
+            return {
+                name: 'cabinet_ticket_create_root'
+            };
+        }
+    }
+
+    /**
      * При выходе из компонента очистить список тикетов
      */
     beforeDestroy(): void {
@@ -134,10 +153,8 @@ export class TicketList extends Vue {
     setCategory(category: TicketCategoryInterface): void{
         if (category) {
             pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
-            pageMetaStore.commit('setPageTitle', `${category.name}`);
         } else {
             pageMetaStore.commit('setTitle', `Заявки`);
-            pageMetaStore.commit('setPageTitle', `Заявки`);
         }
 
         this.category = category;

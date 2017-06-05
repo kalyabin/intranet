@@ -1,7 +1,7 @@
 <div>
     <div class="x_panel">
         <div class="x_title">
-            <h2 v-if="ticket">Заявка №{{ticket.number}}</h2>
+            <h2 v-if="ticket">{{category ? category.name : ''}} #{{ticket.number}}</h2>
             <ul class="navbar-right panel_toolbox">
                 <li>
                     <router-link v-need-user-type="'customer'" :to="{name: 'cabinet_ticket_list', params: {category: category ? category.id : ''}}">

@@ -69,7 +69,16 @@ export const routes: Array<RouteConfig> = [
                 component: TicketForm,
                 meta: {
                     needType: 'customer',
-                    pageTitle: 'Список заявок'
+                    pageTitle: 'Заявки'
+                }
+            },
+            {
+                path: '/auth/cabinet/ticket/create',
+                name: 'cabinet_ticket_create_root',
+                component: TicketForm,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Заявки'
                 }
             },
             {

@@ -876,6 +876,9 @@ h2 {
   padding: 1px 5px 6px;
   margin-bottom: 10px;
   cursor: pointer;
+  &_button {
+    padding-right: 10px;
+  }
 }
 .x_title .filter {
   width: 40%;
