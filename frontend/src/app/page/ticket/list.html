@@ -4,7 +4,7 @@
             <div class="pull-left x_title_button">
                 <dropdown display-prop="name" :item="category" :items="categories" @select="selectCategory"></dropdown>
             </div>
-            <div class="pull-left x_title_button">
+            <div class="pull-left x_title_button" v-need-user-type="'customer'">
                 <router-link :to="createRoute" :class="{'collapse-link btn btn-primary': true}">
                     <i class="fa fa-plus"></i>
                     Новая заявка
