@@ -95,6 +95,7 @@ class RolesManager
                 'ROLE_MAINTAINCE_MANAGEMENT',
                 'ROLE_BOOKER_MANAGEMENT',
                 'ROLE_TICKET_ADMIN_MANAGEMENT',
+                'ROLE_ACCOUNT_MANAGEMENT',
             ],
         ];
     }
@@ -110,7 +111,7 @@ class RolesManager
             'ROLE_SUPERADMIN' => 'Супер администратор (доступны все права сотрудников)',
             'ROLE_CUSTOMER_ADMIN' => 'Администратор арендатора (доступны все права арендатора)',
             'ROLE_TICKET_ADMIN_MANAGEMENT' => 'Администратор тикетной системы (просмотр и назначение ответственных по заявкам)',
-
+            'ROLE_ACCOUNT_MANAGEMENT' => 'Управляющий менеджер',
             'ROLE_USER_CUSTOMER' => 'Создание пользователей арендатора',
             'ROLE_FINANCE_CUSTOMER' => 'Отправка заявок "Финансовые вопросы"',
             'ROLE_MAINTAINCE_CUSTOMER' => 'Отправка заявок "Служба эксплуатации"',

@@ -5,6 +5,7 @@ security:
     role_hierarchy:
         # Описание ролей:
         # USER_MANAGEMENT - управление пользователями
+        # ACCOUNT_MANAGEMENT - ответственный за арендаторов менеджер
         # RENT_MANAGEMENT - управление службой аренды
         # IT_MANAGEMENT - управление тикетной системой IT-поддержки
         # FINANCE_MANAGEMENT - управление тикетной системы Финансовой службы
@@ -31,6 +32,7 @@ security:
             - ROLE_MAINTAINCE_MANAGEMENT
             - ROLE_BOOKER_MANAGEMENT
             - ROLE_TICKET_ADMIN_MANAGEMENT
+            - ROLE_ACCOUNT_MANAGEMENT
 
         ROLE_CUSTOMER_ADMIN:
             - ROLE_USER_CUSTOMER
