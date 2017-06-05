@@ -73,7 +73,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
                     return resolve();
                 }
 
-                let pageNum = 0;
+                let pageNum = 1;
                 let cnt = 0;
                 let fetchTickets = () => {
                     ticketService.list(category, opened, pageNum).then((response: ListInterface<TicketInterface>) => {

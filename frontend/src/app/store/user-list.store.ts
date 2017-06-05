@@ -65,16 +65,16 @@ export const userListStore = new Vuex.Store({
                     return resolve();
                 }
 
-                let currentPage = 0;
+                let currentPage = 1;
                 let cnt = 0;
 
                 let fetchItems = () => {
                     userManagerService
-                        .list(currentPage, 1)
+                        .list(currentPage)
                         .then((response: ListInterface<UserInterface>) => {
                             action.commit('addUsers', response.list);
                             cnt += response.list.length;
-                            currentPage = response.pageNum + 1;
+                            currentPage++;
                             if (response.totalCount > cnt) {
                                 // запросить еще порцию пользователей
                                 fetchItems();

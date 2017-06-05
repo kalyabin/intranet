@@ -64,7 +64,7 @@ export const customerListStore = new Vuex.Store({
                 if (action.state.list.length > 0) {
                     return resolve();
                 }
-                let pageNum = 0;
+                let pageNum = 1;
                 let cnt = 0;
                 let fetchCustomers = () => {
                     customerManagerService.list(pageNum).then((response: ListInterface<CustomerInterface>) => {
