@@ -68,8 +68,11 @@ class CreateCategoryCommand extends ContainerAwareCommand
         $category
             ->setId($id)
             ->setName($name)
-            ->setCustomerRole($customerRole)
             ->setManagerRole($managerRole);
+
+        if ($customerRole) {
+            $category->setCustomerRole($customerRole);
+        }
 
         $entityManager->persist($category);
 
