@@ -134,7 +134,7 @@ class TicketCategoryEntity implements \JsonSerializable
      *
      * @return string
      */
-    public function getCustomerRole(): string
+    public function getCustomerRole(): ?string
     {
         return $this->customerRole;
     }
