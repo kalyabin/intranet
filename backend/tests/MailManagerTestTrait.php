@@ -27,4 +27,15 @@ trait MailManagerTestTrait
         $this->assertInstanceOf(\Swift_Message::class, $lastMessage);
         $this->assertContains($string, $lastMessage->getBody());
     }
+
+    /**
+     * Стереть последнее уведомление
+     */
+    public function clearLastMessage()
+    {
+        /** @var MailManager $mailManager */
+        $mailManager = $this->getContainer()->get('mail_manager');
+
+        $mailManager->clearLastMessage();
+    }
 }

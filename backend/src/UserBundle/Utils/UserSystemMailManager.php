@@ -5,7 +5,6 @@ namespace UserBundle\Utils;
 use AppBundle\Utils\MailManager;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
-use Symfony\Component\Templating\EngineInterface;
 use UserBundle\Event\UserChangedPasswordEvent;
 use UserBundle\Event\UserChangeEmailEvent;
 use UserBundle\Event\UserCreationEvent;

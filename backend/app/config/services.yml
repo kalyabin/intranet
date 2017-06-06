@@ -7,9 +7,17 @@ services:
     json_error_response:
         class: HttpHelperBundle\Listener\JsonErrorResponseListener
         tags:
-          - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
     # системный мейлер всего приложения
     mail_manager:
         class: AppBundle\Utils\MailManager
         arguments: [ '@mailer', '@templating', '%default_from_email%' ]
+
+    # системные уведомления для пользователя в любой транспорт
+    notification_manager:
+        class: AppBundle\Utils\UserNotificationManager
+        calls:
+            - [ 'setMailManager', ['@mail_manager'] ]
+        tags:
+            - { name: kernel.event_listener, event: 'user_notification', method: onUserNotification }
