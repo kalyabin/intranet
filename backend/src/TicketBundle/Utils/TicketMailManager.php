@@ -3,9 +3,9 @@
 namespace TicketBundle\Utils;
 
 
+use AppBundle\Utils\MailManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Templating\EngineInterface;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use TicketBundle\Event\TicketClosedEvent;
@@ -24,24 +24,9 @@ use UserBundle\Utils\RolesManager;
 class TicketMailManager implements EventSubscriberInterface
 {
     /**
-     * @var \Swift_Mailer
+     * @var MailManager Системный мейлер
      */
-    protected $mailer;
-
-    /**
-     * @var EngineInterface
-     */
-    protected $templating;
-
-    /**
-     * @var string
-     */
-    protected $from;
-
-    /**
-     * @var \Swift_Message Последнее отправленное сообщение
-     */
-    protected $lastMessage;
+    protected $mailManager;
 
     /**
      * @var UserRepository Репозиторий для поиска пользователей по группам
@@ -56,33 +41,15 @@ class TicketMailManager implements EventSubscriberInterface
     /**
      * TicketMailManager constructor.
      *
-     * @param \Swift_Mailer $mailer Мейлер для отправки почты
-     * @param EngineInterface $templating Движок для шаблонизации twig
+     * @param MailManager $mailManager Мейлер по умолчанию
      * @param ObjectManager $entityManager Менеджер для работы с БД
      * @param RolesManager $rolesManager Менеджер для работы с ролями
-     * @param null|string $from E-mail отправителя (по умолчанию - без отправителя)
      */
-    public function __construct(\Swift_Mailer $mailer, EngineInterface $templating, ObjectManager $entityManager, RolesManager $rolesManager, ?string $from = null)
+    public function __construct(MailManager $mailManager, ObjectManager $entityManager, RolesManager $rolesManager)
     {
-        $this->mailer = $mailer;
-        $this->templating = $templating;
-        $this->from = $from;
+        $this->mailManager = $mailManager;
         $this->userRepository = $entityManager->getRepository(UserEntity::class);
         $this->rolesManager = $rolesManager;
-    }
-
-    /**
-     * Установка отправителя
-     *
-     * @param string $from
-     *
-     * @return TicketMailManager
-     */
-    public function setFrom(string $from): self
-    {
-        $this->from = $from;
-
-        return $this;
     }
 
     public static function getSubscribedEvents()
@@ -94,43 +61,6 @@ class TicketMailManager implements EventSubscriberInterface
             TicketManagerSetEvent::NAME => 'onManagerSet',
             TicketClosedEvent::NAME => 'onClosedTicket',
         ];
-    }
-
-    /**
-     * Отправка уже сформированного письма
-     *
-     * @param \Swift_Message $message Сообщение с сабжектом и телом
-     * @param string $email E-mail, на который надо отправить письмо
-     *
-     * @return int
-     */
-    protected function sendMessage(\Swift_Message $message, $email)
-    {
-        $message
-            ->setFrom($this->from)
-            ->setTo($email);
-
-        $this->lastMessage = $message;
-
-        return $this->mailer->send($message);
-    }
-
-    /**
-     * Получить последнее сообщение
-     *
-     * @return null|\Swift_Message
-     */
-    public function getLastMessage(): ?\Swift_Message
-    {
-        return $this->lastMessage;
-    }
-
-    /**
-     * Стереть последнее сообщение
-     */
-    public function clearLastMessage()
-    {
-        $this->lastMessage = null;
     }
 
     /**
@@ -146,17 +76,6 @@ class TicketMailManager implements EventSubscriberInterface
         $category = $ticket->getCategory();
 
         $subject = $category->getName() . ': Получена новая заявка №' . $ticket->getNumber();
-        // сформировать письмо
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/new_ticket_to_manager.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $category,
-                    'message' => $ticketMessage,
-                ]),
-                'text/html'
-            );
 
         // получить все роли, в том числе и родительские для указанной
         $managerRole = $this->rolesManager->getParentRoles($category->getManagerRole());
@@ -169,7 +88,13 @@ class TicketMailManager implements EventSubscriberInterface
         foreach ($batchList as $users) {
             foreach ($users as $user) {
                 /** @var UserEntity $user */
-                $this->sendMessage($message, $user->getEmail());
+                $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/new_ticket_to_manager.html.twig', [
+                    'ticket' => $ticket,
+                    'category' => $category,
+                    'message' => $ticketMessage,
+                ]);
+
+                $this->mailManager->sendMessage($message);
                 $result[] = $user->getEmail();
             }
         }
@@ -187,22 +112,21 @@ class TicketMailManager implements EventSubscriberInterface
      */
     public function sendNewTicketToUser(TicketEntity $ticket, TicketMessageEntity $ticketMessage): ?int
     {
-        $subject = 'Заявка №' . $ticket->getNumber() . ' зарегистрирована в системе';
-
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/new_ticket_to_user.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $ticket->getCategory(),
-                    'message' => $ticketMessage
-                ]),
-                'text/html'
-            );
-
         $user = $ticket->getCreatedBy();
 
-        return $user ? $this->sendMessage($message, $user->getEmail()) : 0;
+        if (!$user) {
+            return 0;
+        }
+
+        $subject = 'Заявка №' . $ticket->getNumber() . ' зарегистрирована в системе';
+
+        $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/new_ticket_to_user.html.twig', [
+            'ticket' => $ticket,
+            'category' => $ticket->getCategory(),
+            'message' => $ticketMessage
+        ]);
+
+        return $this->mailManager->sendMessage($message);
     }
 
     /**
@@ -244,22 +168,16 @@ class TicketMailManager implements EventSubscriberInterface
     {
         $subject = 'Заявка №' . $ticket->getNumber() . ': поступил новый ответ';
 
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/new_answer_to_user.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $ticket->getCategory(),
-                    'message' => $ticketMessage
-                ]),
-                'text/html'
-            );
-
         $emails = [];
 
         // ответ поступает всем пользователям, задававшим вопросы по заявке
         foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
-            $this->sendMessage($message, $user->getEmail());
+            $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/new_answer_to_user.html.twig', [
+                'ticket' => $ticket,
+                'category' => $ticket->getCategory(),
+                'message' => $ticketMessage
+            ]);
+            $this->mailManager->sendMessage($message);
             $emails[] = $user->getEmail();
         }
 
@@ -279,21 +197,15 @@ class TicketMailManager implements EventSubscriberInterface
     {
         $subject = 'Заявка №' . $ticket->getNumber() . ': назначен менеджер';
 
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/set_manager_to_user.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $ticket->getCategory(),
-                    'manager' => $manager
-                ]),
-                'text/html'
-            );
-
         // ответ поступает всем пользователям, задававшим вопросы по заявке
         $emails = [];
         foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
-            $this->sendMessage($message, $user->getEmail());
+            $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/set_manager_to_user.html.twig', [
+                'ticket' => $ticket,
+                'category' => $ticket->getCategory(),
+                'manager' => $manager
+            ]);
+            $this->mailManager->sendMessage($message);
             $emails[] = $user->getEmail();
         }
 
@@ -311,20 +223,14 @@ class TicketMailManager implements EventSubscriberInterface
     {
         $subject = 'Заявка №' . $ticket->getNumber() . ': заявка закрыта';
 
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/closed_to_user.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $ticket->getCategory()
-                ]),
-                'text/html'
-            );
-
         // ответ поступает всем пользователям, задававшим вопросы по заявке
         $emails = [];
         foreach ($this->getAllCustomerUsersByTicket($ticket) as $user) {
-            $this->sendMessage($message, $user->getEmail());
+            $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/closed_to_user.html.twig', [
+                'ticket' => $ticket,
+                'category' => $ticket->getCategory()
+            ]);
+            $this->mailManager->sendMessage($message);
             $emails[] = $user->getEmail();
         }
 
@@ -348,22 +254,12 @@ class TicketMailManager implements EventSubscriberInterface
 
         $subject = $category->getName() . ': поступил новый вопрос по заявке №' . $ticket->getNumber();
 
-        $message = \Swift_Message::newInstance()
-            ->setSubject($subject)
-            ->setBody(
-                $this->templating->render('@ticket_emails/new_question_to_manager.html.twig', [
-                    'ticket' => $ticket,
-                    'category' => $ticket->getCategory(),
-                    'message' => $ticketMessage
-                ]),
-                'text/html'
-            );
-
-        $emails = [];
+        /** @var UserEntity[] $to */
+        $to = [];
 
         if ($ticket->getManagedBy()) {
             // если по заявке уже работет менеджер, то она отправляется только ему
-            $emails[] = $ticket->getManagedBy()->getEmail();
+            $to[] = $ticket->getManagedBy();
         } else {
             // иначе заявка отправляется всем ответственным
             $managerRole = $this->rolesManager->getParentRoles($category->getManagerRole());
@@ -372,13 +268,22 @@ class TicketMailManager implements EventSubscriberInterface
             foreach ($batchList as $users) {
                 foreach ($users as $user) {
                     /** @var UserEntity $user */
-                    $emails[] = $user->getEmail();
+                    $to[] = $user;
                 }
             }
         }
 
-        foreach ($emails as $email) {
-            $this->sendMessage($message, $email);
+        $emails = [];
+
+        foreach ($to as $user) {
+            $message = $this->mailManager->buildMessageToUser($user, $subject, '@ticket_emails/new_question_to_manager.html.twig', [
+                'ticket' => $ticket,
+                'category' => $ticket->getCategory(),
+                'message' => $ticketMessage
+            ]);
+            $this->mailManager->sendMessage($message);
+
+            $emails[] = $user->getEmail();
         }
 
         return $emails;

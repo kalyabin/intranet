@@ -42,7 +42,7 @@ services:
     # Мейлер для системных уведомлений пользователю
     user.mailer:
         class: '%user.mailer%'
-        arguments: ['@mailer', '@templating', '%user.default_from_email%']
+        arguments: ['@mail_manager']
         tags:
             - { name: kernel.event_subscriber }
 

@@ -2,6 +2,7 @@
 
 namespace UserBundle\Utils;
 
+use AppBundle\Utils\MailManager;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
 use Symfony\Component\Templating\EngineInterface;
@@ -21,47 +22,18 @@ use UserBundle\Event\UserRememberPasswordEvent;
 class UserSystemMailManager implements EventSubscriberInterface
 {
     /**
-     * @var \Swift_Mailer Мейлер для отправки почты
+     * @var MailManager
      */
-    protected $mailer;
-
-    /**
-     * @var EngineInterface Шаблонизатор
-     */
-    protected $templating;
-
-    /**
-     * @var string Ящик для отправки писем по умолчанию (заголовок From:)
-     */
-    protected $from;
-
-    /**
-     * @var \Swift_Message
-     */
-    protected $lastMessage;
+    protected $mailManager;
 
     /**
      * Конструктор
      *
-     * @param \Swift_Mailer $mailer Мейлер для отправки почты
-     * @param EngineInterface $templating Шаблонизатор писем
-     * @param string $from Отправитель писем (по умолчанию - без отправителя)
+     * @param MailManager $mailManager Системный отправитель в приложении
      */
-    public function __construct(\Swift_Mailer $mailer, EngineInterface $templating, $from = null)
+    public function __construct(MailManager $mailManager)
     {
-        $this->mailer = $mailer;
-        $this->templating = $templating;
-        $this->from = $from;
-    }
-
-    /**
-     * Установить отправителя
-     *
-     * @param string $from
-     */
-    public function setFrom($from)
-    {
-        $this->from = $from;
+        $this->mailManager = $mailManager;
     }
 
     /**
@@ -81,25 +53,6 @@ class UserSystemMailManager implements EventSubscriberInterface
     }
 
     /**
-     * Отправка уже сформированного письма
-     *
-     * @param \Swift_Message $message Сообщение с сабжектом и телом
-     * @param string $email E-mail, на который надо отправить письмо
-     *
-     * @return int
-     */
-    protected function sendMessage(\Swift_Message $message, $email)
-    {
-        $message
-            ->setFrom($this->from)
-            ->setTo($email);
-
-        $this->lastMessage = $message;
-
-        return $this->mailer->send($message);
-    }
-
-    /**
      * Отправить пользователю приветственное письмо после создания аккаунта
      *
      * @param UserEntity $user Модель зарегистрированного пользователя
@@ -109,17 +62,12 @@ class UserSystemMailManager implements EventSubscriberInterface
      */
     public function sendWelcomeEmail(UserEntity $user, string $password)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Создан аккаунт')
-            ->setBody(
-                $this->templating->render('@user_emails/welcome.html.twig', [
-                    'user' => $user,
-                    'password' => $password
-                ]),
-                'text/html'
-            );
+        $message = $this->mailManager->buildMessageToUser($user, 'Создан аккаунт', '@user_emails/welcome.html.twig', [
+            'user' => $user,
+            'password' => $password
+        ]);
 
-        return $this->sendMessage($message, $user->getEmail());
+        return $this->mailManager->sendMessage($message);
     }
 
     /**
@@ -132,17 +80,12 @@ class UserSystemMailManager implements EventSubscriberInterface
      */
     public function sendActivationEmail(UserEntity $user, UserCheckerEntity $checker)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Активация аккаунта')
-            ->setBody(
-                $this->templating->render('@user_emails/registration.html.twig', [
-                    'user' => $user,
-                    'checker' => $checker,
-                ]),
-                'text/html'
-            );
+        $message = $this->mailManager->buildMessageToUser($user, 'Активация аккаунта', '@user_emails/registration.html.twig', [
+            'user' => $user,
+            'checker' => $checker,
+        ]);
 
-        return $this->sendMessage($message, $user->getEmail());
+        return $this->mailManager->sendMessage($message);
     }
 
     /**
@@ -156,18 +99,13 @@ class UserSystemMailManager implements EventSubscriberInterface
      */
     public function sendChangeEmailConfirmation(UserEntity $user, UserCheckerEntity $checker, $newEmail)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Смена e-mail')
-            ->setBody(
-                $this->templating->render('@user_emails/change_email.html.twig', [
-                    'user' => $user,
-                    'checker' => $checker,
-                    'newEmail' => $newEmail,
-                ]),
-                'text/html'
-            );
+        $message = $this->mailManager->buildMessageToUser($user, 'Смена e-mail', '@user_emails/change_email.html.twig', [
+            'user' => $user,
+            'checker' => $checker,
+            'newEmail' => $newEmail,
+        ]);
 
-        return $this->sendMessage($message, $newEmail);
+        return $this->mailManager->sendMessage($message);
     }
 
     /**
@@ -180,17 +118,12 @@ class UserSystemMailManager implements EventSubscriberInterface
      */
     public function sendRememberPasswordEmail(UserEntity $user, UserCheckerEntity $checker)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Восстановление пароля')
-            ->setBody(
-                $this->templating->render('@user_emails/remember_password.html.twig', [
-                    'user' => $user,
-                    'checker' => $checker,
-                ]),
-                'text/html'
-            );
+        $message = $this->mailManager->buildMessageToUser($user, 'Восстановление пароля', '@user_emails/remember_password.html.twig', [
+            'user' => $user,
+            'checker' => $checker,
+        ]);
 
-        return $this->sendMessage($message, $user->getEmail());
+        return $this->mailManager->sendMessage($message);
     }
 
     /**
@@ -203,35 +136,12 @@ class UserSystemMailManager implements EventSubscriberInterface
      */
     public function sendNewPassword(UserEntity $user, $newPassword)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Установлен новый пароль')
-            ->setBody(
-                $this->templating->render('@user_emails/set_new_password.html.twig', [
-                    'user' => $user,
-                    'newPassword' => $newPassword
-                ]),
-                'text/html'
-            );
+        $message = $this->mailManager->buildMessageToUser($user, 'Установлен новый пароль', '@user_emails/set_new_password.html.twig', [
+            'user' => $user,
+            'newPassword' => $newPassword
+        ]);
 
-        return $this->sendMessage($message, $user->getEmail());
-    }
-
-    /**
-     * Получить последнее сообщение
-     *
-     * @return \Swift_Message
-     */
-    public function getLastMessage()
-    {
-        return $this->lastMessage;
-    }
-
-    /**
-     * Стереть последнее сообщение
-     */
-    public function clearLastMessage()
-    {
-        $this->lastMessage = null;
+        return $this->mailManager->sendMessage($message);
     }
 
     /**

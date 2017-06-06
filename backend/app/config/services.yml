@@ -8,3 +8,8 @@ services:
         class: HttpHelperBundle\Listener\JsonErrorResponseListener
         tags:
           - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    # системный мейлер всего приложения
+    mail_manager:
+        class: AppBundle\Utils\MailManager
+        arguments: [ '@mailer', '@templating', '%default_from_email%' ]

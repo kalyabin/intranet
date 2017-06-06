@@ -2,7 +2,6 @@ parameters:
     ticket.manager: 'TicketBundle\Utils\TicketManager'
     ticket.mailer: 'TicketBundle\Utils\TicketMailManager'
     ticket.voided_minutes: 10800 # количество минут, через которое закрыть отвеченную заявку
-    ticket.default_from_email: 'mail@domain.ltd'
     ticket.ticket_controller: 'TicketBundle\Controller\TicketController'
     ticket.category_voter: 'TicketBundle\Security\TicketCategoryVoter'
     ticket.ticket_voter: 'TicketBundle\Security\TicketVoter'
@@ -16,7 +15,7 @@ services:
     # API для управления писем по заявкам
     ticket.mailer:
         class: '%ticket.mailer%'
-        arguments: ['@mailer', '@templating', '@doctrine.orm.entity_manager', '@user.roles_manager', '%ticket.default_from_email%']
+        arguments: ['@mail_manager', '@doctrine.orm.entity_manager', '@user.roles_manager']
         tags:
             - { name: kernel.event_subscriber }
 
