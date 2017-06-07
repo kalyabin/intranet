@@ -102,6 +102,9 @@ class DashboardController extends Controller
                 }
             }
 
+            // обновить дату последнего логина
+            $this->userManager->updateLastLogin($user);
+
             $response->setData([
                 'auth' => true,
                 'user' => $user,

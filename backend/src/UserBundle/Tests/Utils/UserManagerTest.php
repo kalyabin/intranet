@@ -485,4 +485,16 @@ class UserManagerTest extends WebTestCase
         $checker = $repository->findOneById($checkerId);
         $this->assertNull($checker);
     }
+
+    /**
+     * @covers UserManager::updateLastLogin()
+     */
+    public function testUpdateLastLogin()
+    {
+        /** @var UserEntity $user */
+        $user = $this->fixtures->getReference('active-user');
+        $this->assertNull($user->getLastLoginAt());
+        $this->manager->updateLastLogin($user);
+        $this->assertInstanceOf(\DateTime::class, $user->getLastLoginAt());
+    }
 }

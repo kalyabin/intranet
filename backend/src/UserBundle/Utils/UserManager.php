@@ -413,4 +413,16 @@ class UserManager
 
         return $user;
     }
+
+    /**
+     * Установка текущего времени в качестве времени последнего логина
+     *
+     * @param UserEntity $user
+     */
+    public function updateLastLogin(UserEntity $user)
+    {
+        $user->setLastLoginAt(new \DateTime());
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
 }
