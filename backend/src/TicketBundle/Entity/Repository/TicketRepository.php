@@ -4,6 +4,7 @@ namespace TicketBundle\Entity\Repository;
 
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\QueryBuilder;
 use TicketBundle\Entity\TicketEntity;
 use UserBundle\Entity\UserEntity;
@@ -140,5 +141,24 @@ class TicketRepository extends EntityRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * Получить тикеты, которые требуют автоматического закрытия
+     *
+     * @return IterableResult
+     */
+    public function findNeedToClose(): IterableResult
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.voidedAt IS NOT NULL')
+            ->andWhere('t.voidedAt < :dateTime')
+            ->andWhere('t.currentStatus = :status')
+            ->setParameters([
+                'dateTime' => new \DateTime(),
+                'status' => TicketEntity::STATUS_ANSWERED
+            ])
+            ->getQuery()
+            ->iterate();
     }
 }

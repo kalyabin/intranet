@@ -6,6 +6,8 @@ use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
@@ -30,6 +32,11 @@ class TicketRepositoryTest extends WebTestCase
      */
     protected $fixtures;
 
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+
     public function setUp()
     {
         parent::setUp();
@@ -38,6 +45,8 @@ class TicketRepositoryTest extends WebTestCase
         $objectManager = $this->getContainer()->get('doctrine.orm.entity_manager');
 
         $this->repository = $objectManager->getRepository(TicketEntity::class);
+
+        $this->entityManager = $objectManager;
 
         $this->fixtures = $this->loadFixtures([
             TicketTestFixture::class,
@@ -153,5 +162,57 @@ class TicketRepositoryTest extends WebTestCase
 
         $this->assertInstanceOf(TicketEntity::class, $result);
         $this->assertEquals($result->getId(), $ticket->getId());
+    }
+
+    /**
+     * @depends testRepository
+     *
+     * @covers TicketRepository::findNeedToClose()
+     */
+    public function testFindNeedToClose()
+    {
+        /** @var TicketEntity $ticket */
+        $ticket = $this->fixtures->getReference('ticket');
+
+        // сначала пробуем получить с установкой voidedAt = null
+        $ticket->setVoidedAt(null);
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+        $this->entityManager->clear(TicketEntity::class);
+        $result = $this->repository->findNeedToClose();
+        $this->assertNotEmpty($result);
+        foreach ($result as $items) {
+            $this->assertCount(0, $items);
+        }
+
+        // устанавливаем вчерашнюю дату как время освобождения и статус = есть вопрос
+        $yesterday = new \DateTime();
+        $yesterday->sub(new \DateInterval('P1D'));
+        $ticket->setCurrentStatus(TicketEntity::STATUS_WAIT);
+        $ticket->setVoidedAt($yesterday);
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+        $this->entityManager->clear(TicketEntity::class);
+        $result = $this->repository->findNeedToClose();
+        $this->assertNotEmpty($result);
+        foreach ($result as $items) {
+            $this->assertCount(0, $items);
+        }
+
+        // устанавливаем дату вчерашним днем и статус = получен ответ
+        $ticket->setCurrentStatus(TicketEntity::STATUS_ANSWERED);
+        $this->entityManager->persist($ticket);
+        $this->entityManager->flush();
+        $this->entityManager->clear(TicketEntity::class);
+        $result = $this->repository->findNeedToClose();
+        $this->assertNotEmpty($result);
+        foreach ($result as $items) {
+            $this->assertCount(1, $items);
+            foreach ($items as $item) {
+                /** @var TicketEntity $item */
+                $this->assertInstanceOf(TicketEntity::class, $item);
+                $this->assertEquals($item->getId(), $ticket->getId());
+            }
+        }
     }
 }
