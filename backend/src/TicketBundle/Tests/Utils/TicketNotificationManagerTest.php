@@ -2,10 +2,10 @@
 
 namespace TicketBundle\Tests\Utils;
 
+use AppBundle\Event\UserNotificationInterface;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tests\MailManagerTestTrait;
 use TicketBundle\Entity\TicketEntity;
@@ -14,7 +14,6 @@ use TicketBundle\Event\TicketClosedEvent;
 use TicketBundle\Event\TicketManagerSetEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
-use TicketBundle\Event\TicketUserNotificationEvent;
 use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
 use TicketBundle\Utils\TicketNotificationManager;
 use UserBundle\Entity\UserEntity;
@@ -63,7 +62,7 @@ class TicketNotificationManagerTest extends WebTestCase
         $this->manager = new TicketNotificationManager($em, $rolesManager, $eventDispatcher);
         $self = $this;
         $eventDispatcher->addListener('user_notification', function($event) use ($self) {
-            if ($event instanceof TicketUserNotificationEvent) {
+            if ($event instanceof UserNotificationInterface) {
                 $self->receiverIds[] = $event->getReceiver()->getId();
                 $self->eventCnt++;
             }

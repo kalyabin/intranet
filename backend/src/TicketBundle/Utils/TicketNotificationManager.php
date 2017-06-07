@@ -9,10 +9,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use TicketBundle\Event\TicketClosedEvent;
+use TicketBundle\Event\TicketClosedNotificationEvent;
 use TicketBundle\Event\TicketManagerSetEvent;
+use TicketBundle\Event\TIcketManagerSetNotificationEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
-use TicketBundle\Event\TicketUserNotificationEvent;
+use TicketBundle\Event\TicketNewMessageNotificationEvent;
+use TicketBundle\Event\TicketNewNotificationEvent;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Utils\RolesManager;
@@ -109,7 +112,9 @@ class TicketNotificationManager implements EventSubscriberInterface
         $batchList = $this->userRepository->findByRole($managerRole);
         foreach ($batchList as $users) {
             foreach ($users as $user) {
-                $childEvent = new TicketUserNotificationEvent(TicketNewEvent::NAME, $event, $user);
+                $childEvent = new TicketNewNotificationEvent($event, [
+                    'receiver' => $user
+                ]);
                 $this->eventDispatcher->dispatch('user_notification', $childEvent);
                 $result++;
             }
@@ -117,7 +122,9 @@ class TicketNotificationManager implements EventSubscriberInterface
 
         // отправка уведомлений пользователю создавшему тикет
         if ($event->getTicket()->getCreatedBy()) {
-            $childEvent = new TicketUserNotificationEvent(TicketNewEvent::NAME, $event, $event->getTicket()->getCreatedBy());
+            $childEvent = new TicketNewNotificationEvent($event, [
+                'receiver' => $event->getTicket()->getCreatedBy()
+            ]);
             $this->eventDispatcher->dispatch('user_notification', $childEvent);
             $result++;
         }
@@ -138,7 +145,9 @@ class TicketNotificationManager implements EventSubscriberInterface
 
         // отправка всем пользователям арендатора
         foreach ($this->getAllCustomerUsersByTicket($event->getTicket()) as $user) {
-            $childEvent = new TicketUserNotificationEvent(TicketNewMessageEvent::NEW_ANSWER, $event, $user);
+            $childEvent = new TicketNewMessageNotificationEvent($event, [
+                'receiver' => $user
+            ]);
             $this->eventDispatcher->dispatch('user_notification', $childEvent);
             $result++;
         }
@@ -161,7 +170,9 @@ class TicketNotificationManager implements EventSubscriberInterface
 
         if ($ticket->getManagedBy()) {
             // если по заявке уже работет менеджер, то она отправляется только ему
-            $childEvent = new TicketUserNotificationEvent(TicketNewMessageEvent::NEW_QUESTION, $event, $ticket->getManagedBy());
+            $childEvent = new TicketNewMessageNotificationEvent($event, [
+                'receiver' => $ticket->getManagedBy()
+            ]);
             $this->eventDispatcher->dispatch('user_notification', $childEvent);
             $result++;
         } else {
@@ -172,7 +183,9 @@ class TicketNotificationManager implements EventSubscriberInterface
             foreach ($batchList as $users) {
                 foreach ($users as $user) {
                     /** @var UserEntity $user */
-                    $childEvent = new TicketUserNotificationEvent(TicketNewMessageEvent::NEW_QUESTION, $event, $user);
+                    $childEvent = new TicketNewMessageNotificationEvent($event, [
+                        'receiver' => $user
+                    ]);
                     $this->eventDispatcher->dispatch('user_notification', $childEvent);
                     $result++;
                 }
@@ -194,7 +207,9 @@ class TicketNotificationManager implements EventSubscriberInterface
         $result = 0;
 
         foreach ($this->getAllCustomerUsersByTicket($event->getTicket()) as $user) {
-            $childEvent = new TicketUserNotificationEvent(TicketManagerSetEvent::NAME, $event, $user);
+            $childEvent = new TIcketManagerSetNotificationEvent($event, [
+                'receiver' => $user
+            ]);
             $this->eventDispatcher->dispatch('user_notification', $childEvent);
             $result++;
         }
@@ -214,7 +229,9 @@ class TicketNotificationManager implements EventSubscriberInterface
         $result = 0;
 
         foreach ($this->getAllCustomerUsersByTicket($event->getTicket()) as $user) {
-            $childEvent = new TicketUserNotificationEvent(TicketClosedEvent::NAME, $event, $user);
+            $childEvent = new TicketClosedNotificationEvent($event, [
+                'receiver' => $user
+            ]);
             $this->eventDispatcher->dispatch('user_notification', $childEvent);
             $result++;
         }
