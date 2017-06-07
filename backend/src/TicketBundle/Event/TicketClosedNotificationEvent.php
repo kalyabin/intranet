@@ -2,6 +2,7 @@
 
 namespace TicketBundle\Event;
 
+use AppBundle\Entity\UserNotificationEntity;
 use AppBundle\Event\UserNotificationInterface;
 use AppBundle\Utils\MailManager;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -35,6 +36,29 @@ class TicketClosedNotificationEvent extends GenericEvent implements UserNotifica
             'ticket'   => $ticket,
             'category' => $ticket->getCategory()
         ]);
+    }
+
+    /**
+     * Заполнить дополнительные поля для записи в БД
+     *
+     * @param UserNotificationEntity $notification
+     *
+     * @return UserNotificationEntity|null
+     */
+    public function configureNotification(UserNotificationEntity $notification): ?UserNotificationEntity
+    {
+        /** @var TicketClosedEvent $parentEvent */
+        $parentEvent = $this->getSubject();
+
+        $notification
+            ->setType(UserNotificationEntity::TYPE_TICKET_CLOSED)
+            ->setTicket($parentEvent->getTicket());
+
+        if ($parentEvent->getAuthor()) {
+            $notification->setAuthor($parentEvent->getAuthor());
+        }
+
+        return $notification;
     }
 
     /**

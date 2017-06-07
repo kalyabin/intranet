@@ -3,6 +3,7 @@
 namespace TicketBundle\Event;
 
 
+use AppBundle\Entity\UserNotificationEntity;
 use AppBundle\Event\UserNotificationInterface;
 use AppBundle\Utils\MailManager;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -39,6 +40,24 @@ class TIcketManagerSetNotificationEvent extends GenericEvent implements UserNoti
             'category' => $ticket->getCategory(),
             'manager' => $manager
         ]);
+    }
+
+    /**
+     * Сконфигурировать уведомление для записи в БД
+     *
+     * @param UserNotificationEntity $notification
+     *
+     * @return UserNotificationEntity|null
+     */
+    public function configureNotification(UserNotificationEntity $notification): ?UserNotificationEntity
+    {
+        /** @var TicketManagerSetEvent $parentEvent */
+        $parentEvent = $this->getSubject();
+
+        return $notification
+            ->setType(UserNotificationEntity::TYPE_TICKET_MANAGER_SET)
+            ->setTicket($parentEvent->getTicket())
+            ->setTicketManager($parentEvent->getManager());
     }
 
     /**

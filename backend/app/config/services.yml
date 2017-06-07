@@ -17,7 +17,6 @@ services:
     # системные уведомления для пользователя в любой транспорт
     notification_manager:
         class: AppBundle\Utils\UserNotificationManager
-        calls:
-            - [ 'setMailManager', ['@mail_manager'] ]
+        arguments: ['@doctrine.orm.entity_manager', '@mail_manager']
         tags:
             - { name: kernel.event_listener, event: 'user_notification', method: onUserNotification }

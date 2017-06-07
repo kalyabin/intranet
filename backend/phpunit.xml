@@ -13,6 +13,9 @@
     </php>
 
     <testsuites>
+        <testsuite name="AppBundle tests">
+            <directory>src/AppBundle/Tests</directory>
+        </testsuite>
         <testsuite name="UserBundle tests">
             <directory>src/UserBundle/Tests</directory>
         </testsuite>

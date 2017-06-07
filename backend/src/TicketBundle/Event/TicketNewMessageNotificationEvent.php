@@ -3,6 +3,7 @@
 namespace TicketBundle\Event;
 
 
+use AppBundle\Entity\UserNotificationEntity;
 use AppBundle\Event\UserNotificationInterface;
 use AppBundle\Utils\MailManager;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -45,6 +46,18 @@ class TicketNewMessageNotificationEvent extends GenericEvent implements UserNoti
             'category' => $ticket->getCategory(),
             'message' => $ticketMessage
         ]);
+    }
+
+    public function configureNotification(UserNotificationEntity $notification): ?UserNotificationEntity
+    {
+        /** @var TicketNewMessageEvent $parentEvent */
+        $parentEvent = $this->getSubject();
+
+        return $notification
+            ->setType(UserNotificationEntity::TYPE_TICKET_NEW_MESSAGE)
+            ->setTicket($parentEvent->getTicket())
+            ->setTicketMessage($parentEvent->getMessage())
+            ->setAuthor($parentEvent->getMessage()->getCreatedBy());
     }
 
     public function getReceiver(): UserEntity
