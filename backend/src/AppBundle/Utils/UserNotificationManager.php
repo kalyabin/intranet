@@ -1,9 +1,12 @@
 <?php
 
 namespace AppBundle\Utils;
+
+use AppBundle\Entity\Repository\UserNotificationRepository;
 use AppBundle\Entity\UserNotificationEntity;
 use AppBundle\Event\UserNotificationInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use UserBundle\Entity\UserEntity;
 
 
 /**
@@ -24,6 +27,11 @@ class UserNotificationManager
     protected $entityManager;
 
     /**
+     * @var UserNotificationRepository
+     */
+    protected $repository;
+
+    /**
      * UserNotificationManager constructor.
      *
      * @param EntityManagerInterface $entityManager
@@ -33,6 +41,7 @@ class UserNotificationManager
     {
         $this->entityManager = $entityManager;
         $this->mailManager = $mailManager;
+        $this->repository = $entityManager->getRepository(UserNotificationEntity::class);
     }
 
     /**
@@ -73,6 +82,7 @@ class UserNotificationManager
         $entity = new UserNotificationEntity();
 
         $entity
+            ->setIsRead(false)
             ->setReceiver($event->getReceiver())
             ->setCreatedAt(new \DateTime());
 
@@ -86,6 +96,30 @@ class UserNotificationManager
         }
 
         return false;
+    }
+
+    /**
+     * Пометить все уведомления как прочтенные
+     *
+     * @param UserEntity $user Пользователь для которого выполнить операцию
+     *
+     * @return int Количество помеченных уведомлений
+     */
+    public function setAllNotificationIsRead(UserEntity $user): int
+    {
+        $result = 0;
+
+        foreach ($this->repository->findAllUnreadUserNotification($user) as $notification) {
+            $notification->setIsRead(true);
+            $this->entityManager->persist($notification);
+            $result++;
+        }
+
+        if ($result > 0) {
+            $this->entityManager->flush();
+        }
+
+        return $result;
     }
 
     /**

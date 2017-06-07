@@ -14,7 +14,7 @@ use UserBundle\Entity\UserEntity;
  * В зависимости от типа уведомления привязываются дополнительные поля.
  * Они указываются как null, необязательные.
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserNotificationRepository")
  * @ORM\Table(name="user_notification")
  *
  * @package AppBundle\Entity
@@ -63,6 +63,13 @@ class UserNotificationEntity
      * @var string Тип уведомления
      */
     protected $type;
+
+    /**
+     * @ORM\Column(name="is_read", type="boolean", nullable=false)
+     *
+     * @var boolean Уведомление было прочтено
+     */
+    protected $isRead;
 
     /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\UserEntity")
@@ -157,6 +164,29 @@ class UserNotificationEntity
     public function setType(string $type): self
     {
         $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Get is read flag
+     *
+     * @return bool
+     */
+    public function getIsRead(): ?bool
+    {
+        return $this->isRead;
+    }
+
+    /**
+     * Set is read flag
+     *
+     * @param bool $isRead
+     *
+     * @return UserNotificationEntity
+     */
+    public function setIsRead(bool $isRead): self
+    {
+        $this->isRead = $isRead;
         return $this;
     }
 

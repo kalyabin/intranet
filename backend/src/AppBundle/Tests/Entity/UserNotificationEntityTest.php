@@ -45,6 +45,7 @@ class UserNotificationEntityTest extends WebTestCase
      * @covers UserNotificationEntity::getId()
      * @covers UserNotificationEntity::getCreatedAt()
      * @covers UserNotificationEntity::getType()
+     * @covers UserNotificationEntity::getIsRead()
      * @covers UserNotificationEntity::getReceiver()
      * @covers UserNotificationEntity::getAuthor()
      * @covers UserNotificationEntity::getTicket()
@@ -53,6 +54,7 @@ class UserNotificationEntityTest extends WebTestCase
      *
      * @covers UserNotificationEntity::setCreatedAt()
      * @covers UserNotificationEntity::setType()
+     * @covers UserNotificationEntity::setIsRead()
      * @covers UserNotificationEntity::setReceiver()
      * @covers UserNotificationEntity::setAuthor()
      * @covers UserNotificationEntity::setTicket()
@@ -76,6 +78,7 @@ class UserNotificationEntityTest extends WebTestCase
         $this->assertNull($entity->getId());
         $this->assertNull($entity->getCreatedAt());
         $this->assertNull($entity->getType());
+        $this->assertNull($entity->getIsRead());
         $this->assertNull($entity->getReceiver());
 
         // дополнительные поля
@@ -88,8 +91,10 @@ class UserNotificationEntityTest extends WebTestCase
         $entity
             ->setCreatedAt(new \DateTime())
             ->setType(UserNotificationEntity::TYPE_TICKET_NEW)
+            ->setIsRead(false)
             ->setReceiver($user);
 
+        $this->assertFalse($entity->getIsRead());
         $this->assertInstanceOf(\DateTime::class, $entity->getCreatedAt());
         $this->assertEquals(UserNotificationEntity::TYPE_TICKET_NEW, $entity->getType());
         $this->assertInstanceOf(UserEntity::class, $entity->getReceiver());
