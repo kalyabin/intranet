@@ -36,11 +36,9 @@ export class TicketList extends Vue {
     @Model() category: TicketCategoryInterface = null;
 
     /**
-     * При изменении категории - получать новый список
+     * Получить список тикетов
      */
-    @Watch('category') onChangeCategory(category: TicketCategoryInterface): void {
-        let categoryId = category ? category.id : null;
-
+    fetchTicketList(categoryId: string): void {
         let fetchList = (categoryId: string) => {
             pageMetaStore.commit('showPageLoader');
             this.$store.dispatch('clear').then(() => {
@@ -158,6 +156,8 @@ export class TicketList extends Vue {
         }
 
         this.category = category;
+        let categoryId = category ? category.id : null;
+        this.fetchTicketList(categoryId);
     }
 
     /**
@@ -169,7 +169,7 @@ export class TicketList extends Vue {
                 .then((category: TicketCategoryInterface) => {
                     next(vm => vm.setCategory(category));
                 }, () => {
-                    next(vm => vm.setCategory(null))
+                    next(vm => vm.setCategory(null));
                 });
         } else {
             next(vm => vm.setCategory(null));
