@@ -5,9 +5,12 @@ namespace TicketBundle\Tests\Entity\Repository;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\Repository\TicketCategoryRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 
 /**
  * Тестирование TicketCategoryRepository
@@ -30,7 +33,12 @@ class TicketCategoryRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class,
+            TicketCategoryTestFixture::class,
+            TicketTestFixture::class
+        ])->getReferenceRepository();
 
         /** @var ObjectManager $em */
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');

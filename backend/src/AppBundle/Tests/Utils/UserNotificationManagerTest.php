@@ -9,8 +9,10 @@ use AppBundle\Utils\UserNotificationManager;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\UserNotificationTestFixture;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование менеджера уведомлений для пользователя
@@ -43,29 +45,12 @@ class UserNotificationManagerTest extends WebTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->manager = new UserNotificationManager($entityManager, $mailManager);
-        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserNotificationTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
         $this->entityManager = $entityManager;
-    }
-
-
-    protected function createNotification(): UserNotificationEntity
-    {
-        /** @var UserEntity $user */
-        $user = $this->fixtures->getReference('active-user');
-
-        $entity = new UserNotificationEntity();
-
-        $entity
-            ->setType('testing type')
-            ->setIsRead(false)
-            ->setCreatedAt(new \DateTime())
-            ->setReceiver($user);
-
-        $this->entityManager->persist($entity);
-
-        $this->entityManager->flush();
-
-        return $entity;
     }
 
     /**
@@ -76,12 +61,7 @@ class UserNotificationManagerTest extends WebTestCase
         /** @var UserEntity $user */
         $user = $this->fixtures->getReference('active-user');
 
-        // убедиться что на данный момент уведомлений нет
-        $this->assertEquals(0, $this->manager->setAllNotificationIsRead($user));
-
         // создать уведомление и пометить его как прочтенное
-        $this->createNotification();
-        $this->createNotification();
         $this->assertEquals(2, $this->manager->setAllNotificationIsRead($user));
 
         // повторный вызов должен возвращать 0 - нет уведомлений для пометки

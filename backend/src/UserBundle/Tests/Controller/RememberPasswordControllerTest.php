@@ -4,12 +4,12 @@ namespace UserBunde\Tests\Controller;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\JsonResponseTestTrait;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Controller\RememberPasswordController;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
 use Doctrine\Common\Persistence\ObjectManager;
-use UserBundle\Entity\Repository\UserRepository;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 
 /**
  * Тестирование класса RememberPasswordController
@@ -39,7 +39,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testChangePasswordAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $currentPassword = $user->getPassword();
         $newPassword = 'newtestpassword';
@@ -157,7 +157,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testChangePasswordFormAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         // создать чекер
         $checker = new UserCheckerEntity();
@@ -209,7 +209,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testRememberAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $this->assertEmpty($user->getCheckerByType(UserCheckerEntity::TYPE_REMEMBER_PASSWORD));
 

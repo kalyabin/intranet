@@ -4,7 +4,8 @@ namespace UserBunde\Tests\Controller;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\JsonResponseTestTrait;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use UserBundle\Controller\DashboardController;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\UserCheckerEntity;
@@ -65,7 +66,7 @@ class DashboardControllerTest extends WebTestCase
     public function testCheckAuthorizationActionAuth()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('superadmin-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('superadmin-user');
 
         $url = $this->getUrl('user.check_auth');
 
@@ -101,7 +102,7 @@ class DashboardControllerTest extends WebTestCase
     public function testChangeEmailAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $url = $this->getUrl('user.change_email');
 
@@ -165,7 +166,7 @@ class DashboardControllerTest extends WebTestCase
     public function testChangePasswordAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $url = $this->getUrl('user.change_password');
 
@@ -241,7 +242,7 @@ class DashboardControllerTest extends WebTestCase
     public function testProfileUpdateAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $url = $this->getUrl('user.profile_update');
 
@@ -310,7 +311,7 @@ class DashboardControllerTest extends WebTestCase
     public function testConfirmChangeEmailAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $newEmail = 'newemail@test.ru';
 
@@ -369,7 +370,7 @@ class DashboardControllerTest extends WebTestCase
     public function testLogoutAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
         $this->loginAs($user, 'main');
         $client = parent::makeClient();
         $url = $this->getUrl('user.logout');
@@ -387,7 +388,7 @@ class DashboardControllerTest extends WebTestCase
     public function testGenerateTokenAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
         $this->loginAs($user, 'main');
         $client = parent::makeClient();
 

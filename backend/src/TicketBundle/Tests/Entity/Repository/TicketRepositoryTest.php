@@ -3,16 +3,18 @@
 namespace TicketBundle\Tests\Entity\Repository;
 
 use CustomerBundle\Entity\CustomerEntity;
-use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use UserBundle\Entity\UserEntity;
 
 /**
@@ -49,7 +51,9 @@ class TicketRepositoryTest extends WebTestCase
         $this->entityManager = $objectManager;
 
         $this->fixtures = $this->loadFixtures([
+            UserTestFixture::class,
             TicketTestFixture::class,
+            TicketCategoryTestFixture::class,
             CustomerTestFixture::class
         ])->getReferenceRepository();
     }
@@ -105,8 +109,8 @@ class TicketRepositoryTest extends WebTestCase
         $ticket = $this->fixtures->getReference('ticket');
         /** @var CustomerEntity $ticketCustomer */
         $ticketCustomer = $this->fixtures->getReference('ticket-customer');
-        /** @var CustomerEntity $allCustomer */
-        $allCustomer = $this->fixtures->getReference('all-customer');
+        /** @var CustomerEntity $noneCustomer */
+        $noneCustomer = $this->fixtures->getReference('none-customer');
 
         // поиск всех заявок
         /** @var TicketEntity[] $result */
@@ -129,7 +133,7 @@ class TicketRepositoryTest extends WebTestCase
 
         // поиск по контрагенту
         /** @var TicketEntity[] $result */
-        $result = $this->repository->findAllByFilter([$category->getId()], $allCustomer->getId())->getQuery()->getResult();
+        $result = $this->repository->findAllByFilter([$category->getId()], $noneCustomer->getId())->getQuery()->getResult();
         $this->assertEmpty($result);
 
         $result = $this->repository->findAllByFilter([$category->getId()], $ticketCustomer->getId())->getQuery()->getResult();

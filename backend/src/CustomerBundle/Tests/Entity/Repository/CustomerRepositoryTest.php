@@ -5,7 +5,7 @@ namespace CustomerBundle\Tests\Entity\Repository;
 
 use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Entity\Repository\CustomerRepository;
-use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;

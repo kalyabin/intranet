@@ -4,7 +4,7 @@ namespace UserBundle\Tests\Controller;
 
 
 use CustomerBundle\Entity\CustomerEntity;
-use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -13,7 +13,7 @@ use Tests\ManagerControllerTestTrait;
 use UserBundle\Controller\ManagerController;
 use UserBundle\Entity\Repository\UserRepository;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Utils\RolesManager;
 
 /**

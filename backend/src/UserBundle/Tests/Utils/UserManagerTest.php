@@ -2,13 +2,14 @@
 
 namespace UserBunde\Tests\Utils;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use UserBundle\Entity\UserRoleEntity;
 use UserBundle\Event\UserCreationEvent;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Event\UserActivationEvent;
@@ -51,7 +52,10 @@ class UserManagerTest extends WebTestCase
         $this->em = $container->get('doctrine.orm.entity_manager');
 
         $this->loadFixtures([]);
-        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
 
         $this->manager = new UserManager($container->get('security.encoder_factory'), $container->get('doctrine.orm.entity_manager'), $container->get('event_dispatcher'));
     }

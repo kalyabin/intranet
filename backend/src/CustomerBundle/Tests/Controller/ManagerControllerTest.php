@@ -4,14 +4,14 @@ namespace CustomerBundle\Tests\Controller;
 
 use CustomerBundle\Controller\ManagerController;
 use CustomerBundle\Entity\CustomerEntity;
-use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\JsonResponseTestTrait;
 use Tests\ManagerControllerTestTrait;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование класса ManagerController
@@ -53,12 +53,13 @@ class ManagerControllerTest extends WebTestCase
         $superadminUser = $this->fixtures->getReference('superadmin-user');
 
         // подсчитать общее количество всех контрагентов
-        $expectedCount = 0;
+        $expectedCount = [];
         foreach ($this->fixtures->getReferences() as $reference) {
-            if ($reference instanceof CustomerEntity) {
-                $expectedCount++;
+            if ($reference instanceof CustomerEntity && !in_array($reference->getId(), $expectedCount)) {
+                $expectedCount[] = $reference->getId();
             }
         }
+        $expectedCount = count($expectedCount);
 
         $pageSize = 1;
         $pageNum = 2;

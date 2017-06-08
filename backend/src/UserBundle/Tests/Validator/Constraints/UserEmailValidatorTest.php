@@ -2,9 +2,10 @@
 
 namespace UserBundle\Tests\Validator\Constraints;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Validator\Constraints\UserEmail;
 use UserBundle\Validator\Constraints\UserEmailValidator;
@@ -64,7 +65,10 @@ class UserEmailValidatorTest extends WebTestCase
      */
     public function testIsEmailExists()
     {
-        $fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
 
         $email = $fixtures->getReference('active-user')->getEmail();
         $failEmail = 'non-existent@email.ru';
@@ -114,7 +118,10 @@ class UserEmailValidatorTest extends WebTestCase
      */
     public function testIsEmailNotExists()
     {
-        $fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
 
         $failEmail = $fixtures->getReference('active-user')->getEmail();
         $email = 'non-existent@email.ru';
@@ -164,7 +171,10 @@ class UserEmailValidatorTest extends WebTestCase
      */
     public function testWithContextObject()
     {
-        $fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
 
         /** @var UserEntity $user */
         $user = $fixtures->getReference('active-user');

@@ -7,8 +7,10 @@ use AppBundle\Entity\UserNotificationEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\UserNotificationTestFixture;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use AppBundle\Entity\Repository\UserNotificationRepository;
 
 /**
@@ -39,29 +41,13 @@ class UserNotificationRepositoryTest extends WebTestCase
 
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->repository = $this->entityManager->getRepository(UserNotificationEntity::class);
-        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class,
+            UserNotificationTestFixture::class,
+        ])->getReferenceRepository();
 
         $this->assertInstanceOf(UserNotificationRepository::class, $this->repository);
-    }
-
-    protected function createNotification(): UserNotificationEntity
-    {
-        /** @var UserEntity $user */
-        $user = $this->fixtures->getReference('active-user');
-
-        $entity = new UserNotificationEntity();
-
-        $entity
-            ->setType('testing type')
-            ->setIsRead(false)
-            ->setCreatedAt(new \DateTime())
-            ->setReceiver($user);
-
-        $this->entityManager->persist($entity);
-
-        $this->entityManager->flush();
-
-        return $entity;
     }
 
     /**
@@ -69,7 +55,10 @@ class UserNotificationRepositoryTest extends WebTestCase
      */
     public function testFindAllUnreadUserNotification()
     {
-        $entity = $this->createNotification();
+        /** @var UserNotificationEntity $entity */
+        $entity = $this->fixtures->getReference('active-user-notification');
+        /** @var UserNotificationEntity $entitySecond */
+        $entitySecond = $this->fixtures->getReference('active-user-notification-second');
 
         // убедиться что для неактивного пользователя уведомлений нет
         /** @var UserEntity $inactiveUser */
@@ -83,12 +72,18 @@ class UserNotificationRepositoryTest extends WebTestCase
         $result = $this->repository->findAllUnreadUserNotification($entity->getReceiver());
         $this->assertInternalType('array', $result);
         $this->assertContainsOnlyInstancesOf(UserNotificationEntity::class, $result);
-        $this->assertCount(1, $result);
-        $this->assertEquals($entity->getId(), $result[0]->getId());
+        $this->assertCount(2, $result);
+        $founded = false;
+        foreach ($result as $item) {
+            $founded = in_array($item->getId(), [$entity->getId(), $entitySecond->getId()]);
+        }
+        $this->assertTrue($founded);
 
         // пометить сообщение как прочтенное
         $entity->setIsRead(true);
+        $entitySecond->setIsRead(true);
 
+        $this->entityManager->persist($entitySecond);
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 

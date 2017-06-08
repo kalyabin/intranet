@@ -3,7 +3,7 @@
 namespace UserBunde\Tests\Form\Type;
 
 use CustomerBundle\Entity\CustomerEntity;
-use CustomerBundle\Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Tests\FormWebTestCase;
 use UserBundle\Entity\UserEntity;

@@ -7,6 +7,9 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketHistoryEntity;
@@ -17,7 +20,7 @@ use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
 use TicketBundle\Form\Type\TicketMessageType;
 use TicketBundle\Form\Type\TicketType;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use TicketBundle\Utils\TicketManager;
 use UserBundle\Entity\UserEntity;
 
@@ -43,7 +46,12 @@ class TicketManagerTest extends WebTestCase
         parent::setUp();
 
         $this->manager = $this->getContainer()->get('ticket.manager');
-        $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class,
+            TicketCategoryTestFixture::class,
+            TicketTestFixture::class
+        ])->getReferenceRepository();
     }
 
     /**

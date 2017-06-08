@@ -6,9 +6,12 @@ namespace TicketBundle\Tests\Entity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketHistoryEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use UserBundle\Entity\UserEntity;
 
 /**
@@ -32,7 +35,12 @@ class TicketHistoryEntityTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class,
+            TicketCategoryTestFixture::class,
+            TicketTestFixture::class
+        ])->getReferenceRepository();
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
     }
 

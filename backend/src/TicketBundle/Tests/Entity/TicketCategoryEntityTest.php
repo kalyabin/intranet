@@ -6,7 +6,7 @@ namespace TicketBundle\Tests\Entity;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use TicketBundle\Entity\TicketCategoryEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 
 /**
  * Тестирование категорий (очередей) тикетной системы

@@ -7,14 +7,16 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\JsonResponseTestTrait;
 use TicketBundle\Controller\TicketController;
 use TicketBundle\Entity\Repository\TicketRepository;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Entity\TicketEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование контроллера тикетной системы
@@ -45,6 +47,8 @@ class TicketControllerTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            TicketCategoryTestFixture::class,
             TicketTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();

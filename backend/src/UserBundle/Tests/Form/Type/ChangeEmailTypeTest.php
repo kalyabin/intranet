@@ -2,9 +2,10 @@
 
 namespace UserBunde\Tests\Form\Type;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Tests\FormWebTestCase;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Form\Type\ChangeEmailType;
 
@@ -23,6 +24,7 @@ class ChangeEmailTypeTest extends FormWebTestCase
     protected function setUp()
     {
         $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
             UserTestFixture::class,
         ])->getReferenceRepository();
 

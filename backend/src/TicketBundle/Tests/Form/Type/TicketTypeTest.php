@@ -6,7 +6,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Tests\FormWebTestCase;
 use TicketBundle\Entity\TicketCategoryEntity;
 use TicketBundle\Form\Type\TicketType;
-use TicketBundle\Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 
 /**
  * Тестирование формы добавления заявки

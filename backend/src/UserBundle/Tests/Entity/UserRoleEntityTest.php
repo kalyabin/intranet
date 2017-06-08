@@ -2,11 +2,12 @@
 
 namespace UserBunde\Tests\Entity;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\UserRoleEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование UserRoleEntity
@@ -44,7 +45,10 @@ class UserRoleEntityTest extends WebTestCase
     public function testMe()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository()->getReference('active-user');
 
         $role = new UserRoleEntity();
 
@@ -66,14 +70,14 @@ class UserRoleEntityTest extends WebTestCase
         $this->em->persist($user);
         $this->em->flush();
 
-        $this->assertEquals(2, $user->getRole()->count());
+        $this->assertEquals(3, $user->getRole()->count());
 
         $user->removeRole($role);
 
         $this->em->persist($user);
         $this->em->flush();
 
-        $this->assertEquals(1, $user->getRole()->count());
+        $this->assertEquals(2, $user->getRole()->count());
 
         $user->clearRoles();
 

@@ -1,10 +1,11 @@
 <?php
 
-namespace CustomerBundle\Tests\DataFixtures\ORM;
+namespace Tests\DataFixtures\ORM;
 
 
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -12,7 +13,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  *
  * @package CustomerBundle\Tests\DataFixtures\ORM
  */
-class CustomerTestFixture extends AbstractFixture
+class CustomerTestFixture extends AbstractFixture implements OrderedFixtureInterface
 {
     /**
      * @inheritdoc
@@ -62,5 +63,15 @@ class CustomerTestFixture extends AbstractFixture
         $this->addReference('it-customer', $allowItCustomer);
         $this->addReference('booker-customer', $allowBookerCustomer);
         $this->addReference('none-customer', $allowNoneCustomer);
+    }
+
+    /**
+     * От контрагентов зависят пользователи
+     *
+     * @return int
+     */
+    public function getOrder()
+    {
+        return 1;
     }
 }

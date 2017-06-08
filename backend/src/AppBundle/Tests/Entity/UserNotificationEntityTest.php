@@ -7,11 +7,14 @@ use AppBundle\Entity\UserNotificationEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserNotificationTestFixture;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use UserBundle\Entity\UserEntity;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
  * Тестирование системных уведомлений для пользователей
@@ -36,7 +39,10 @@ class UserNotificationEntityTest extends WebTestCase
 
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
             UserTestFixture::class,
+            UserNotificationTestFixture::class,
+            TicketCategoryTestFixture::class,
             TicketTestFixture::class,
         ])->getReferenceRepository();
     }

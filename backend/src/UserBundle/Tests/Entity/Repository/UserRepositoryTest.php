@@ -2,10 +2,11 @@
 
 namespace UserBunde\Tests\Entity\Repository;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\Repository\UserRepository;
 
@@ -34,7 +35,10 @@ class UserRepositoryTest extends WebTestCase
         $this->repository = static::$kernel->getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(UserEntity::class);
 
-        $this->fixtures = $this->loadFixtures([UserTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
+            UserTestFixture::class
+        ])->getReferenceRepository();
     }
 
     /**
@@ -139,6 +143,7 @@ class UserRepositoryTest extends WebTestCase
         $this->assertInstanceOf(IterableResult::class, $result);
 
         $iterates = 0;
+        $founded = false;
 
         foreach ($result as $rows) {
             $this->assertInternalType('array', $rows);
@@ -148,11 +153,16 @@ class UserRepositoryTest extends WebTestCase
                 $iterates++;
                 /** @var UserEntity $item */
                 $this->assertInstanceOf(UserEntity::class, $item);
-                $this->assertEquals($superadmin->getId(), $item->getId());
+                if ($superadmin->getId() == $item->getId()) {
+                    $founded = true;
+                }
             }
         }
 
-        // в фикстурах есть только 1 супер админ
+        // наш супер админ был найден
+        $this->assertTrue($founded);
+
+        // в фикстурах есть только 2 супер админа
         $this->assertEquals(1, $iterates);
     }
 }

@@ -2,8 +2,9 @@
 
 namespace UserBunde\Tests\Form\Type;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use Tests\FormWebTestCase;
 use UserBundle\Form\Type\ProfileType;
 
@@ -22,6 +23,7 @@ class ProfileTypeTest extends FormWebTestCase
     protected function setUp()
     {
         $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
             UserTestFixture::class,
         ])->getReferenceRepository();
 

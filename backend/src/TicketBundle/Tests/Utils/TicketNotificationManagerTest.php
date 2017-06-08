@@ -7,6 +7,9 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use Tests\MailManagerTestTrait;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
@@ -14,7 +17,7 @@ use TicketBundle\Event\TicketClosedEvent;
 use TicketBundle\Event\TicketManagerSetEvent;
 use TicketBundle\Event\TicketNewEvent;
 use TicketBundle\Event\TicketNewMessageEvent;
-use TicketBundle\Tests\DataFixtures\ORM\TicketTestFixture;
+use Tests\DataFixtures\ORM\TicketTestFixture;
 use TicketBundle\Utils\TicketNotificationManager;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Utils\RolesManager;
@@ -52,7 +55,12 @@ class TicketNotificationManagerTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->fixtures = $this->loadFixtures([TicketTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            UserTestFixture::class,
+            CustomerTestFixture::class,
+            TicketCategoryTestFixture::class,
+            TicketTestFixture::class
+        ])->getReferenceRepository();
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         /** @var RolesManager $rolesManager */
@@ -138,7 +146,6 @@ class TicketNotificationManagerTest extends WebTestCase
         $this->assertDispathcerUserContainsId($user->getId());
 
         $this->assertLastMessageContains($ticket->getNumber());
-        $this->assertLastMessageContains($ticket->getTitle());
     }
 
     /**
@@ -168,7 +175,6 @@ class TicketNotificationManagerTest extends WebTestCase
 
         $this->assertEquals(2, $result);
         $this->assertLastMessageContains($ticket->getNumber());
-        $this->assertLastMessageContains($ticket->getTitle());
 
         $this->clearLastMessage();
 
@@ -181,7 +187,6 @@ class TicketNotificationManagerTest extends WebTestCase
         $this->assertEquals(1, $result);
 
         $this->assertLastMessageContains($ticket->getNumber());
-        $this->assertLastMessageContains($ticket->getTitle());
     }
 
     /**

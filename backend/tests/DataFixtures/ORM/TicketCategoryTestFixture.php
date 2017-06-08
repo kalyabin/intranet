@@ -1,8 +1,9 @@
 <?php
 
-namespace TicketBundle\Tests\DataFixtures\ORM;
+namespace Tests\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use TicketBundle\Entity\TicketCategoryEntity;
 
@@ -11,7 +12,7 @@ use TicketBundle\Entity\TicketCategoryEntity;
  *
  * @package TicketBundle\Tests\DataFixtures\ORM
  */
-class TicketCategoryTestFixture extends AbstractFixture
+class TicketCategoryTestFixture extends AbstractFixture implements OrderedFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
@@ -28,5 +29,15 @@ class TicketCategoryTestFixture extends AbstractFixture
         $manager->flush();
 
         $this->addReference('it-department', $entity);
+    }
+
+    /**
+     * Категория тикетной системы ни отчего не зависит
+     *
+     * @return int
+     */
+    public function getOrder()
+    {
+        return 1;
     }
 }

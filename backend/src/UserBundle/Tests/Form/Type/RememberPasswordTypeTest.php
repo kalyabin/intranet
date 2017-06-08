@@ -2,9 +2,10 @@
 
 namespace UserBunde\Tests\Form\Type;
 
+use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Tests\FormWebTestCase;
-use UserBundle\Tests\DataFixtures\ORM\UserTestFixture;
+use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Form\Type\RememberPasswordType;
 
 /**
@@ -24,6 +25,7 @@ class RememberPasswordTypeTest extends FormWebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            CustomerTestFixture::class,
             UserTestFixture::class,
         ]);
     }
