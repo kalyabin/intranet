@@ -25,11 +25,6 @@ use UserBundle\Entity\UserEntity;
 class UserNotificationController extends Controller
 {
     /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
-
-    /**
      * @var UserNotificationManager
      */
     protected $notificationManager;
@@ -47,7 +42,6 @@ class UserNotificationController extends Controller
      */
     public function __construct(EntityManagerInterface $entityManager, UserNotificationManager $notificationManager)
     {
-        $this->entityManager = $entityManager;
         $this->notificationManager = $notificationManager;
         $this->notificationRepository = $entityManager->getRepository(UserNotificationEntity::class);
     }
@@ -85,7 +79,7 @@ class UserNotificationController extends Controller
      *
      * @return JsonResponse
      */
-    public function setAllRead(): JsonResponse
+    public function readAllAction(): JsonResponse
     {
         /** @var UserEntity $user */
         $user = $this->getUser();
