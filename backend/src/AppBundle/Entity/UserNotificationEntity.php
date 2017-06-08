@@ -19,7 +19,7 @@ use UserBundle\Entity\UserEntity;
  *
  * @package AppBundle\Entity
  */
-class UserNotificationEntity
+class UserNotificationEntity implements \JsonSerializable
 {
     /**
      * Новая заявка в тикетной системе
@@ -303,5 +303,24 @@ class UserNotificationEntity
     {
         $this->ticketManager = $ticketManager;
         return $this;
+    }
+
+    /**
+     * Сериализация данных для JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'createdAt' => $this->createdAt ? $this->createdAt->format('Y-m-d H:i:s') : null,
+            'type' => $this->type,
+            'isRead' => $this->isRead,
+            'author' => $this->author,
+            'ticket' => $this->ticket,
+            'ticketMessage' => $this->ticketMessage,
+            'ticketManager' => $this->ticketManager,
+        ];
     }
 }
