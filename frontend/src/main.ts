@@ -16,6 +16,8 @@ import {NeedUserTypeDirective} from "./app/directive/need-user-type.directive";
 import {pageMetaStore} from "./app/router/page-meta-store";
 import {ticketStatusColorFilter} from "./app/filter/ticket-status-color.filter";
 import {Dropdown} from "./app/components/dropdown";
+import {UserNotificationMessage} from "./app/components/user-notification/message";
+import {CustomScrollbarDirective} from "./app/directive/custom-scrollbar.directive";
 
 /**
  * Точка входа приложения
@@ -37,10 +39,12 @@ Vue.component('x-panel', XPanel);
 Vue.component('tabs', Tabs);
 Vue.component('tab-pane', TabPane);
 Vue.component('dropdown', Dropdown);
+Vue.component('notification-message', UserNotificationMessage);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
 Vue.directive('need-user-type', NeedUserTypeDirective);
+Vue.directive('custom-scrollbar', CustomScrollbarDirective);
 
 // используемые фильтры
 Vue.filter('ticketStatus', ticketStatusFilter);

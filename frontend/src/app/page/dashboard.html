@@ -91,69 +91,37 @@
                             </ul>
                         </li>
 
-                        <li role="presentation" class="dropdown">
-                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                        <li v-if="notifications.length > 0" role="presentation" class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false" title="Просмотреть уведомления">
                                 <i class="fa fa-envelope-o"></i>
-                                <span class="badge bg-green">6</span>
+                                <span class="badge bg-green" v-if="unreadNotifications > 0">{{unreadNotifications}}</span>
                             </a>
-                            <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a>
-                                        <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                        <span>
-                          <span>John Smith</span>
-                          <span class="time">3 mins ago</span>
-                        </span>
-                                        <span class="message">
-                          Film festivals used to be do-or-die moments for movie makers. They were where...
-                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="text-center">
-                                        <a>
-                                            <strong>See All Alerts</strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
+                            <div class="dropdown-menu list-unstyled msg_list" role="menu" v-custom-scrollbar="readAllNotifications">
+                                <div v-for="item in notifications" class="list-item">
+                                    <div class="item">
+                                        <div class="image"><img src="images/img.jpg" alt="Profile Image" /></div>
+                                        <div v-if="item.author">{{item.author.name}}</div>
+                                        <div class="message">
+                                            <notification-message :notification="item"></notification-message>
+                                        </div>
+                                        <div class="time">{{item.createdAt | dateFormat()}}</div>
                                     </div>
-                                </li>
-                            </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li v-if="notifications.length == 0" role="presentation" class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false" title="Новых уведомлений нет">
+                                <i class="fa fa-envelope-o"></i>
+                            </a>
+                            <div class="dropdown-menu list-unstyled msg_list" role="menu">
+                                <div class="list-item">
+                                    <div class="item">
+                                        <div class="message">
+                                            Новых уведомлений нет
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </nav>

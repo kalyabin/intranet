@@ -7,6 +7,7 @@ import {environment} from "../../environment";
 import {RememberPasswordInterface} from "./response/remember-password.interface";
 import {RestorePasswordInterface} from "./response/restore-password.interface";
 import {authUserStore} from "../store/auth-user.store";
+import {UserNotificationInterface} from "./model/user-notification.interface";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -154,6 +155,32 @@ export class AuthUserService {
     hasRole(role: string): boolean {
         let roles = authUserStore.state.roles;
         return !!(roles && roles.indexOf(role) != -1);
+    }
+
+    /**
+     * Получить персонализированные уведомления для текущего авторизованного пользователя
+     */
+    notifications(): Promise<UserNotificationInterface[]> {
+        return this.backendService
+            .makeRequest('GET', 'notifications')
+            .then((response: AxiosResponse) => {
+                return response.data['list'] as UserNotificationInterface[];
+            }, () => {
+                return [];
+            });
+    }
+
+    /**
+     * Пометить все уведомления как прочитанные
+     */
+    readAllNotifications(): Promise<boolean> {
+        return this.backendService
+            .makeRequest('POST', 'notifications/read-all')
+            .then(() => {
+                return true;
+            }, () => {
+                return false;
+            });
     }
 }
 

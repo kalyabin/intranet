@@ -1,0 +1,14 @@
+<div>
+    <router-link v-if="notification.type == 'ticket_new'" :to="getTicketRoute(notification.ticket)">
+        В системе зарегистрирована новая заявка №{{notification.ticket.number}}
+    </router-link>
+    <router-link v-if="notification.type == 'ticket_closed'" :to="getTicketRoute(notification.ticket)">
+        Заявка №{{notification.ticket.number}} закрыта
+    </router-link>
+    <router-link v-if="notification.type == 'ticket_message'" :to="getTicketRoute(notification.ticket)">
+        В заявке №{{notification.ticket.number}} создано новое сообщение
+    </router-link>
+    <router-link v-if="notification.type == 'ticket_manager_set'" :to="getTicketRoute(notification.ticket)">
+        По заявке №{{notification.ticket.number}} установлен ответственный - {{notification.ticketManager.name}}
+    </router-link>
+</div>

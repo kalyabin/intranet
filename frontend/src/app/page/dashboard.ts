@@ -10,9 +10,13 @@ import {SideBarMenuItem, managerSideBarMenu, customerSideBarMenu} from "../sideb
 import {pageMetaStore} from "../router/page-meta-store";
 import {ticketCategoriesStore} from "../store/ticket-categories.store";
 import {TicketCategoryInterface} from "../service/model/ticket-category.interface";
+import {notificationStore} from "../store/notification.store";
+import {UserNotificationInterface} from "../service/model/user-notification.interface";
 
 Component.registerHooks([
-    'beforeRouteLeave'
+    'beforeRouteLeave',
+    'beforeRouteUpdate',
+    'beforeRouteEnter',
 ]);
 
 /**
@@ -99,12 +103,35 @@ export class Dashboard extends Vue {
         $('body').addClass('footer_fixed');
         this.fixContentHeight();
         $(window).on('resize', () => this.fixContentHeight());
+
+        notificationStore.dispatch('fetchAll');
     }
 
     beforeRouteLeave(to, from, next): void {
         $(window).off('resize');
         $('body').removeClass('nav-md footer_fixed');
         next();
+    }
+
+    /**
+     * Получить количество непрочитанных уведомлений
+     */
+    get unreadNotifications(): number {
+        return notificationStore.state.unread;
+    }
+
+    /**
+     * Получить список уведомлений для отображения в шапке
+     */
+    get notifications(): UserNotificationInterface[] {
+        return notificationStore.state.userNotifications;
+    }
+
+    /**
+     * Пометить все уведомления как прочитанные
+     */
+    readAllNotifications(): void {
+        notificationStore.dispatch('readAll');
     }
 
     /**

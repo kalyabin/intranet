@@ -39,4 +39,29 @@ class UserNotificationRepository extends EntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    /**
+     * Получить последние уведомления для пользователя.
+     *
+     * К ним относятся непрочитанные уведомления + уведомления не старше 3-х дней
+     *
+     * @param UserEntity $user
+     *
+     * @return array
+     */
+    public function findLastMessages(UserEntity $user): array
+    {
+        $lastNotify = new \DateTime();
+        $lastNotify->sub(new \DateInterval('P3D'));
+
+        return $this->createQueryBuilder('n')
+            ->where('n.receiver = :receiver AND (n.isRead = :isRead OR n.createdAt >= :lastNotify)')
+            ->setParameters([
+                'isRead' => false,
+                'receiver' => $user,
+                'lastNotify' => $lastNotify
+            ])
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -7,6 +7,7 @@ import {ticketService} from "../../service/ticket.service";
 import {TicketCategoryInterface} from "../../service/model/ticket-category.interface";
 import {TicketMessageResponseInterface} from "../../service/response/ticket-message-response.interface";
 import {TicketResponseInterface} from "../../service/response/ticket-response.interface";
+import {notificationStore} from "../../store/notification.store";
 
 /**
  * Форма создания сообщения по тикету
@@ -68,6 +69,10 @@ export class TicketMessageForm extends Vue {
                     // очистить текст сообщения
                     this.errorMessage = '';
                     this.text = '';
+                    notificationStore.dispatch('systemMessage', {
+                        type: 'success',
+                        text: 'Сообщение было отправлено'
+                    });
                     this.$emit('ticket-changed', response);
                 } else {
                     this.errorMessage = response.firstError;
@@ -100,6 +105,10 @@ export class TicketMessageForm extends Vue {
                     this.errorMessage = 'Не удалось закрыть заявку';
                 } else {
                     this.text = '';
+                    notificationStore.dispatch('systemMessage', {
+                        type: 'success',
+                        text: `Заявка №${this.ticket.number} закрыта`
+                    });
                 }
                 this.$emit('ticket-changed', response);
             }, () => {

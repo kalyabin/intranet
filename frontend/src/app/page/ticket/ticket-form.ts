@@ -10,6 +10,7 @@ import {TicketRequestInterface} from "../../service/request/ticket-request.inter
 import {TicketResponseInterface} from "../../service/response/ticket-response.interface";
 import {router} from "../../router/router";
 import {Location} from "vue-router";
+import {notificationStore} from "../../store/notification.store";
 
 /**
  * Форма создания нового тикета для арендатора
@@ -139,6 +140,10 @@ export class TicketForm extends Vue {
                     if (response.success) {
                         this.$store.dispatch('addTicket', response.ticket)
                             .then(() => router.push(this.categoryRoute));
+                        notificationStore.dispatch('systemMessage', {
+                            type: 'success',
+                            text: `Заявка №${response.ticket.number} зарегистрирована в системе`
+                        });
                     } else {
                         this.errorMessage = response.firstError;
                     }

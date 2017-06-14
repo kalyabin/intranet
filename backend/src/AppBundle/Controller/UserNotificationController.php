@@ -58,13 +58,10 @@ class UserNotificationController extends Controller
      */
     public function unreadListAction(Request $request): JsonResponse
     {
-        $limit = $request->get('limit', null);
-        $limit = is_scalar($limit) ? (int) $limit : null;
-
         /** @var UserEntity $user */
         $user = $this->getUser();
 
-        $list = $this->notificationRepository->findAllUnreadUserNotification($user, $limit);
+        $list = $this->notificationRepository->findLastMessages($user);
 
         return new JsonResponse([
             'list' => $list

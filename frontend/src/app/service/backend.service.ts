@@ -1,5 +1,6 @@
 import Axios, {AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse} from "axios";
 import {environment} from "../../environment";
+import {notificationStore} from "../store/notification.store";
 
 /**
  * Сервис для выполнения API-запросов на бекенд
@@ -79,10 +80,17 @@ export class BackendService {
         .catch((error: AxiosError) => {
             retrieveCsrfToken(error.response);
 
-            // TODO: сделать обработку ошибок
-            console.log(error.response);
+            if (error.response.data.error && error.response.data.error.code && error.response.data.error.message) {
+                let errorMessage = error.response.data.error;
 
-            return error.response;
+                notificationStore.dispatch('systemMessage', {
+                    type: 'error',
+                    title: errorMessage['code'],
+                    text: errorMessage['message']
+                });
+            } else {
+                return error.response;
+            }
         });
     }
 }
