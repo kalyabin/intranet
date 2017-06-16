@@ -5,6 +5,7 @@ namespace AppBundle\Utils;
 use AppBundle\Entity\Repository\UserNotificationRepository;
 use AppBundle\Entity\UserNotificationEntity;
 use AppBundle\Event\UserNotificationInterface;
+use AppBundle\Service\CometClient;
 use Doctrine\ORM\EntityManagerInterface;
 use UserBundle\Entity\UserEntity;
 
@@ -32,16 +33,39 @@ class UserNotificationManager
     protected $repository;
 
     /**
+     * @var CometClient
+     */
+    protected $cometClient;
+
+    /**
      * UserNotificationManager constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param MailManager $mailManager
      */
-    public function __construct(EntityManagerInterface $entityManager, MailManager $mailManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->mailManager = $mailManager;
         $this->repository = $entityManager->getRepository(UserNotificationEntity::class);
+    }
+
+    /**
+     * Установка мейлера
+     *
+     * @param MailManager $mailManager
+     */
+    public function setMailManager(MailManager $mailManager)
+    {
+        $this->mailManager = $mailManager;
+    }
+
+    /**
+     * Установка клиента для comet-сервера
+     *
+     * @param CometClient $cometClient
+     */
+    public function setCometClient(CometClient $cometClient)
+    {
+        $this->cometClient = $cometClient;
     }
 
     /**
@@ -65,6 +89,26 @@ class UserNotificationManager
 
                 return $this->mailManager->sendMessage($message) == 1;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * Отправка уведомления пользователю во фронтенд с новыми сообщениями
+     *
+     * @param UserNotificationInterface $event
+     *
+     * @return bool
+     */
+    protected function sendCometMessage(UserNotificationInterface $event): bool
+    {
+        $receiver = $event->getReceiver();
+
+        if ($this->cometClient) {
+            $this->cometClient->fetchNewNotification($receiver);
+
+            return true;
         }
 
         return false;
@@ -133,5 +177,7 @@ class UserNotificationManager
         $this->saveNotification($event);
         // отправка уведомления по e-mail
         $this->sendMailMessage($event);
+        // отправка уведомления прямо в браузер
+        $this->sendCometMessage($event);
     }
 }

@@ -8,6 +8,7 @@ import {RememberPasswordInterface} from "./response/remember-password.interface"
 import {RestorePasswordInterface} from "./response/restore-password.interface";
 import {authUserStore} from "../store/auth-user.store";
 import {UserNotificationInterface} from "./model/user-notification.interface";
+import {cometClientService} from "./comet-client.service";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -22,6 +23,25 @@ export class AuthUserService {
         protected backendService: BackendService,
         protected reloadAuthStateInterval: number
     ) { }
+
+    /**
+     * Подключение к comet-серверу
+     */
+    protected connectComet(): void {
+        if (authUserStore.state.isAuth) {
+            // активация comet-клиента
+            cometClientService.disconnect();
+            cometClientService.connect();
+            cometClientService.registerFetchNewNotifications();
+        }
+    }
+
+    /**
+     * Отключение от comet-сервера
+     */
+    protected disconnectComet(): void {
+        cometClientService.disconnect();
+    }
 
     /**
      * Проверка авторизации
@@ -46,6 +66,11 @@ export class AuthUserService {
                 }
 
                 if (data.auth) {
+                    if (!cometClientService.isConnected()) {
+                        // если comet-сервер ещё не подключен - подключиться
+                        this.connectComet();
+                    }
+
                     // запустить регулярную проверку авторизации, если пользователь авторизован
                     this.checkAuthTimeout = setTimeout(() => {
                         this.checkAuth();
@@ -92,6 +117,9 @@ export class AuthUserService {
                 authUserStore.commit('userData', null);
                 authUserStore.commit('isTemporaryPassword', false);
                 authUserStore.commit('roles', []);
+
+                // отключение comet-клиента
+                this.disconnectComet();
 
                 if (this.checkAuthTimeout) {
                     clearTimeout(this.checkAuthTimeout);

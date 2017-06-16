@@ -116,6 +116,10 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:8000',
                 secure: false
+            },
+            '/comet': {
+                taget: 'http://localhost:3001',
+                secure: false
             }
         }
     }

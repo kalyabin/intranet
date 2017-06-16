@@ -17,7 +17,10 @@ services:
     # системные уведомления для пользователя в любой транспорт
     notification_manager:
         class: AppBundle\Utils\UserNotificationManager
-        arguments: ['@doctrine.orm.entity_manager', '@mail_manager']
+        arguments: ['@doctrine.orm.entity_manager']
+        calls:
+            - [ 'setMailManager', ['@mail_manager'] ]
+            - [ 'setCometClient', ['@comet_client'] ]
         tags:
             - { name: kernel.event_listener, event: 'user_notification', method: onUserNotification }
 
@@ -27,3 +30,8 @@ services:
         arguments: ['@doctrine.orm.entity_manager', '@notification_manager']
         calls:
             - [ setContainer, ['@service_container'] ]
+
+    # клиент для подключения к comet-серверу
+    comet_client:
+        class: AppBundle\Service\CometClient
+        arguments: ['%comet_url%']

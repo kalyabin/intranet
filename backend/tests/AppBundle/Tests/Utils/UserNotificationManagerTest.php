@@ -4,6 +4,7 @@ namespace AppBundle\Tests\Utils;
 
 
 use AppBundle\Entity\UserNotificationEntity;
+use AppBundle\Service\CometClient;
 use AppBundle\Utils\MailManager;
 use AppBundle\Utils\UserNotificationManager;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
@@ -40,11 +41,9 @@ class UserNotificationManagerTest extends WebTestCase
     {
         parent::setUp();
 
-        /** @var MailManager $mailManager */
-        $mailManager = $this->getContainer()->get('mail_manager');
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->manager = new UserNotificationManager($entityManager, $mailManager);
+        $this->manager = new UserNotificationManager($entityManager);
         $this->fixtures = $this->loadFixtures([
             CustomerTestFixture::class,
             UserNotificationTestFixture::class,

@@ -27,3 +27,6 @@ parameters:
 
     # e-mail отправителя для всех писем по умолчанию
     default_from_email: mail@domain.ltd
+
+    # адрес comet-сервера
+    comet_url: 'http://127.0.0.1:3001/'
