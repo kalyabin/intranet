@@ -385,6 +385,8 @@ class UserNotificationEntity implements \JsonSerializable
             'ticket' => $this->ticket,
             'ticketMessage' => $this->ticketMessage,
             'ticketManager' => $this->ticketManager,
+            'callerId' => $this->callerId,
+            'comment' => $this->comment,
         ];
     }
 }

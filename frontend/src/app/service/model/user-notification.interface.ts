@@ -46,4 +46,14 @@ export interface UserNotificationInterface {
      * Установленный менеджер по заявке
      */
     ticketManager?: UserInterface;
+
+    /**
+     * Входящий номер телефона, если тип уведомления incoming_call
+     */
+    callerId: string;
+
+    /**
+     * Сопроводительный комментарий
+     */
+    comment: string;
 }
