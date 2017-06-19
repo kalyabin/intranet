@@ -11,4 +11,11 @@
     <router-link v-if="notification.type == 'ticket_manager_set'" :to="getTicketRoute(notification.ticket)">
         По заявке №{{notification.ticket.number}} установлен ответственный - {{notification.ticketManager.name}}
     </router-link>
+    <div v-if="notification.type == 'incoming_call'">
+        Входящий звонок с телефонного номера: {{notification.callerId}}.
+        <span v-if="notification.comment">
+            <br />
+            <strong>Комментарий менеджера:</strong> {{notification.comment}}
+        </span>
+    </div>
 </div>
