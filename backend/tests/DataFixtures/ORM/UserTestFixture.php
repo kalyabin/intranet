@@ -144,7 +144,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         // другой пользователь тикетной системы от другого контрагента
         $role = new UserRoleEntity();
         $role->setCode('ROLE_CUSTOMER_ADMIN');
-        /** @var CustomerEntity $customer */
+        /** @var CustomerEntity $customerNone */
         $customerNone = $this->getReference('none-customer');
         $noneCustomerUser = new UserEntity();
         $noneCustomerUser

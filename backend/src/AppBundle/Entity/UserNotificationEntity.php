@@ -22,6 +22,11 @@ use UserBundle\Entity\UserEntity;
 class UserNotificationEntity implements \JsonSerializable
 {
     /**
+     * Тип уведомления - входящий звонок
+     */
+    const TYPE_INCOMING_CALL = 'incoming_call';
+
+    /**
      * Новая заявка в тикетной системе
      */
     const TYPE_TICKET_NEW = 'ticket_new';
@@ -86,6 +91,20 @@ class UserNotificationEntity implements \JsonSerializable
      * @var UserEntity Пользователь, который синицировал уведомление
      */
     protected $author;
+
+    /**
+     * @ORM\Column(name="caller_id", type="string", length=20, nullable=true)
+     *
+     * @var string Номер входящего телефона для типа уведомления "Входящий звонок"
+     */
+    protected $callerId;
+
+    /**
+     * @ORM\Column(name="comment", type="text", nullable=true)
+     *
+     * @var string Сопроводительный комментарий для любого типа уведомления
+     */
+    protected $comment;
 
     /**
      * @ORM\ManyToOne(targetEntity="TicketBundle\Entity\TicketEntity")
@@ -210,6 +229,51 @@ class UserNotificationEntity implements \JsonSerializable
     public function setReceiver(UserEntity $receiver): self
     {
         $this->receiver = $receiver;
+        return $this;
+    }
+
+    /**
+     * Get caller id
+     *
+     * @return string
+     */
+    public function getCallerId(): ?string
+    {
+        return $this->callerId;
+    }
+
+    /**
+     * Set caller id
+     * @param string $callerId
+     *
+     * @return UserNotificationEntity
+     */
+    public function setCallerId(?string $callerId): self
+    {
+        $this->callerId = $callerId;
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return string
+     */
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment
+     *
+     * @return UserNotificationEntity
+     */
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
         return $this;
     }
 

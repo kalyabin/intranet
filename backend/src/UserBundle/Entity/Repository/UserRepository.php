@@ -2,6 +2,7 @@
 
 namespace UserBundle\Entity\Repository;
 
+use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use UserBundle\Entity\UserEntity;
@@ -110,6 +111,33 @@ class UserRepository extends EntityRepository
             $queryBuilder->andWhere('u.status = :status')
                 ->setParameter('status', $status);
         }
+
+        return $queryBuilder
+            ->groupBy('u.id')
+            ->getQuery()
+            ->iterate();
+    }
+
+    /**
+     * Получить по коду ролей и привязке к контрагенту
+     *
+     * @param string|string[] $role Роль или массив ролей
+     * @param CustomerEntity $customer
+     *
+     * @return IterableResult
+     */
+    public function findByRoleAndCustomer($role, CustomerEntity $customer): IterableResult
+    {
+        $role = is_array($role) ? $role : [$role];
+
+        $queryBuilder = $this->createQueryBuilder('u')
+            ->distinct()
+            ->join('u.role', 'r')
+            ->where('u.customer = :customer AND r.code IN (:role)')
+            ->setParameters([
+                'customer' => $customer,
+                'role' => $role,
+            ]);
 
         return $queryBuilder
             ->groupBy('u.id')

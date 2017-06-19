@@ -30,3 +30,6 @@ parameters:
 
     # адрес comet-сервера
     comet_url: 'http://127.0.0.1:3001/'
+
+    # реквизиты для доступа АТС к системе входящих звонков
+    ats_password: 'asterisk'

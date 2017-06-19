@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Exception\AccountExpiredException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -126,7 +127,13 @@ class AuthenticationListener implements AuthenticationSuccessHandlerInterface, A
      */
     public function onAccessDenied(GetResponseForExceptionEvent $event)
     {
+        /** @var AuthenticationException $exception */
         $exception = $event->getException();
+
+        // TODO: заглушка для АТС - не показываем 403-ю ошибку
+        if ($event->getRequest()->getPathInfo() == '/api/incoming-call') {
+            return;
+        }
 
         if ($exception instanceof AuthenticationCredentialsNotFoundException || $exception instanceof AccessDeniedException || $exception instanceof AccountStatusException) {
             $isAuth = $this->tokenStorage->getToken()->getUser() instanceof UserInterface;

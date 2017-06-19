@@ -83,6 +83,7 @@ class RolesManager
                 'ROLE_STORAGE_CUSTOMER',
                 'ROLE_IT_CUSTOMER',
                 'ROLE_BOOKER_CUSTOMER',
+                'ROLE_INCOMING_CALLS_CUSTOMER',
             ],
             UserEntity::TYPE_MANAGER => [
                 'ROLE_SUPERADMIN',
@@ -96,6 +97,7 @@ class RolesManager
                 'ROLE_BOOKER_MANAGEMENT',
                 'ROLE_TICKET_ADMIN_MANAGEMENT',
                 'ROLE_ACCOUNT_MANAGEMENT',
+                'ROLE_INCOMING_CALLS_MANAGEMENT',
             ],
         ];
     }
@@ -110,8 +112,7 @@ class RolesManager
         return [
             'ROLE_SUPERADMIN' => 'Супер администратор (доступны все права сотрудников)',
             'ROLE_CUSTOMER_ADMIN' => 'Администратор арендатора (доступны все права арендатора)',
-            'ROLE_TICKET_ADMIN_MANAGEMENT' => 'Администратор тикетной системы (просмотр и назначение ответственных по заявкам)',
-            'ROLE_ACCOUNT_MANAGEMENT' => 'Управляющий менеджер',
+
             'ROLE_USER_CUSTOMER' => 'Создание пользователей арендатора',
             'ROLE_FINANCE_CUSTOMER' => 'Отправка заявок "Финансовые вопросы"',
             'ROLE_MAINTAINCE_CUSTOMER' => 'Отправка заявок "Служба эксплуатации"',
@@ -120,7 +121,10 @@ class RolesManager
             'ROLE_STORAGE_CUSTOMER' => 'Заказ товаров на складе',
             'ROLE_IT_CUSTOMER' => 'Отправка заявок "IT аутсорсинг"',
             'ROLE_BOOKER_CUSTOMER' => 'Пользование услугами SMART-бухгалтера',
+            'ROLE_INCOMING_CALLS_CUSTOMER' => 'Получение входящих звонков с проходной',
 
+            'ROLE_TICKET_ADMIN_MANAGEMENT' => 'Администратор тикетной системы (просмотр и назначение ответственных по заявкам)',
+            'ROLE_ACCOUNT_MANAGEMENT' => 'Управляющий менеджер',
             'ROLE_USER_MANAGEMENT' => 'Управление всеми пользователями',
             'ROLE_RENT_MANAGEMENT' => 'Сотрудник службы аренды',
             'ROLE_STORAGE_MANAGEMENT' => 'Сотрудник склада',
@@ -129,6 +133,7 @@ class RolesManager
             'ROLE_FINANCE_MANAGEMENT' => 'Сотрудник финансовой службы',
             'ROLE_MAINTAINCE_MANAGEMENT' => 'Сотрудник службы эксплуатации',
             'ROLE_BOOKER_MANAGEMENT' => 'Сотрудник SMART-бухгалтер',
+            'ROLE_INCOMING_CALLS_MANAGEMENT' => 'Получение входящих звонков и переотправка их арендаторам',
         ];
     }
 }

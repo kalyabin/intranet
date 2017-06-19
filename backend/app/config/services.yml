@@ -31,6 +31,13 @@ services:
         calls:
             - [ setContainer, ['@service_container'] ]
 
+    # приём от АТС входящих звонков и переотправка арендаторам
+    incoming_calls_controller:
+        class: AppBundle\Controller\IncomingCallsController
+        arguments: ['@user.roles_manager', '@doctrine.orm.entity_manager', '@event_dispatcher']
+        calls:
+            - [ setContainer, ['@service_container'] ]
+
     # клиент для подключения к comet-серверу
     comet_client:
         class: AppBundle\Service\CometClient

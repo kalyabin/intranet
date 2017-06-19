@@ -2,6 +2,7 @@
 
 namespace UserBunde\Tests\Entity\Repository;
 
+use CustomerBundle\Entity\CustomerEntity;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -164,5 +165,36 @@ class UserRepositoryTest extends WebTestCase
 
         // в фикстурах есть только 2 супер админа
         $this->assertEquals(1, $iterates);
+    }
+
+    /**
+     * @covers UserRepository::findByRoleAndCustomer()
+     */
+    public function testFindByRoleAndCustomer()
+    {
+        /** @var CustomerEntity $customer */
+        $customer = $this->fixtures->getReference('all-customer');
+
+        $result = $this->repository->findByRoleAndCustomer('ROLE_CUSTOMER_ADMIN', $customer);
+        $this->assertInstanceOf(IterableResult::class, $result);
+
+        $founded = false;
+
+        foreach ($result as $rows) {
+            $this->assertInternalType('array', $rows);
+            $this->assertNotEmpty($rows);
+
+            foreach ($rows as $item) {
+                /** @var UserEntity $item */
+                $this->assertInstanceOf(UserEntity::class, $item);
+                $this->assertArraySubset(['ROLE_CUSTOMER_ADMIN'], $item->getRoles());
+                $this->assertInstanceOf(CustomerEntity::class, $item->getCustomer());
+                $this->assertEquals($customer->getId(), $item->getCustomer()->getId());
+
+                $founded = true;
+            }
+        }
+
+        $this->assertTrue($founded);
     }
 }
