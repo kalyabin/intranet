@@ -18,6 +18,7 @@ import {ticketStatusColorFilter} from "./app/filter/ticket-status-color.filter";
 import {Dropdown} from "./app/components/dropdown";
 import {UserNotificationMessage} from "./app/components/user-notification/message";
 import {CustomScrollbarDirective} from "./app/directive/custom-scrollbar.directive";
+import {FlashNotificationInterface, notificationStore} from "./app/store/notification.store";
 
 /**
  * Точка входа приложения
@@ -57,6 +58,14 @@ export const app = new Vue({
     computed: {
         pageLoader: (): boolean => {
             return pageMetaStore.state.pageLoader;
+        },
+        notifications: (): FlashNotificationInterface[] => {
+            return notificationStore.state.flashNotifications;
+        }
+    },
+    methods: {
+        removeNotification: (flash: FlashNotificationInterface): void => {
+            notificationStore.commit('removeFlash', flash);
         }
     }
 }).$mount('#app');

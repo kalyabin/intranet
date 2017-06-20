@@ -100,10 +100,7 @@ module.exports = {
             jQuery: 'jquery',
             $: 'jquery',
             DataTable: 'datatable.net',
-            DataTableBs: 'datatable.net-bs',
-            PNotify: 'pnotify/dist/pnotify.js',
-            PNotifyButtons: 'pnotify/dist/pnotify.buttons.js',
-            PNotifyNonblock: 'pnotify/dist/pnotify.nonblock.js'
+            DataTableBs: 'datatable.net-bs'
         }),
         new webpack.DefinePlugin({
             'process.env': {

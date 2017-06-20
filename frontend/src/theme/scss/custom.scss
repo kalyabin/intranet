@@ -3437,6 +3437,11 @@ ul.project_files li a i {
   opacity: .75;
   filter: alpha(opacity=75);
   z-index: 20140628;
+  width: 100%;
+  height: 100%;
+  &.loading-page {
+    position: fixed;
+  }
 
   &.visible {
     display: block;
@@ -3892,6 +3897,41 @@ header {
 
 /* *********  end nprogress  **************************** */
 
+.flash-notification {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  margin-bottom: 50px;
+  margin-right: 50px;
+  max-width: 50%;
+  padding: 10px;
+
+  .flash-notification-icon {
+    float: left;
+    margin-right: 10px;
+  }
+
+  .flash-notification-text {
+    float: left;
+    margin-left: 10px;
+    white-space: nowrap;
+
+    a {
+      color: #FFFFFF;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .flash-notification-close {
+    float: right;
+    margin-left: 10px;
+    a {
+      color: #FFFFFF;
+    }
+  }
+}
 
 /** bootstrap-wysiwyg **/
 .editor-wrapper {

@@ -140,7 +140,7 @@ export class TicketForm extends Vue {
                     if (response.success) {
                         this.$store.dispatch('addTicket', response.ticket)
                             .then(() => router.push(this.categoryRoute));
-                        notificationStore.dispatch('systemMessage', {
+                        notificationStore.dispatch('flash', {
                             type: 'success',
                             text: `Заявка №${response.ticket.number} зарегистрирована в системе`
                         });

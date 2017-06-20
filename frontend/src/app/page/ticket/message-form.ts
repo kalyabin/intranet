@@ -69,7 +69,7 @@ export class TicketMessageForm extends Vue {
                     // очистить текст сообщения
                     this.errorMessage = '';
                     this.text = '';
-                    notificationStore.dispatch('systemMessage', {
+                    notificationStore.dispatch('flash', {
                         type: 'success',
                         text: 'Сообщение было отправлено'
                     });
@@ -105,10 +105,6 @@ export class TicketMessageForm extends Vue {
                     this.errorMessage = 'Не удалось закрыть заявку';
                 } else {
                     this.text = '';
-                    notificationStore.dispatch('systemMessage', {
-                        type: 'success',
-                        text: `Заявка №${this.ticket.number} закрыта`
-                    });
                 }
                 this.$emit('ticket-changed', response);
             }, () => {

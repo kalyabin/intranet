@@ -83,8 +83,8 @@ export class BackendService {
             if (error.response.data.error && error.response.data.error.code && error.response.data.error.message) {
                 let errorMessage = error.response.data.error;
 
-                notificationStore.dispatch('systemMessage', {
-                    type: 'error',
+                notificationStore.dispatch('flash', {
+                    type: 'danger',
                     title: errorMessage['code'],
                     text: errorMessage['message']
                 });

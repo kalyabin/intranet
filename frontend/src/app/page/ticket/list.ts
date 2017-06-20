@@ -140,6 +140,7 @@ export class TicketList extends Vue {
         router.push({
             name: this.userType == 'customer' ? 'cabinet_ticket_details' : 'manager_ticket_details',
             params: <any>{
+                category: ticket.category,
                 ticket: ticket.id
             }
         });

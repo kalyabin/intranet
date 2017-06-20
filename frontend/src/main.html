@@ -1,4 +1,30 @@
 <div>
-    <div class="loading" :class="{'visible': pageLoader}"></div>
+    <div class="loading loading-page" :class="{'visible': pageLoader}"></div>
     <router-view></router-view>
+    <div
+        v-for="flash in notifications"
+        v-bind:class="{
+            'flash-notification': true,
+            'alert': true,
+            'alert-danger': flash.type == 'danger',
+            'alert-success': flash.type == 'success',
+            'alert-warning': flash.type == 'warning',
+            'alert-primary': flash.type == 'primary',
+            'alert-info': flash.type == 'info',
+            'alert-default': flash.type == 'default'
+        }">
+        <div class="flash-notification-icon float-left">
+            <i class="fa fa-warning" v-if="flash.type == 'danger' || flash.type == 'warning'"></i>
+            <i class="fa fa-info" v-if="flash.type == 'info' || flash.type == 'default'"></i>
+            <i class="fa fa-check" v-if="flash.type == 'success'"></i>
+        </div>
+        <div class="flash-notification-text float-left">
+            <h4 v-if="flash.title">{{flash.title}}</h4>
+            <div v-if="flash.text">{{flash.text}}</div>
+            <notification-message v-if="flash.userNotify" :notification="flash.userNotify"></notification-message>
+        </div>
+        <div class="flash-notification-close float-left">
+            <a href="#" @click.prevent="removeNotification(flash)"><i class="fa fa-close"></i></a>
+        </div>
+    </div>
 </div>

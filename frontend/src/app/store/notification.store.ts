@@ -20,14 +20,70 @@ export interface NotificationStateInterface {
      * Количество непрочитанных уведомлений
      */
     unread: number;
+
+    /**
+     * Всплывающие уведомления
+     */
+    flashNotifications: FlashNotificationInterface[];
+}
+
+/**
+ * Тип всплывающего уведомления
+ */
+export type FlashNotificationType = 'default' | 'danger' | 'success' | 'info' | 'warning';
+
+/**
+ * Модель всплывающего уведомления
+ */
+export interface FlashNotificationInterface {
+    /**
+     * Автоматически скрывать уведомление. По умолучанию - всегда скрывать.
+     */
+    autoHide?: boolean;
+
+    /**
+     * Привязка к персонализированному ведомлению
+     */
+    userNotify?: UserNotificationInterface;
+
+    /**
+     * Заголовок уведомления
+     */
+    title?: string;
+
+    /**
+     * Текст уведомления, если нет привязки к персонализированному уведомлению
+     */
+    text?: string;
+
+    /**
+     * Тип всплывающего уведомления
+     */
+    type?: FlashNotificationType;
 }
 
 export let notificationStore = new Vuex.Store<NotificationStateInterface>({
     state: <NotificationStateInterface>{
         userNotifications: [],
         unread: 0,
+        flashNotifications: []
     },
     mutations: {
+        /**
+         * Добавить всплывающее уведомление в стек
+         */
+        pushFlash: (state: NotificationStateInterface, flash: FlashNotificationInterface) => {
+            state.flashNotifications.push(flash);
+        },
+        /**
+         * Удалить всплывающее уведомление из стека
+         */
+        removeFlash: (state: NotificationStateInterface, flash: FlashNotificationInterface) => {
+            let index = state.flashNotifications.indexOf(flash);
+            if (index !== -1) {
+                state.flashNotifications.splice(index, 1);
+            }
+        },
         /**
          * Очистить все пользовательские уведомления
          */
@@ -67,22 +123,6 @@ export let notificationStore = new Vuex.Store<NotificationStateInterface>({
     },
     actions: {
         /**
-         * Создать мерцающее системное уведомление
-         */
-        systemMessage: (action, notifyOptions: PNotifyOptions) => {
-            if (Object.keys(notifyOptions).indexOf('hide') == -1) {
-                notifyOptions.hide = true;
-            }
-            notifyOptions.styling = 'bootstrap3';
-            notifyOptions.buttons = {
-                closer: true,
-                closer_hover: true,
-                sticker: false,
-                sticker_hover: false
-            };
-            new PNotify(notifyOptions);
-        },
-        /**
          * Получить все персонализированные уведомления с бекенда
          */
         fetchAll: (action) => {
@@ -114,6 +154,10 @@ export let notificationStore = new Vuex.Store<NotificationStateInterface>({
                         if (existsIds.indexOf(item.id) == -1) {
                             newList.push(item);
                             action.commit('addNotification', item);
+                            action.dispatch('flash', {
+                                userNotify: item,
+                                type: 'info'
+                            });
                         }
                     }
                     resolve(newList);
@@ -138,6 +182,28 @@ export let notificationStore = new Vuex.Store<NotificationStateInterface>({
                     resolve(true);
                 }
             });
+        },
+        /**
+         * Поместить сплывающее уведомление
+         */
+        flash: (action, flash: FlashNotificationInterface) => {
+            // если не чего показывать
+            if (!flash.userNotify && !flash.title && !flash.text) {
+                return;
+            }
+
+            if (!flash.type) {
+                flash.type = 'default';
+            }
+
+            action.commit('pushFlash', flash);
+
+            // если не установлен флаг автоматического удаления уведомления - всегда скрывать
+            if (typeof flash.autoHide == 'undefined' || flash.autoHide) {
+                setTimeout(() => {
+                    action.commit('removeFlash', flash);
+                }, 5000);
+            }
         }
     }
 });
