@@ -4,6 +4,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import {UserNotificationInterface} from "../service/model/user-notification.interface";
 import {authUserService} from "../service/auth-user.service";
+import {authUserStore} from "./auth-user.store";
+import {managerIncomingCallStore} from "./manager-incoming-call.store";
 
 Vue.use(Vuex);
 
@@ -154,6 +156,18 @@ export let notificationStore = new Vuex.Store<NotificationStateInterface>({
                         if (existsIds.indexOf(item.id) == -1) {
                             newList.push(item);
                             action.commit('addNotification', item);
+
+                            // вхоядщие звонки для менеджеров не имеют всплывающих уведомлений
+                            // вместо этого для них раскрывается модальное окно для пересылки звонка арендатору
+                            if (
+                                authUserStore.state.isAuth &&
+                                authUserStore.state.userData.userType == 'manager' &&
+                                item.type == 'incoming_call'
+                            ) {
+                                managerIncomingCallStore.commit('incomingCall', item);
+                                return;
+                            }
+
                             action.dispatch('flash', {
                                 userNotify: item,
                                 type: 'info'

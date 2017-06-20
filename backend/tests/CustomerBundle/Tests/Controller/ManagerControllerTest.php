@@ -69,8 +69,6 @@ class ManagerControllerTest extends WebTestCase
             'pageNum' => $pageNum,
         ]);
 
-        $this->assertNonAuthenticatedUsers('GET', $url);
-
         // авторизоваться под админом
         $this->loginAs($superadminUser, 'main');
 

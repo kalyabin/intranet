@@ -1,0 +1,40 @@
+<div>
+    <modal-window @hide="onHideModal()" ref="window">
+        <div slot="title">
+            <i class="fa fa-phone"></i>
+            Входящий звонок
+        </div>
+        <div slot="body" v-if="incomingCall">
+            <div class="modal-body">
+                <form @submit.prevent="submit" @input="errorMessage = ''">
+                    <loader :visible="awaitOfSubmit"></loader>
+                    <div class="form-group">
+                        <label class="control-label">Входящий номер телефона:</label>
+                        <div class="form-control">{{incomingCall.callerId}}</div>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('customer')}">
+                        <label class="control-label">Отправить уведомление арендатору:</label>
+                        <select name="customer" v-model="customer" v-validate="'required'" class="form-control">
+                            <option value="">Выберите арендатора</option>
+                            <option v-for="item in customers" :value="item.id">{{item.name}}</option>
+                        </select>
+                        <p class="help-block" v-if="errors.has('customer')">
+                            {{errors.first('customer')}}
+                        </p>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('comment')}">
+                        <label class="control-label">Комментарий:</label>
+                        <textarea class="form-control" name="comment" v-model="comment" v-validate="'max:255'" rows="10"></textarea>
+                        <p class="help-block" v-if="errors.has('comment')">
+                            {{errors.first('comment')}}
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Отправить уведомление</button>
+                        <button type="submit" class="btn btn-danger" @click.prevent="hideModal()">Проигнорировать звонок</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </modal-window>
+</div>

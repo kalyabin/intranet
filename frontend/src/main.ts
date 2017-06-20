@@ -19,6 +19,8 @@ import {Dropdown} from "./app/components/dropdown";
 import {UserNotificationMessage} from "./app/components/user-notification/message";
 import {CustomScrollbarDirective} from "./app/directive/custom-scrollbar.directive";
 import {FlashNotificationInterface, notificationStore} from "./app/store/notification.store";
+import {FlashNotifications} from "./app/components/user-notification/flash-notifications";
+import {ManagerIncomingCallWindow} from "./app/components/user-notification/manager-incoming-call-window";
 
 /**
  * Точка входа приложения
@@ -41,6 +43,8 @@ Vue.component('tabs', Tabs);
 Vue.component('tab-pane', TabPane);
 Vue.component('dropdown', Dropdown);
 Vue.component('notification-message', UserNotificationMessage);
+Vue.component('flash-notifications', FlashNotifications);
+Vue.component('manager-incoming-call-window', ManagerIncomingCallWindow);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
@@ -59,13 +63,5 @@ export const app = new Vue({
         pageLoader: (): boolean => {
             return pageMetaStore.state.pageLoader;
         },
-        notifications: (): FlashNotificationInterface[] => {
-            return notificationStore.state.flashNotifications;
-        }
     },
-    methods: {
-        removeNotification: (flash: FlashNotificationInterface): void => {
-            notificationStore.commit('removeFlash', flash);
-        }
-    }
 }).$mount('#app');

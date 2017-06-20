@@ -63,6 +63,7 @@ class ManagerController extends Controller
     /**
      * Список всех контрагентов
      *
+     * @Security("is_fully_authenticated()")
      * @Method({"GET"})
      * @Route("/manager/customer", name="customer.manager.list", options={"expose": true})
      *

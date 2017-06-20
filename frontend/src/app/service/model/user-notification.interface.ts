@@ -4,7 +4,7 @@
 import {UserInterface} from "./user.interface";
 import {TicketInterface} from "./ticket.interface";
 import {TicketMessageInterface} from "./ticket-message.interface";
-export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed';
+export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed' | 'incoming_call';
 
 /**
  * Модель системного уведомления для пользователя
