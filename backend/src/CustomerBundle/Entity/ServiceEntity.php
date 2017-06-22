@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Модель дополнительной услуги для подключения
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CustomerBundle\Entity\Repository\ServiceRepository")
  * @ORM\Table(name="`service`")
  *
  * @package CustomerBundle\Entity

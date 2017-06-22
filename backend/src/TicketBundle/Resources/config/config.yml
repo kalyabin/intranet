@@ -29,7 +29,7 @@ services:
     # проверка прав доступа к категории тикетов
     ticket.category_voter:
         class: '%ticket.category_voter%'
-        arguments: [ '@security.access.decision_manager' ]
+        arguments: [ '@security.access.decision_manager', '@doctrine.orm.entity_manager' ]
         public: false
         tags:
             - { name: security.voter }

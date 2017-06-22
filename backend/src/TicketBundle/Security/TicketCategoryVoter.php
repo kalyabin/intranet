@@ -2,7 +2,10 @@
 
 namespace TicketBundle\Security;
 
+use CustomerBundle\Entity\Repository\ServiceRepository;
 use CustomerBundle\Entity\ServiceActivatedEntity;
+use CustomerBundle\Entity\ServiceEntity;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -32,13 +35,38 @@ class TicketCategoryVoter extends Voter
     protected $decisionManager;
 
     /**
+     * @var ServiceRepository Репозиторий для получения дополнительных услуг
+     */
+    protected $serviceRepository;
+
+    /**
      * TicketCategoryVoter constructor.
      *
      * @param AccessDecisionManagerInterface $decisionManager
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(AccessDecisionManagerInterface $decisionManager)
+    public function __construct(AccessDecisionManagerInterface $decisionManager, EntityManagerInterface $entityManager)
     {
         $this->decisionManager = $decisionManager;
+        $this->serviceRepository = $entityManager->getRepository(ServiceEntity::class);
+    }
+
+    /**
+     * Проверить, что роль доступна только в соответствии с дополнительной услугой
+     *
+     * @param string $customerRole Роль арендатора
+     *
+     * @return bool
+     */
+    protected function isExtendedService($customerRole): bool
+    {
+        $services = $this->serviceRepository->findAll();
+        foreach ($services as $service) {
+            if ($service->getEnableCustomerRole() == $customerRole) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -81,23 +109,26 @@ class TicketCategoryVoter extends Voter
         if ($user->getUserType() == UserEntity::TYPE_MANAGER) {
             return $this->decisionManager->decide($token, [$subject->getManagerRole()]);
         } else if ($user->getUserType() == UserEntity::TYPE_CUSTOMER && $user->getCustomer()) {
-            // если по договору для контрагента эта услуга не доступна - не даём пользоваться данной категорией при любом раскладе
+            // если данный тикет включен как отдельная услуга
+            // и если по договору для контрагента эта услуга не доступна -
+            // не даём пользоваться данной категорией при любом раскладе
             $customerRole = $subject->getCustomerRole();
-            $customer = $user->getCustomer();
-            $allowedByService = false;
-            foreach ($customer->getService() as $activatedService) {
-                /** @var ServiceActivatedEntity $activatedService */
-                if ($activatedService->getService()->getEnableCustomerRole() == $customerRole) {
-                    $allowedByService = true;
-                    break;
+            if ($this->isExtendedService($customerRole)) {
+                $customer = $user->getCustomer();
+                $allowedByService = false;
+                foreach ($customer->getService() as $activatedService) {
+                    /** @var ServiceActivatedEntity $activatedService */
+                    if ($activatedService->getService()->getEnableCustomerRole() == $customerRole) {
+                        $allowedByService = true;
+                        break;
+                    }
                 }
-            }
-            if (!$allowedByService) {
-                return false;
+                if (!$allowedByService) {
+                    return false;
+                }
             }
 
             // проверка прав доступа
-            $customerRole = $subject->getCustomerRole();
             if (empty($customerRole)) {
                 // если не указана роль для арендаторов значит доступ имеют все арендаторы
                 return true;
