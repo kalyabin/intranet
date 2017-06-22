@@ -8,6 +8,7 @@ use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\JsonResponseTestTrait;
 use Tests\ManagerControllerTestTrait;
 use UserBundle\Controller\ManagerController;
@@ -43,7 +44,8 @@ class ManagerControllerTest extends WebTestCase
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = $this->loadFixtures([
             UserTestFixture::class,
-            CustomerTestFixture::class
+            CustomerTestFixture::class,
+            ServiceTestFixture::class,
         ])->getReferenceRepository();
     }
 

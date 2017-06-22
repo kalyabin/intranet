@@ -60,9 +60,7 @@ export class ManagerUserForm extends Vue {
      */
     @Model() customer: CustomerInterface = this.user && this.user.customer ? this.user.customer : {
         name: '',
-        currentAgreement: '',
-        allowItDepartment: false,
-        allowBookerDepartment: false
+        currentAgreement: ''
     };
 
     /**
@@ -155,9 +153,7 @@ export class ManagerUserForm extends Vue {
             .catch(() => {
                 this.customer = {
                     name: '',
-                    currentAgreement: '',
-                    allowItDepartment: false,
-                    allowBookerDepartment: false
+                    currentAgreement: ''
                 }
             });
     }

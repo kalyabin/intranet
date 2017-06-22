@@ -54,19 +54,11 @@ class CreateCustomerCommand extends ContainerAwareCommand
 
         $agreement = $helper->ask($input, $output, $agreementQuestion);
 
-        $allowItDepartmentQuestion = new ConfirmationQuestion('Есть доступ к IT-аутсорсингу? ');
-        $allowItDepartment = $helper->ask($input, $output, $allowItDepartmentQuestion);
-
-        $allowBookerDepartmentQuestion = new ConfirmationQuestion('Есть доступ к SMART-бухгалтеру? ');
-        $allowBookerDepartment = $helper->ask($input, $output, $allowBookerDepartmentQuestion);
-
         $customer = new CustomerEntity();
 
         $customer
             ->setName($name)
-            ->setCurrentAgreement($agreement)
-            ->setAllowItDepartment($allowItDepartment)
-            ->setAllowBookerDepartment($allowBookerDepartment);
+            ->setCurrentAgreement($agreement);
 
         /** @var ObjectManager $em */
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');

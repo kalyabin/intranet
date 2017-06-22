@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use Tests\MailManagerTestTrait;
@@ -56,6 +57,7 @@ class TicketNotificationManagerTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             UserTestFixture::class,
             CustomerTestFixture::class,
             TicketCategoryTestFixture::class,

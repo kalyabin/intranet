@@ -678,31 +678,6 @@ class UserEntity implements AdvancedUserInterface, \JsonSerializable
     }
 
     /**
-     * Проверка ролей контрагента.
-     *
-     * Если есть роль ROLE_IT_CUSTOMER, то проверить доступ к IT-аутсорсингу по договору
-     * Если есть роль ROLE_BOOKER_CUSTOMER, то проверить доступ к SMART-бухгалтеру по договору
-     *
-     * @Assert\Callback()
-     *
-     * @param ExecutionContextInterface $context
-     */
-    public function checkRoles(ExecutionContextInterface $context)
-    {
-        if (!$this->userType == self::TYPE_CUSTOMER || !$this->customer instanceof CustomerEntity) {
-            return;
-        }
-
-        if (in_array('ROLE_IT_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowItDepartment()) {
-            $context->addViolation('Данный арендатор не имеет прав пользоваться IT услугами');
-        }
-
-        if (in_array('ROLE_BOOKER_CUSTOMER', $this->getRoles()) && !$this->customer->getAllowBookerDepartment()) {
-            $context->addViolation('Данный арендатор не имеет прав пользоваться услугами SMART-бухгалтера');
-        }
-    }
-
-    /**
      * Получить типы пользователей
      *
      * @return string[]

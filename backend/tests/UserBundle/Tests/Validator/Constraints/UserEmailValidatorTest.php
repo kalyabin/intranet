@@ -5,6 +5,7 @@ namespace UserBundle\Tests\Validator\Constraints;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Validator\Constraints\UserEmail;
@@ -66,6 +67,7 @@ class UserEmailValidatorTest extends WebTestCase
     public function testIsEmailExists()
     {
         $fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();
@@ -119,6 +121,7 @@ class UserEmailValidatorTest extends WebTestCase
     public function testIsEmailNotExists()
     {
         $fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();
@@ -172,6 +175,7 @@ class UserEmailValidatorTest extends WebTestCase
     public function testWithContextObject()
     {
         $fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();

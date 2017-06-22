@@ -8,6 +8,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\Security\Core\User\User;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use Tests\JsonResponseTestTrait;
 use UserBundle\Entity\UserEntity;
@@ -31,6 +32,7 @@ class IncomingCallsControllerTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class,
         ])->getReferenceRepository();

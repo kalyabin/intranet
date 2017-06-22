@@ -11,6 +11,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\UserNotificationTestFixture;
 use UserBundle\Entity\UserEntity;
 use Tests\DataFixtures\ORM\UserTestFixture;
@@ -45,6 +46,7 @@ class UserNotificationManagerTest extends WebTestCase
         $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->manager = new UserNotificationManager($entityManager);
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserNotificationTestFixture::class,
             UserTestFixture::class

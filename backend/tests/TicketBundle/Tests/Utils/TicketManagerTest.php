@@ -8,6 +8,7 @@ use Liip\FunctionalTestBundle\Test\WebTestCase;
 use DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\TicketCategoryEntity;
@@ -47,6 +48,7 @@ class TicketManagerTest extends WebTestCase
 
         $this->manager = $this->getContainer()->get('ticket.manager');
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class,
             TicketCategoryTestFixture::class,

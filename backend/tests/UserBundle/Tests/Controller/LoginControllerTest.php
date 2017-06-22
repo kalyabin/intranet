@@ -5,6 +5,7 @@ namespace UserBundle\Tests\Controller;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\JsonResponseTestTrait;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Controller\LoginController;
@@ -26,7 +27,7 @@ class LoginControllerTest extends WebTestCase
     public function testSimpleLoginAction()
     {
         // загрузить пользователей
-        $fixtures = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository();
+        $fixtures = $this->loadFixtures([ServiceTestFixture::class, CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository();
 
         /** @var UserEntity $activeUser */
         $activeUser = $fixtures->getReference('active-user');

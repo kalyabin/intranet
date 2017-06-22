@@ -27,12 +27,6 @@ class CustomerType extends AbstractType
             ])
             ->add('currentAgreement', TextType::class, [
                 'label' => 'Номер договора'
-            ])
-            ->add('allowItDepartment', CheckboxType::class, [
-                'label' => 'IT-аутсорсинг'
-            ])
-            ->add('allowBookerDepartment', CheckboxType::class, [
-                'label' => 'SMART-бухгалтер'
             ]);
     }
 
@@ -42,7 +36,8 @@ class CustomerType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CustomerEntity::class
+            'data_class' => CustomerEntity::class,
+            'allow_extra_fields' => true,
         ]);
     }
 }

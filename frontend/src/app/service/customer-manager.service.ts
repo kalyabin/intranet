@@ -34,9 +34,7 @@ export class CustomerManager {
             .makeRequest('POST', `manager/customer/${id}`, {
                 customer: {
                     name: customer.name,
-                    currentAgreement: customer.currentAgreement,
-                    allowItDepartment: customer.allowItDepartment,
-                    allowBookerDepartment: customer.allowBookerDepartment
+                    currentAgreement: customer.currentAgreement
                 }
             })
             .then((response: AxiosResponse) => {

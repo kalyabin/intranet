@@ -8,6 +8,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\DataFixtures\ORM\UserNotificationTestFixture;
 use TicketBundle\Entity\TicketEntity;
@@ -39,6 +40,7 @@ class UserNotificationEntityTest extends WebTestCase
 
         $this->entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class,
             UserNotificationTestFixture::class,

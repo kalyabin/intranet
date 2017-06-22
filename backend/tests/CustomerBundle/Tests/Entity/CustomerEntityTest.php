@@ -30,13 +30,9 @@ class CustomerEntityTest extends WebTestCase
      * @covers CustomerEntity::getId()
      * @covers CustomerEntity::getName()
      * @covers CustomerEntity::getCurrentAgreement()
-     * @covers CustomerEntity::getAllowItDepartment()
-     * @covers CustomerEntity::getAllowBookerDepartment()
      *
      * @covers CustomerEntity::setName()
      * @covers CustomerEntity::setCurrentAgreement()
-     * @covers CustomerEntity::setAllowItDepartment()
-     * @covers CustomerEntity::setAllowBookerDepartment()
      */
     public function testMe()
     {
@@ -45,19 +41,12 @@ class CustomerEntityTest extends WebTestCase
 
         $entity = new CustomerEntity();
 
-        $this->assertFalse($entity->getAllowBookerDepartment());
-        $this->assertFalse($entity->getAllowItDepartment());
-
         $entity
             ->setName($name)
-            ->setCurrentAgreement($agreement)
-            ->setAllowItDepartment(true)
-            ->setAllowBookerDepartment(true);
+            ->setCurrentAgreement($agreement);
 
         $this->assertEquals($name, $entity->getName());
         $this->assertEquals($agreement, $entity->getCurrentAgreement());
-        $this->assertTrue($entity->getAllowItDepartment());
-        $this->assertTrue($entity->getAllowBookerDepartment());
 
         $this->em->persist($entity);
         $this->em->flush();

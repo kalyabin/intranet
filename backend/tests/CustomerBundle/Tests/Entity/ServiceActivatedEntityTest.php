@@ -54,7 +54,7 @@ class ServiceActivatedEntityTest extends WebTestCase
     public function testMe()
     {
         /** @var CustomerEntity $customer */
-        $customer = $this->fixtures->getReference('all-customer');
+        $customer = $this->fixtures->getReference('none-customer');
         /** @var ServiceEntity $service */
         $service = $this->fixtures->getReference('service-it');
         /** @var ServiceTariffEntity $tariff */

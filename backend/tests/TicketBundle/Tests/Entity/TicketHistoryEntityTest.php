@@ -7,6 +7,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\TicketEntity;
@@ -36,6 +37,7 @@ class TicketHistoryEntityTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class,
             TicketCategoryTestFixture::class,

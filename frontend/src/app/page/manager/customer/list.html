@@ -20,7 +20,6 @@
                         <th>Название</th>
                         <th>Договор</th>
                         <th>Количество пользователей</th>
-                        <th>Дополнительные доступы</th>
                     </tr>
                     </thead>
 
@@ -29,10 +28,6 @@
                         <td>{{customer.name}}</td>
                         <td>{{customer.currentAgreement}}</td>
                         <td>0</td>
-                        <td>
-                            {{customer.allowItDepartment ? 'IT-аутсорсинг' : ''}}<br />
-                            {{customer.allowBookerDepartment ? 'SMART-бухгалтер' : ''}}
-                        </td>
                     </tr>
                     </tbody>
                 </table>

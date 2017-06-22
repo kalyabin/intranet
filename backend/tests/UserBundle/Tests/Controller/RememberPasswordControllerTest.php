@@ -3,6 +3,7 @@
 namespace UserBunde\Tests\Controller;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\JsonResponseTestTrait;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Controller\RememberPasswordController;
@@ -39,7 +40,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testChangePasswordAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([ServiceTestFixture::class, CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $currentPassword = $user->getPassword();
         $newPassword = 'newtestpassword';
@@ -157,7 +158,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testChangePasswordFormAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([ServiceTestFixture::class, CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         // создать чекер
         $checker = new UserCheckerEntity();
@@ -209,7 +210,7 @@ class RememberPasswordControllerTest extends WebTestCase
     public function testRememberAction()
     {
         /** @var UserEntity $user */
-        $user = $this->loadFixtures([CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
+        $user = $this->loadFixtures([ServiceTestFixture::class, CustomerTestFixture::class, UserTestFixture::class])->getReferenceRepository()->getReference('active-user');
 
         $this->assertEmpty($user->getCheckerByType(UserCheckerEntity::TYPE_REMEMBER_PASSWORD));
 

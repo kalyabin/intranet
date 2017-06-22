@@ -8,11 +8,13 @@ import {ListInterface} from "../service/response/list.interface";
  */
 export interface CustomerListStateInterface {
     list: CustomerInterface[];
+    alreadyFetched: boolean;
 }
 
 export const customerListStore = new Vuex.Store({
     state: <CustomerListStateInterface>{
-        list: []
+        list: [],
+        alreadyFetched: false
     },
     mutations: {
         /**
@@ -51,6 +53,7 @@ export const customerListStore = new Vuex.Store({
          * Очистить весь стек контрагентов
          */
         clear: (state: CustomerListStateInterface) => {
+            state.alreadyFetched = false;
             state.list = [];
         },
     },
@@ -61,9 +64,10 @@ export const customerListStore = new Vuex.Store({
         fetchList: (action) => {
             return new Promise((resolve, reject) => {
                 // защита от задвоения данных
-                if (action.state.list.length > 0) {
+                if (action.state.list.length > 0 || action.state.alreadyFetched) {
                     return resolve();
                 }
+                action.state.alreadyFetched = true;
                 let pageNum = 1;
                 let cnt = 0;
                 let fetchCustomers = () => {

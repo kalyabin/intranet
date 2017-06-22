@@ -4,6 +4,7 @@ namespace UserBunde\Tests\Entity;
 
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
@@ -53,6 +54,7 @@ class UserCheckerEntityTest extends WebTestCase
     {
         /** @var UserEntity $user */
         $user = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository()->getReference('active-user');

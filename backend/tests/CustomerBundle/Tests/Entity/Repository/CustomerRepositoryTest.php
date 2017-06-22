@@ -9,6 +9,7 @@ use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 
 /**
  * Class CustomerRepositoryTest
@@ -31,6 +32,7 @@ class CustomerRepositoryTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class
         ])->getReferenceRepository();
 
@@ -64,7 +66,12 @@ class CustomerRepositoryTest extends WebTestCase
      */
     public function testGetTotalCount()
     {
-        $expected = count($this->fixtures->getReferences());
+        $expected = 0;
+        foreach ($this->fixtures->getReferences() as $reference) {
+            if ($reference instanceof CustomerEntity) {
+                $expected++;
+            }
+        }
 
         $result = $this->repository->getTotalCount();
 

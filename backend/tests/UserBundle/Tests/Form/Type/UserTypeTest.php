@@ -5,6 +5,7 @@ namespace UserBunde\Tests\Form\Type;
 use CustomerBundle\Entity\CustomerEntity;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\FormWebTestCase;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Form\Type\UserType;
@@ -26,6 +27,7 @@ class UserTypeTest extends FormWebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class
         ])->getReferenceRepository();
     }
@@ -157,12 +159,7 @@ class UserTypeTest extends FormWebTestCase
                     'password' => 'userpassword',
                     'userType' => UserEntity::TYPE_CUSTOMER,
                     'role' => [
-                        [
-                            'code' => 'ROLE_IT_CUSTOMER'
-                        ],
-                        [
-                            'code' => 'ROLE_BOOKER_CUSTOMER'
-                        ],
+                        'invalid role'
                     ],
                     'customer' => $this->getCustomer()->getId()
                 ],

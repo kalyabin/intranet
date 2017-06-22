@@ -7,6 +7,7 @@ use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use UserBundle\Entity\UserRoleEntity;
 use UserBundle\Event\UserCreationEvent;
 use Tests\DataFixtures\ORM\UserTestFixture;
@@ -53,6 +54,7 @@ class UserManagerTest extends WebTestCase
 
         $this->loadFixtures([]);
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();

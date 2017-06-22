@@ -28,9 +28,7 @@ export class ManagerCustomerForm extends Vue {
      */
     @Model() customerData: CustomerInterface = this.customer ? this.customer : {
         name: '',
-        currentAgreement: '',
-        allowItDepartment: false,
-        allowBookerDepartment: false
+        currentAgreement: ''
     };
 
     /**

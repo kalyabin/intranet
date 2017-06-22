@@ -8,6 +8,7 @@ use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\JsonResponseTestTrait;
 use Tests\ManagerControllerTestTrait;
 use UserBundle\Entity\UserEntity;
@@ -39,6 +40,7 @@ class ManagerControllerTest extends WebTestCase
 
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class,
         ])->getReferenceRepository();
@@ -171,9 +173,6 @@ class ManagerControllerTest extends WebTestCase
 
         $this->assertNonAuthenticatedUsers('POST', $url);
 
-        $this->assertTrue($customer->getAllowBookerDepartment());
-        $this->assertTrue($customer->getAllowItDepartment());
-
         $invalidPostData = [
             'customer' => []
         ];
@@ -182,8 +181,6 @@ class ManagerControllerTest extends WebTestCase
             'customer' => [
                 'name' => 'testing customer',
                 'currentAgreement' => 'testing agreement',
-                'allowItDepartment' => false,
-                'allowBookerDepartment' => false,
             ]
         ];
 
@@ -210,8 +207,6 @@ class ManagerControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
         $customerData = $customer->jsonSerialize();
-        $customerData['allowItDepartment'] = false;
-        $customerData['allowBookerDepartment'] = false;
 
         $this->assertArraySubset([
             'customer' => $customerData,

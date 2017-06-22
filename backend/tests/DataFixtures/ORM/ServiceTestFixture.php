@@ -34,13 +34,35 @@ class ServiceTestFixture extends AbstractFixture implements OrderedFixtureInterf
             ->setTitle('testing rate')
             ->setService($it)
             ->setMonthlyCost(200);
-        
+
+        // SMART-бухгалтер
+        $booker = new ServiceEntity();
+
+        $booker
+            ->setId('booker-department')
+            ->setIsActive(true)
+            ->setDescription('testing description')
+            ->setTitle('SMART-бухгалтер')
+            ->setEnableCustomerRole('ROLE_BOOKER_CUSTOMER');
+
+        $bookerTariff = new ServiceTariffEntity();
+
+        $bookerTariff
+            ->setIsActive(true)
+            ->setTitle('testing rate')
+            ->setService($booker)
+            ->setMonthlyCost(100);
+
         $manager->persist($it);
         $manager->persist($itTariff);
+        $manager->persist($booker);
+        $manager->persist($bookerTariff);
         $manager->flush();
 
         $this->addReference('service-it', $it);
         $this->addReference('service-it-tariff', $itTariff);
+        $this->addReference('service-booker', $booker);
+        $this->addReference('service-booker-tariff', $bookerTariff);
     }
 
     /**

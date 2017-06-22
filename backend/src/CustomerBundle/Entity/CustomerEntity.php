@@ -3,7 +3,6 @@
 namespace CustomerBundle\Entity;
 
 
-use CustomerBundle\Entity\ServiceActivatedEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,24 +50,6 @@ class CustomerEntity implements \JsonSerializable
     private $currentAgreement;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
-     *
-     * @Assert\Type(type="boolean")
-     *
-     * @var boolean Доступ к IT-аутсорсингу
-     */
-    private $allowItDepartment = false;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     *
-     * @Assert\Type(type="boolean")
-     *
-     * @var boolean Доступ к службе SMART-бухгалтера
-     */
-    private $allowBookerDepartment = false;
-
-    /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserEntity", mappedBy="customer", cascade={"persist", "remove"})
      *
      * @var ArrayCollection Привязка к пользователям
@@ -76,7 +57,7 @@ class CustomerEntity implements \JsonSerializable
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="CustomerBundle\Entity\ServiceActivatedEntity", mappedBy="customer")
+     * @ORM\OneToMany(targetEntity="CustomerBundle\Entity\ServiceActivatedEntity", mappedBy="customer", cascade={"persist", "remove"})
      *
      * @var ArrayCollection Активированные услуги
      */
@@ -159,44 +140,6 @@ class CustomerEntity implements \JsonSerializable
     }
 
     /**
-     * @return boolean
-     */
-    public function getAllowItDepartment(): bool
-    {
-        return $this->allowItDepartment === true;
-    }
-
-    /**
-     * @param boolean $allowItDepartment
-     *
-     * @return CustomerEntity
-     */
-    public function setAllowItDepartment(?bool $allowItDepartment): self
-    {
-        $this->allowItDepartment = $allowItDepartment === true;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getAllowBookerDepartment(): bool
-    {
-        return $this->allowBookerDepartment === true;
-    }
-
-    /**
-     * @param boolean $allowBookerDepartment
-     *
-     * @return CustomerEntity
-     */
-    public function setAllowBookerDepartment(?bool $allowBookerDepartment): self
-    {
-        $this->allowBookerDepartment = $allowBookerDepartment === true;
-        return $this;
-    }
-
-    /**
      * Получить подключенные услуги
      *
      * @return Collection
@@ -243,8 +186,6 @@ class CustomerEntity implements \JsonSerializable
             'id' => $this->getId(),
             'name' => $this->getName(),
             'currentAgreement' => $this->getCurrentAgreement(),
-            'allowItDepartment' => $this->getAllowItDepartment(),
-            'allowBookerDepartment' => $this->getAllowBookerDepartment(),
         ];
     }
 }

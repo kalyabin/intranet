@@ -2,6 +2,7 @@
 
 namespace TicketBundle\Security;
 
+use CustomerBundle\Entity\ServiceActivatedEntity;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -80,11 +81,18 @@ class TicketCategoryVoter extends Voter
         if ($user->getUserType() == UserEntity::TYPE_MANAGER) {
             return $this->decisionManager->decide($token, [$subject->getManagerRole()]);
         } else if ($user->getUserType() == UserEntity::TYPE_CUSTOMER && $user->getCustomer()) {
-            // проверка IT-аутсорсинга и SMART-бухгалтера
             // если по договору для контрагента эта услуга не доступна - не даём пользоваться данной категорией при любом раскладе
-            if ($subject->getCustomerRole() == 'ROLE_IT_CUSTOMER' && !$user->getCustomer()->getAllowItDepartment()) {
-                return false;
-            } else if ($subject->getCustomerRole() == 'ROLE_BOOKER_CUSTOMER' && !$user->getCustomer()->getAllowBookerDepartment()) {
+            $customerRole = $subject->getCustomerRole();
+            $customer = $user->getCustomer();
+            $allowedByService = false;
+            foreach ($customer->getService() as $activatedService) {
+                /** @var ServiceActivatedEntity $activatedService */
+                if ($activatedService->getService()->getEnableCustomerRole() == $customerRole) {
+                    $allowedByService = true;
+                    break;
+                }
+            }
+            if (!$allowedByService) {
                 return false;
             }
 

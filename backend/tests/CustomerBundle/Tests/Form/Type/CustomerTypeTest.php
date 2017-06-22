@@ -30,34 +30,8 @@ class CustomerTypeTest extends FormWebTestCase
                 'data' => [
                     'name' => 'testing',
                     'currentAgreement' => 'testing',
-                    'allowItDepartment' => true,
-                    'allowBookerDepartment' => true,
                 ],
             ],
-            [
-                'data' => [
-                    'name' => 'testing',
-                    'currentAgreement' => 'testing',
-                    'allowItDepartment' => true,
-                    'allowBookerDepartment' => false,
-                ],
-            ],
-            [
-                'data' => [
-                    'name' => 'testing',
-                    'currentAgreement' => 'testing',
-                    'allowItDepartment' => false,
-                    'allowBookerDepartment' => true,
-                ],
-            ],
-            [
-                'data' => [
-                    'name' => 'testing',
-                    'currentAgreement' => 'testing',
-                    'allowItDepartment' => false,
-                    'allowBookerDepartment' => false,
-                ],
-            ]
         ];
     }
 
@@ -68,16 +42,6 @@ class CustomerTypeTest extends FormWebTestCase
                 'data' => [],
                 'errorKeys' => [
                     'name', 'currentAgreement',
-                ]
-            ],
-            [
-                'data' => [
-                    'name' => 'testing',
-                    'allowItDepartment' => ['test'],
-                    'allowBookerDepartment' => ['test'],
-                ],
-                'errorKeys' => [
-                    'allowItDepartment', 'allowBookerDepartment'
                 ]
             ],
         ];

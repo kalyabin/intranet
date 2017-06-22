@@ -7,6 +7,7 @@ use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Entity\Repository\UserRepository;
@@ -37,6 +38,7 @@ class UserRepositoryTest extends WebTestCase
             ->getRepository(UserEntity::class);
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();

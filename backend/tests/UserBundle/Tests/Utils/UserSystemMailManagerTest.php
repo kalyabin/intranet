@@ -4,6 +4,7 @@ namespace UserBunde\Tests\Utils;
 
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\MailManagerTestTrait;
 use UserBundle\Event\UserChangedPasswordEvent;
 use UserBundle\Event\UserChangeEmailEvent;
@@ -51,6 +52,7 @@ class UserSystemMailManagerTest extends WebTestCase
         $container = $this->getContainer();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             UserTestFixture::class
         ])->getReferenceRepository();

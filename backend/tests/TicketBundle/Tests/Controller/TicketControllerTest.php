@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\JsonResponseTestTrait;
 use TicketBundle\Controller\TicketController;
@@ -47,6 +48,7 @@ class TicketControllerTest extends WebTestCase
         parent::setUp();
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             CustomerTestFixture::class,
             TicketCategoryTestFixture::class,
             TicketTestFixture::class,

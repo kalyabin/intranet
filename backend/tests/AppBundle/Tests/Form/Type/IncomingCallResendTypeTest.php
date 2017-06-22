@@ -7,6 +7,7 @@ use AppBundle\Form\Type\IncomingCallResendType;
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\FormWebTestCase;
 
 
@@ -26,7 +27,10 @@ class IncomingCallResendTypeTest extends FormWebTestCase
     {
         parent::setUp();
 
-        $this->fixtures = $this->loadFixtures([CustomerTestFixture::class])->getReferenceRepository();
+        $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
+            CustomerTestFixture::class
+        ])->getReferenceRepository();
     }
 
     protected function getFormClass()

@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Tests\DataFixtures\ORM\ServiceTestFixture;
 use Tests\DataFixtures\ORM\TicketCategoryTestFixture;
 use Tests\DataFixtures\ORM\UserTestFixture;
 use TicketBundle\Entity\Repository\TicketRepository;
@@ -51,6 +52,7 @@ class TicketRepositoryTest extends WebTestCase
         $this->entityManager = $objectManager;
 
         $this->fixtures = $this->loadFixtures([
+            ServiceTestFixture::class,
             UserTestFixture::class,
             TicketTestFixture::class,
             TicketCategoryTestFixture::class,
