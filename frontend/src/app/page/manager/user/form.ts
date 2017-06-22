@@ -106,7 +106,9 @@ export class ManagerUserForm extends Vue {
     mounted(): void {
         // запрос данных о доступных ролях
         rolesListStore.dispatch('fetchData');
-        customerListStore.dispatch('fetchList');
+        customerListStore.dispatch('clear').then(() => {
+            customerListStore.dispatch('fetchList');
+        });
 
         // получить роли пользователя, если редактируем пользователя
         this.roles = [];

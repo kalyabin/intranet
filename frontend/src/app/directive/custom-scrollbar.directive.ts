@@ -31,8 +31,5 @@ export const CustomScrollbarDirective: DirectiveOptions = {
     componentUpdated: (el, binding: VNodeDirective): void => {
         disconnectScrollbar(el);
         connectScrollbar(el, binding);
-    },
-    unbind: (el): void => {
-        disconnectScrollbar(el);
     }
 };

@@ -76,7 +76,7 @@ export const customerListStore = new Vuex.Store({
                         } else {
                             resolve();
                         }
-                    }).catch(() => reject());
+                    }).catch(() => resolve());
                 };
                 fetchCustomers();
             });
