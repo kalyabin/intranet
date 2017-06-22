@@ -3,7 +3,9 @@
 namespace CustomerBundle\Entity;
 
 
+use CustomerBundle\Entity\ServiceActivatedEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use UserBundle\Entity\UserEntity;
@@ -73,9 +75,17 @@ class CustomerEntity implements \JsonSerializable
      */
     private $user;
 
+    /**
+     * @ORM\OneToMany(targetEntity="CustomerBundle\Entity\ServiceActivatedEntity", mappedBy="customer")
+     *
+     * @var ArrayCollection Активированные услуги
+     */
+    private $service;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
+        $this->service = new ArrayCollection();
     }
 
     /**
@@ -183,6 +193,42 @@ class CustomerEntity implements \JsonSerializable
     public function setAllowBookerDepartment(?bool $allowBookerDepartment): self
     {
         $this->allowBookerDepartment = $allowBookerDepartment === true;
+        return $this;
+    }
+
+    /**
+     * Получить подключенные услуги
+     *
+     * @return Collection
+     */
+    public function getService(): Collection
+    {
+        return $this->service;
+    }
+
+    /**
+     * Добавить услугу
+     *
+     * @param ServiceActivatedEntity $entity
+     *
+     * @return CustomerEntity
+     */
+    public function addService(ServiceActivatedEntity $entity): self
+    {
+        $this->service[] = $entity;
+        return $this;
+    }
+
+    /**
+     * Удалить услугу
+     *
+     * @param ServiceActivatedEntity $entity
+     *
+     * @return CustomerEntity
+     */
+    public function removeService(ServiceActivatedEntity $entity): self
+    {
+        $this->service->removeElement($entity);
         return $this;
     }
 
