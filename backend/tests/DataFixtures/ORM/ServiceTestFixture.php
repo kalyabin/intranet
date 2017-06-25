@@ -24,7 +24,7 @@ class ServiceTestFixture extends AbstractFixture implements OrderedFixtureInterf
             ->setIsActive(true)
             ->setDescription('testing description')
             ->setTitle('IT-аутсорсинг')
-            ->setEnableCustomerRole('ROLE_IT_CUSTOMER');
+            ->setCustomerRole('ROLE_IT_CUSTOMER');
         $itTariff = new ServiceTariffEntity();
         $itTariff
             ->setIsActive(true)
@@ -40,7 +40,7 @@ class ServiceTestFixture extends AbstractFixture implements OrderedFixtureInterf
             ->setIsActive(true)
             ->setDescription('testing description')
             ->setTitle('SMART-бухгалтер')
-            ->setEnableCustomerRole('ROLE_BOOKER_CUSTOMER');
+            ->setCustomerRole('ROLE_BOOKER_CUSTOMER');
         $bookerTariff = new ServiceTariffEntity();
         $bookerTariff
             ->setIsActive(true)

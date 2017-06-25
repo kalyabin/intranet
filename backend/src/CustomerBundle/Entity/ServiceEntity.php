@@ -74,7 +74,7 @@ class ServiceEntity implements \JsonSerializable
      *
      * @var string При активации услуги активируется возможность подключения роли
      */
-    protected $enableCustomerRole;
+    protected $customerRole;
 
     /**
      * @ORM\OneToMany(targetEntity="CustomerBundle\Entity\ServiceTariffEntity", mappedBy="service", cascade={"persist", "remove"})
@@ -181,21 +181,21 @@ class ServiceEntity implements \JsonSerializable
      *
      * @return string
      */
-    public function getEnableCustomerRole(): ?string
+    public function getCustomerRole(): ?string
     {
-        return $this->enableCustomerRole;
+        return $this->customerRole;
     }
 
     /**
      * Set customer role
      *
-     * @param string $enableCustomerRole
+     * @param string $customerRole
      *
      * @return ServiceEntity
      */
-    public function setEnableCustomerRole(?string $enableCustomerRole): self
+    public function setCustomerRole(?string $customerRole): self
     {
-        $this->enableCustomerRole = $enableCustomerRole;
+        $this->customerRole = $customerRole;
         return $this;
     }
 
@@ -258,7 +258,7 @@ class ServiceEntity implements \JsonSerializable
             'isActive' => $this->getIsActive(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'customerRole' => $this->getEnableCustomerRole(),
+            'customerRole' => $this->getCustomerRole(),
             'tariff' => $this->getTariff()->getValues(),
         ];
     }

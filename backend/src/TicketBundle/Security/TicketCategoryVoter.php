@@ -62,7 +62,7 @@ class TicketCategoryVoter extends Voter
     {
         $services = $this->serviceRepository->findAll();
         foreach ($services as $service) {
-            if ($service->getEnableCustomerRole() == $customerRole) {
+            if ($service->getCustomerRole() == $customerRole) {
                 return true;
             }
         }
@@ -118,7 +118,7 @@ class TicketCategoryVoter extends Voter
                 $allowedByService = false;
                 foreach ($customer->getService() as $activatedService) {
                     /** @var ServiceActivatedEntity $activatedService */
-                    if ($activatedService->getService()->getEnableCustomerRole() == $customerRole) {
+                    if ($activatedService->getService()->getCustomerRole() == $customerRole) {
                         $allowedByService = true;
                         break;
                     }

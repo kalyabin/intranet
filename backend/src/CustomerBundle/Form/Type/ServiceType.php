@@ -34,7 +34,7 @@ class ServiceType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Описание'
             ])
-            ->add('enableCustomerRole', TextType::class, [
+            ->add('customerRole', TextType::class, [
                 'label' => 'Право пользователей, назначаемое арендатору'
             ])
             ->add('tariff', CollectionType::class, [

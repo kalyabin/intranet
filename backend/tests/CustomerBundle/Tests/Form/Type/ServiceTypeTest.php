@@ -34,7 +34,7 @@ class ServiceTypeTest extends FormWebTestCase
                     'id' => 'test-department',
                     'isActive' => true,
                     'title' => 'Test department',
-                    'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                    'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                     'tariff' => [
                         [
                             'title' => 'new tariff plan',
@@ -50,7 +50,7 @@ class ServiceTypeTest extends FormWebTestCase
                     'description' => 'testing description',
                     'isActive' => false,
                     'title' => 'Test department',
-                    'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                    'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 ]
             ],
         ];
@@ -66,7 +66,7 @@ class ServiceTypeTest extends FormWebTestCase
             [
                 'data' => [],
                 'errorKeys' => [
-                    'id', 'isActive', 'title', 'enableCustomerRole',
+                    'id', 'isActive', 'title', 'customerRole',
                 ]
             ],
             [
@@ -74,10 +74,10 @@ class ServiceTypeTest extends FormWebTestCase
                     'id' => $existsService->getId(),
                     'isActive' => 'wrong boolean type',
                     'title' => '',
-                    'enableCustomerRole' => 'NON EXISTENT ROLE'
+                    'customerRole' => 'NON EXISTENT ROLE'
                 ],
                 'errorKeys' => [
-                    'id', 'isActive', 'title', 'enableCustomerRole',
+                    'id', 'isActive', 'title', 'customerRole',
                 ]
             ],
             [
@@ -91,7 +91,7 @@ class ServiceTypeTest extends FormWebTestCase
                     ],
                 ],
                 'errorKeys' => [
-                    'enableCustomerRole',
+                    'customerRole', 'tariff[title]', 'tariff[monthlyCost]', 'tariff[isActive]',
                 ]
             ],
             [
@@ -100,10 +100,10 @@ class ServiceTypeTest extends FormWebTestCase
                     'isActive' => true,
                     'title' => 'testing department',
                     'description' => 'text type',
-                    'enableCustomerRole' => 'ROLE_IT_MANAGEMENT',
+                    'customerRole' => 'ROLE_IT_MANAGEMENT',
                 ],
                 'errorKeys' => [
-                    'enableCustomerRole',
+                    'customerRole',
                 ]
             ],
         ];

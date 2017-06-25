@@ -82,7 +82,7 @@ class ServiceManagerControllerTest extends WebTestCase
             'service' => [
                 'id' => 'test-department',
                 'title' => 'Test department',
-                'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 'tariff' => [
                     [
                         'title' => 'testing tariff',
@@ -97,7 +97,7 @@ class ServiceManagerControllerTest extends WebTestCase
             'service' => [
                 'id' => 'it-department',
                 'title' => 'IT-department',
-                'enableCustomerRole' => 'ROLE_IT_CUSTOMER',
+                'customerRole' => 'ROLE_IT_CUSTOMER',
             ]
         ];
 
@@ -179,7 +179,7 @@ class ServiceManagerControllerTest extends WebTestCase
                 'title' => 'test update',
                 'isActive' => false,
                 'description' => 'test update',
-                'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 'tariff' => [
                     json_decode(json_encode($itTariff), true),
                     [

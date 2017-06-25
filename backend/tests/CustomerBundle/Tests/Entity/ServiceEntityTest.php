@@ -34,13 +34,13 @@ class ServiceEntityTest extends WebTestCase
      * @covers ServiceEntity::getIsActive()
      * @covers ServiceEntity::getTitle()
      * @covers ServiceEntity::getDescription()
-     * @covers ServiceEntity::getEnableCustomerRole()
+     * @covers ServiceEntity::getCustomerRole()
      *
      * @covers ServiceEntity::setId()
      * @covers ServiceEntity::setIsActive()
      * @covers ServiceEntity::setTitle()
      * @covers ServiceEntity::setDescription()
-     * @covers ServiceEntity::setEnableCustomerRole()
+     * @covers ServiceEntity::setCustomerRole()
      */
     public function testMe()
     {
@@ -50,7 +50,7 @@ class ServiceEntityTest extends WebTestCase
         $this->assertNull($entity->getIsActive());
         $this->assertNull($entity->getTitle());
         $this->assertNull($entity->getDescription());
-        $this->assertNull($entity->getEnableCustomerRole());
+        $this->assertNull($entity->getCustomerRole());
 
         $id = 'test-department';
         $title = 'TEST-аутсорсинг';
@@ -62,13 +62,13 @@ class ServiceEntityTest extends WebTestCase
             ->setIsActive(true)
             ->setTitle($title)
             ->setDescription($description)
-            ->setEnableCustomerRole($role);
+            ->setCustomerRole($role);
 
         $this->assertEquals($id, $entity->getId());
         $this->assertTrue($entity->getIsActive());
         $this->assertEquals($title, $entity->getTitle());
         $this->assertEquals($description, $entity->getDescription());
-        $this->assertEquals($role, $entity->getEnableCustomerRole());
+        $this->assertEquals($role, $entity->getCustomerRole());
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
