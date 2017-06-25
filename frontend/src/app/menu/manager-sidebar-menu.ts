@@ -1,39 +1,10 @@
-/**
- * Элемент меню для левой колонки
- */
-export interface SideBarMenuItem {
-    route: any;
-    faIcon?: string;
-    menuName: string;
-    role?: string;
-    children?: SideBarMenuItem[];
-}
 
-/**
- * Меню для арендатора
- */
-export const customerSideBarMenu: Array<SideBarMenuItem> = [
-    {
-        route: {
-            name: 'cabinet_index',
-        },
-        faIcon: 'fa-home',
-        menuName: 'Главная страница',
-    },
-    {
-        route: {
-            name: 'cabinet_ticket_root',
-        },
-        faIcon: 'fa-question',
-        menuName: 'Заявки',
-        children: []
-    },
-];
+import {SidebarMenuItem} from "./sidebar-menu-item";
 
 /**
  * Меню для менеджера
  */
-export const managerSideBarMenu: Array<SideBarMenuItem> = [
+export const managerSidebarMenu: Array<SidebarMenuItem> = [
     {
         route: {
             name: 'dashboard_index',
@@ -56,6 +27,14 @@ export const managerSideBarMenu: Array<SideBarMenuItem> = [
         faIcon: 'fa-newspaper-o',
         menuName: 'Арендаторы',
         role: 'ROLE_USER_MANAGEMENT'
+    },
+    {
+        route: {
+            name: 'manager_service_list',
+        },
+        faIcon: 'fa-wrench',
+        menuName: 'Дополнительные услуги',
+        role: 'ROLE_SERVICE_MANAGEMENT',
     },
     {
         route: {

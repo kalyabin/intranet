@@ -10,6 +10,7 @@ import {ManagerCustomerList} from "../page/manager/customer/list";
 import {TicketList} from "../page/ticket/list";
 import {TicketForm} from "../page/ticket/ticket-form";
 import {TicketDetails} from "../page/ticket/details";
+import {ManagerServiceList} from "../page/manager/service/list";
 
 /**
  * Правила роутинга
@@ -149,6 +150,15 @@ export const routes: Array<RouteConfig> = [
                 meta: {
                     needType: 'manager',
                     pageTitle: 'Заявка'
+                },
+            },
+            {
+                path: '/auth/manager/service',
+                name: 'manager_service_list',
+                component: ManagerServiceList,
+                meta: {
+                    needRole: 'ROLE_SERVICE_MANAGEMENT',
+                    pageTitle: 'Дополнительные услуги'
                 },
             },
         ]

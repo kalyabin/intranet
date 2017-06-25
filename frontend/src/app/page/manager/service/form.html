@@ -1,0 +1,94 @@
+<form @submit.prevent="submit()" @input="errorMessage = ''">
+    <loader :visible="awaitOfSubmit"></loader>
+    <div class="modal-body" v-if="errorMessage">
+        <div class="alert alert-danger">{{errorMessage}}</div>
+    </div>
+    <tabs :in-modal-window="true" ref="tabs">
+        <tab-pane label="Описание" :has-error="errors.has('serviceId') || errors.has('serviceTitle') || errors.has('serviceDescription') || errors.has('serviceIsActive') || errors.has('serviceCustomerRole')">
+            <div class="form-group col-xs-12" :class="{'has-error': errors.has('serviceIsActive')}">
+                <label>
+                    <input type="checkbox" v-model="service.isActive" name="serviceIsActive" />
+                    Услуга активна
+                </label>
+                <p class="help-block" v-if="errors.has('serviceIsActive')">
+                    {{errors.first('serviceIsActive')}}
+                </p>
+            </div>
+            <div class="form-group col-md-6" :class="{'has-error': errors.has('serviceId')}">
+                <label class="control-label">Код услуги</label>
+                <input type="text" v-validate="'required|max:20'" class="form-control" v-model="service.id" name="serviceId" />
+                <p class="help-block" v-if="errors.has('serviceId')">
+                    {{errors.first('serviceId')}}
+                </p>
+            </div>
+            <div class="form-group col-md-6" :class="{'has-error': errors.has('serviceTitle')}">
+                <label class="control-label">Заголовок услуги</label>
+                <input type="text" v-validate="'required|max:50'" class="form-control" v-model="service.title" name="serviceTitle" />
+                <p class="help-block" v-if="errors.has('serviceTitle')">
+                    {{errors.first('serviceTitle')}}
+                </p>
+            </div>
+            <div class="form-group col-xs-12" :class="{'has-error': errors.has('serviceCustomerRole')}">
+                <label class="control-label">Роль арендатора, дающая право пользоваться услугой:</label>
+                <select class="form-control" name="serviceCustomerRole" v-model="service.customerRole">
+                    <option value=""></option>
+                    <option v-for="role in customerRoles" :value="role">{{rolesLabels[role]}}</option>
+                </select>
+            </div>
+            <div class="form-group col-xs-12" :class="{'has-error': errors.has('serviceDescription')}">
+                <label class="control-label">Описание</label>
+                <br />
+                <textarea class="form-control" rows="10" v-validate="'max:1000'" v-model="service.description" name="serviceDescription"></textarea>
+                <p class="help-block" v-if="errors.has('serviceDescription')">
+                    {{errors.first('serviceDescription')}}
+                </p>
+            </div>
+            <div class="clearfix"></div>
+        </tab-pane>
+        <tab-pane label="Тарифы" :has-error="errors.any()">
+            <button class="btn btn-primary" @click.prevent="addTariff()"><i class="fa fa-plus"></i> Добавить тариф</button>
+            <table class="table" v-if="service.tariff.length > 0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Заголовок</th>
+                        <th>Стоимость в месяц</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(tariff, index) in service.tariff">
+                        <td>
+                            <div class="form-group" :class="{'has-error': errors.has('tariffIsActive' + index)}">
+                                <label>
+                                    <input type="checkbox" v-model="tariff.isActive" :name="'tariffIsActive' + index" />
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group" :class="{'has-error': errors.has('tariffTitle' + index)}">
+                                <input type="text" class="form-control" v-model="tariff.title" v-validate="'required|max:50'" :name="'tariffTitle' + index" />
+                                <p class="help-block" v-if="errors.has('tariffTitle' + index)">
+                                    <small>{{errors.first('tariffTitle' + index)}}</small>
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group" :class="{'has-error': errors.has('tariffMonthlyCost' + index)}">
+                                <input type="text" class="form-control" v-model="tariff.monthlyCost" v-validate="'required|decimal'" :name="'tariffMonthlyCost' + index" />
+                                <p class="help-block" v-if="errors.has('tariffMonthlyCost' + index)">
+                                    <small>{{errors.first('tariffMonthlyCost' + index)}}</small>
+                                </p>
+                            </div>
+                        </td>
+                        <td><button class="btn btn-danger" @click.prevent="removeTariff(index)"><i class="fa fa-trash"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab-pane>
+        <div class="modal-footer" slot="footer">
+            <button type="button" class="btn btn-danger" @click.prevent="remove" v-if="existent">Удалить</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </tabs>
+</form>

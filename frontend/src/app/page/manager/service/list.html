@@ -1,0 +1,82 @@
+<div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Список дополнительных услуг</h2>
+            <ul class="navbar-right panel_toolbox">
+                <li>
+                    <a @click.prevent="openDialog(null)" class="collapse-link btn btn-primary">
+                        <i class="fa fa-plus"></i>
+                        Добавить
+                    </a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <tabs>
+                    <tab-pane label="Активные">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Название</th>
+                                <th>Тариф</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                                <template v-for="item in list" v-if="item.isActive">
+                                    <tr style="vertical-align: top; cursor: pointer;" @click="openDialog(item)">
+                                        <td>{{item.id}}</td>
+                                        <th>{{item.title}}</th>
+                                        <td>
+                                            <template v-for="tariff in item.tariff">
+                                                <span :class="{'disabled': !tariff.isActive}">
+                                                    {{tariff.title}}: {{tariff.monthlyCost}} руб/мес
+                                                </span><br />
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </tab-pane>
+                    <tab-pane label="Неактивные" v-if="hasInactive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Название</th>
+                                <th>Тариф</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                                <template v-for="item in list" v-if="!item.isActive">
+                                    <tr style="vertical-align: top; cursor: pointer;" @click="openDialog(item)">
+                                        <td>{{item.id}}</td>
+                                        <th>{{item.title}}</th>
+                                        <td>
+                                            <template v-for="tariff in item.tariff">
+                                                <span :class="{'disabled': !tariff.isActive}">
+                                                    {{tariff.title}}: {{tariff.monthlyCost}} руб/мес
+                                                </span><br />
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </tab-pane>
+                </tabs>
+            </div>
+        </div>
+    </div>
+
+    <modal-window ref="modal-window" @hide="viewForm = false; currentService = null;" :title="currentService ? 'Редактирование услуги' : 'Создание услуги'">
+        <div slot="body" v-if="viewForm">
+            <service-form :input-service="currentService" @service:new="newService" @service:updated="updatedService" @service:removed="removedService"></service-form>
+        </div>
+    </modal-window>
+</div>

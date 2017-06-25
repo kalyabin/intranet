@@ -6,12 +6,14 @@ import {authUserService} from "../service/auth-user.service";
 import {router} from "../router/router";
 import {authUserStore} from "../store/auth-user.store";
 import {Model} from "vue-property-decorator";
-import {SideBarMenuItem, managerSideBarMenu, customerSideBarMenu} from "../sidebar-menu";
+import {customerSidebarMenu} from "../menu/customer-sidebar-menu";
+import {managerSidebarMenu} from "../menu/manager-sidebar-menu";
 import {pageMetaStore} from "../router/page-meta-store";
 import {ticketCategoriesStore} from "../store/ticket-categories.store";
 import {TicketCategoryInterface} from "../service/model/ticket-category.interface";
 import {notificationStore} from "../store/notification.store";
 import {UserNotificationInterface} from "../service/model/user-notification.interface";
+import {SidebarMenuItem} from "../menu/sidebar-menu-item";
 
 Component.registerHooks([
     'beforeRouteLeave',
@@ -34,7 +36,7 @@ export class Dashboard extends Vue {
     /**
      * Все возможные пункты меню с разбивкой по ролям
      */
-    @Model() sideBarMenu: Array<SideBarMenuItem> = [];
+    @Model() sideBarMenu: Array<SidebarMenuItem> = [];
 
     protected fixContentHeight(): void {
         $(this.$refs['right-col']).css('min-height', Math.max($(this.$refs['left-col']).outerHeight(), $(window).height()));
@@ -68,7 +70,7 @@ export class Dashboard extends Vue {
         authUserStore.dispatch('fetchData').then(() => {
             let userType = authUserStore.state.userData.userType;
 
-            this.sideBarMenu = userType == 'manager' ? managerSideBarMenu : customerSideBarMenu;
+            this.sideBarMenu = userType == 'manager' ? managerSidebarMenu : customerSidebarMenu;
 
             // получить подразделы для тикетной системы
             ticketCategoriesStore
