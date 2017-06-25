@@ -33,9 +33,25 @@ class ServiceRepository extends EntityRepository
     public function findAllActive(): array
     {
         return $this->createQueryBuilder('s')
-            ->where('s.is_active = :isActive')
+            ->where('s.isActive = :isActive')
             ->setParameter('isActive', true)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Получить услугу по идентификатору
+     *
+     * @param string $id
+     *
+     * @return ServiceEntity|null
+     */
+    public function findOneById($id): ?ServiceEntity
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

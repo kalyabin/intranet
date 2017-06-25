@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @package CustomerBundle\Entity
  */
-class ServiceHistoryEntity
+class ServiceHistoryEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -163,5 +163,23 @@ class ServiceHistoryEntity
     {
         $this->voidedAt = $voidedAt;
         return $this;
+    }
+
+    /**
+     * Сериализация в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $dateFormat = 'Y-m-d H:i:s';
+
+        return [
+            'id' => $this->getId(),
+            'service' => $this->getService(),
+            'tariff' => $this->getTariff(),
+            'createdAt' => $this->getCreatedAt() ? $this->getCreatedAt()->format($dateFormat) : null,
+            'voidedAt' => $this->getVoidedAt() ? $this->getVoidedAt()->format($dateFormat) : null,
+        ];
     }
 }

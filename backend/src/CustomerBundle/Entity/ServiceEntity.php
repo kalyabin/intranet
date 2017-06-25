@@ -6,20 +6,32 @@ namespace CustomerBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use UserBundle\Entity\UserEntity;
+use UserBundle\Validator\Constraints\UserRole;
 
 /**
  * Модель дополнительной услуги для подключения
  *
  * @ORM\Entity(repositoryClass="CustomerBundle\Entity\Repository\ServiceRepository")
  * @ORM\Table(name="`service`")
+ * @UniqueEntity(fields={"id"}, message="Услуга с таким кодом уже существует")
  *
  * @package CustomerBundle\Entity
  */
-class ServiceEntity
+class ServiceEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
      * @ORM\Column(type="string", name="id", length=20, nullable=false, unique=true)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(max="20")
+     * @Assert\Regex(
+     *     pattern="/^[a-zA-Z0-9-_]+$/i",
+     *     message="Код должен содержать только буквы латинского алфавита, цифры, знак тире или знак подчеркивания"
+     * )
      *
      * @var string Код услуги
      */
@@ -35,6 +47,9 @@ class ServiceEntity
     /**
      * @ORM\Column(type="string", name="title", length=50, nullable=false)
      *
+     * @Assert\NotBlank()
+     * @Assert\Length(max="50")
+     *
      * @var string Заголовок услуги
      */
     protected $title;
@@ -42,12 +57,18 @@ class ServiceEntity
     /**
      * @ORM\Column(type="text", name="description", nullable=true)
      *
+     * @Assert\Length(max=1000)
+     *
      * @var string Описание
      */
     protected $description;
 
     /**
-     * @ORM\Column(type="string", length=50, name="customer_role", nullable=true)
+     * @ORM\Column(type="string", length=50, name="customer_role", nullable=false)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(max=50)
+     * @UserRole(message="Роль не найдена для типа пользователя Арендатор", userTypeCallback="getCustomerUserType")
      *
      * @var string При активации услуги активируется возможность подключения роли
      */
@@ -210,5 +231,32 @@ class ServiceEntity
     {
         $this->tariff->removeElement($tariff);
         return $this;
+    }
+
+    /**
+     * Получение кода типа пользователя "Арендатор" для валидации ролей арендатора
+     *
+     * @return string
+     */
+    public function getCustomerUserType(): string
+    {
+        return UserEntity::TYPE_CUSTOMER;
+    }
+
+    /**
+     * Сериализация в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'isActive' => $this->getIsActive(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'customerRole' => $this->getEnableCustomerRole(),
+            'tariff' => $this->getTariff(),
+        ];
     }
 }

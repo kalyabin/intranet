@@ -84,6 +84,7 @@ class RolesManager
                 'ROLE_IT_CUSTOMER',
                 'ROLE_BOOKER_CUSTOMER',
                 'ROLE_INCOMING_CALLS_CUSTOMER',
+                'ROLE_SERVICE_MANAGEMENT',
             ],
             UserEntity::TYPE_MANAGER => [
                 'ROLE_SUPERADMIN',
@@ -98,6 +99,7 @@ class RolesManager
                 'ROLE_TICKET_ADMIN_MANAGEMENT',
                 'ROLE_ACCOUNT_MANAGEMENT',
                 'ROLE_INCOMING_CALLS_MANAGEMENT',
+                'ROLE_SERVICE_CUSTOMER',
             ],
         ];
     }
@@ -122,6 +124,7 @@ class RolesManager
             'ROLE_IT_CUSTOMER' => 'Отправка заявок "IT аутсорсинг"',
             'ROLE_BOOKER_CUSTOMER' => 'Пользование услугами SMART-бухгалтера',
             'ROLE_INCOMING_CALLS_CUSTOMER' => 'Получение входящих звонков с проходной',
+            'ROLE_SERVICE_CUSTOMER' => 'Подключение и управление дополнительными услугами',
 
             'ROLE_TICKET_ADMIN_MANAGEMENT' => 'Администратор тикетной системы (просмотр и назначение ответственных по заявкам)',
             'ROLE_ACCOUNT_MANAGEMENT' => 'Управляющий менеджер',
@@ -134,6 +137,7 @@ class RolesManager
             'ROLE_MAINTAINCE_MANAGEMENT' => 'Сотрудник службы эксплуатации',
             'ROLE_BOOKER_MANAGEMENT' => 'Сотрудник SMART-бухгалтер',
             'ROLE_INCOMING_CALLS_MANAGEMENT' => 'Получение входящих звонков и переотправка их арендаторам',
+            'ROLE_SERVICE_MANAGEMENT' => 'Управление дополнительными услугами',
         ];
     }
 }

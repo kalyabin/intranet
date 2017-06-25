@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @package CustomerBundle\Tests\Entity
  */
-class ServiceActivatedEntity
+class ServiceActivatedEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -121,5 +121,20 @@ class ServiceActivatedEntity
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    /**
+     * Сериализация в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'customer' => $this->getCustomer(),
+            'service' => $this->getService(),
+            'tariff' => $this->getTariff(),
+            'createdAt' => $this->getCreatedAt() ? $this->getCreatedAt()->format('Y-m-d H:i:s') : null,
+        ];
     }
 }

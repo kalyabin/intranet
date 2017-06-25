@@ -18,13 +18,13 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Контроллер для управления контрагентами
  *
- * @Route(service="customer.manager_controller")
+ * @Route(service="customer.customer_manager_controller")
  *
  * @Security("has_role('ROLE_USER_MANAGEMENT')")
  *
  * @package CustomerBundle\Controller
  */
-class ManagerController extends Controller
+class CustomerManagerController extends Controller
 {
     /**
      * @var ObjectManager

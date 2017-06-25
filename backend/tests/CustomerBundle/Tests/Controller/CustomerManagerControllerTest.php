@@ -2,7 +2,7 @@
 
 namespace CustomerBundle\Tests\Controller;
 
-use CustomerBundle\Controller\ManagerController;
+use CustomerBundle\Controller\CustomerManagerController;
 use CustomerBundle\Entity\CustomerEntity;
 use Tests\DataFixtures\ORM\CustomerTestFixture;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
@@ -15,11 +15,11 @@ use UserBundle\Entity\UserEntity;
 use Tests\DataFixtures\ORM\UserTestFixture;
 
 /**
- * Тестирование класса ManagerController
+ * Тестирование контроллера управления контрагентами
  *
  * @package CustomerBundle\Tests\Controller
  */
-class ManagerControllerTest extends WebTestCase
+class CustomerManagerControllerTest extends WebTestCase
 {
     use JsonResponseTestTrait;
     use ManagerControllerTestTrait;
@@ -47,7 +47,7 @@ class ManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @covers ManagerController::listAction()
+     * @covers CustomerManagerController::listAction()
      */
     public function testListAction()
     {
@@ -97,7 +97,7 @@ class ManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @covers ManagerController::createAction()
+     * @covers CustomerManagerController::createAction()
      */
     public function testCreateAction()
     {
@@ -158,7 +158,7 @@ class ManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @covers ManagerController::updateAction()
+     * @covers CustomerManagerController::updateAction()
      */
     public function testUpdateAction()
     {
@@ -219,7 +219,7 @@ class ManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @covers ManagerController::detailsAction()
+     * @covers CustomerManagerController::detailsAction()
      */
     public function testDetailsAction()
     {

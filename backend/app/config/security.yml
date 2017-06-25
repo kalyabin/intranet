@@ -36,6 +36,7 @@ security:
             - ROLE_TICKET_ADMIN_MANAGEMENT
             - ROLE_ACCOUNT_MANAGEMENT
             - ROLE_INCOMING_CALLS_MANAGEMENT
+            - ROLE_SERVICE_MANAGEMENT
 
         ROLE_CUSTOMER_ADMIN:
             - ROLE_USER_CUSTOMER
@@ -47,6 +48,7 @@ security:
             - ROLE_IT_CUSTOMER
             - ROLE_BOOKER_CUSTOMER
             - ROLE_INCOMING_CALLS_CUSTOMER
+            - ROLE_SERVICE_CUSTOMER
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:

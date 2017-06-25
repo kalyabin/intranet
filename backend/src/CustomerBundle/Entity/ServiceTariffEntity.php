@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @package CustomerBundle\Entity
  */
-class ServiceTariffEntity
+class ServiceTariffEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -135,5 +135,20 @@ class ServiceTariffEntity
     {
         $this->monthlyCost = $monthlyCost;
         return $this;
+    }
+
+    /**
+     * Сериализация в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'isActive' => $this->getIsActive(),
+            'title' => $this->getTitle(),
+            'monthlyCost' => $this->getMonthlyCost(),
+        ];
     }
 }
