@@ -19,27 +19,27 @@ class JsonErrorResponseListener
             return;
         }
 
-//        $exception = $event->getException();
-//
-//        if ($exception instanceof HttpException) {
-//            $response = new JsonResponse([
-//                'error' => [
-//                    'code' => $exception->getStatusCode(),
-//                    'message' => $exception->getMessage()
-//                ]
-//            ]);
-//            $response->setStatusCode($exception->getStatusCode());
-//        } else {
-//            $response = new JsonResponse([
-//                'error' => [
-//                    'code' => 500,
-//                    'message' => $exception->getMessage()
-//                ]
-//            ]);
-//            $response->setStatusCode(500);
-//        }
-//
-//        $event->setResponse($response);
+        $exception = $event->getException();
+
+        if ($exception instanceof HttpException) {
+            $response = new JsonResponse([
+                'error' => [
+                    'code' => $exception->getStatusCode(),
+                    'message' => $exception->getMessage()
+                ]
+            ]);
+            $response->setStatusCode($exception->getStatusCode());
+        } else {
+            $response = new JsonResponse([
+                'error' => [
+                    'code' => 500,
+                    'message' => $exception->getMessage()
+                ]
+            ]);
+            $response->setStatusCode(500);
+        }
+
+        $event->setResponse($response);
 
         return;
     }

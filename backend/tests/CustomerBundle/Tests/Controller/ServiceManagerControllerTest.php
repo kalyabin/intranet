@@ -5,6 +5,7 @@ namespace CustomerBundle\Tests\Controller;
 use CustomerBundle\Controller\ServiceManagerController;
 use CustomerBundle\Entity\Repository\ServiceRepository;
 use CustomerBundle\Entity\ServiceEntity;
+use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -81,7 +82,13 @@ class ServiceManagerControllerTest extends WebTestCase
             'service' => [
                 'id' => 'test-department',
                 'title' => 'Test department',
-                'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER'
+                'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                'tariff' => [
+                    (new ServiceTariffEntity())
+                        ->setTitle('testing tariff')
+                        ->setMonthlyCost(100.5)
+                        ->setIsActive(true)
+                ]
             ]
         ];
 
@@ -107,7 +114,13 @@ class ServiceManagerControllerTest extends WebTestCase
                 'title' => 'Test department',
                 'description' => '',
                 'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
-                'tariff' => [],
+                'tariff' => [
+                    [
+                        'title' => 'testing tariff',
+                        'monthlyCost' => 100.5,
+                        'isActive' => true,
+                    ]
+                ],
             ],
             'success' => true,
             'submitted' => true,
@@ -148,10 +161,14 @@ class ServiceManagerControllerTest extends WebTestCase
     {
         /** @var ServiceEntity $itDepartment */
         $itDepartment = $this->fixtures->getReference('service-it');
+        /** @var ServiceTariffEntity $itTariff */
+        $itTariff = $this->fixtures->getReference('service-it-tariff');
 
         $url = $this->getUrl('service.manager.update', [
             'id' => $itDepartment->getId()
         ]);
+
+        $itTariff->setTitle('changed tariff name');
 
         $validData = [
             'service' => [
@@ -160,6 +177,13 @@ class ServiceManagerControllerTest extends WebTestCase
                 'isActive' => false,
                 'description' => 'test update',
                 'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
+                'tariff' => [
+                    $itTariff,
+                    (new ServiceTariffEntity())
+                        ->setTitle('new tariff')
+                        ->setMonthlyCost(2000.3)
+                        ->setIsActive(true)
+                ]
             ]
         ];
 
@@ -186,7 +210,6 @@ class ServiceManagerControllerTest extends WebTestCase
                 'description' => 'test update',
                 'customerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 'isActive' => false,
-                'tariff' => [],
             ],
             'success' => true,
             'valid' => true,
@@ -194,6 +217,21 @@ class ServiceManagerControllerTest extends WebTestCase
             'validationErrors' => [],
             'firstError' => '',
         ], $result);
+
+        $this->assertNotEmpty($result['service']['tariff']);
+        $this->assertCount(2, $result['service']['tariff']);
+
+        foreach ($result['service']['tariff'] as $tariff) {
+            if ($tariff['id'] == $itTariff->getId()) {
+                $this->assertArraySubset($tariff, json_decode(json_encode($itTariff), true));
+            } else {
+                $this->assertArraySubset([
+                    'title' => 'new tariff',
+                    'monthlyCost' => 2000.3,
+                    'isActive' => true
+                ], $tariff);
+            }
+        }
     }
 
     /**

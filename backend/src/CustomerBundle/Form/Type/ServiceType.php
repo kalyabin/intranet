@@ -4,6 +4,7 @@ namespace CustomerBundle\Form\Type;
 
 use CustomerBundle\Entity\ServiceEntity;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -34,6 +35,12 @@ class ServiceType extends AbstractType
             ])
             ->add('enableCustomerRole', TextType::class, [
                 'label' => 'Право пользователей, назначаемое арендатору'
+            ])
+            ->add('tariff', CollectionType::class, [
+                'label' => 'Тарифы',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'allow_extra_fields' => true,
             ]);
     }
 

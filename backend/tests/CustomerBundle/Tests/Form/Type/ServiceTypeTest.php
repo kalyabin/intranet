@@ -35,7 +35,14 @@ class ServiceTypeTest extends FormWebTestCase
                     'isActive' => true,
                     'title' => 'Test department',
                     'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
-                ]
+                    'tariff' => [
+                        [
+                            'title' => 'new tariff plan',
+                            'isActive' => true,
+                            'monthlyCost' => 100.5
+                        ],
+                    ],
+                ],
             ],
             [
                 'data' => [
@@ -79,6 +86,9 @@ class ServiceTypeTest extends FormWebTestCase
                     'isActive' => false,
                     'title' => 'testing department',
                     'description' => 'text type',
+                    'tariff' => [
+                        [],
+                    ],
                 ],
                 'errorKeys' => [
                     'enableCustomerRole',

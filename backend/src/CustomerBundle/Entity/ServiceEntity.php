@@ -40,6 +40,8 @@ class ServiceEntity implements \JsonSerializable
     /**
      * @ORM\Column(type="boolean", name="is_active", nullable=false)
      *
+     * @Assert\Type("bool")
+     *
      * @var boolean Активная услуга
      */
     protected $isActive;
@@ -216,6 +218,7 @@ class ServiceEntity implements \JsonSerializable
      */
     public function addTariff(ServiceTariffEntity $tariff): self
     {
+        $tariff->setService($this);
         $this->tariff[] = $tariff;
         return $this;
     }
@@ -256,7 +259,7 @@ class ServiceEntity implements \JsonSerializable
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'customerRole' => $this->getEnableCustomerRole(),
-            'tariff' => $this->getTariff(),
+            'tariff' => $this->getTariff()->getValues(),
         ];
     }
 }

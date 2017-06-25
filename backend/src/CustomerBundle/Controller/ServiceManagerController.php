@@ -4,6 +4,7 @@ namespace CustomerBundle\Controller;
 
 use CustomerBundle\Entity\Repository\ServiceRepository;
 use CustomerBundle\Entity\ServiceEntity;
+use CustomerBundle\Entity\ServiceTariffEntity;
 use CustomerBundle\Form\Type\ServiceType;
 use Doctrine\ORM\EntityManagerInterface;
 use HttpHelperBundle\Response\FormValidationJsonResponse;
@@ -14,7 +15,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Управление услугами: создание, редактирование и удаление
@@ -95,6 +95,10 @@ class ServiceManagerController extends Controller
         $success = false;
 
         if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($entity->getTariff() as $tariff) {
+                /** @var ServiceTariffEntity $tariff */
+                $tariff->setService($entity);
+            }
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
@@ -151,6 +155,10 @@ class ServiceManagerController extends Controller
         $success = false;
 
         if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($entity->getTariff() as $tariff) {
+                /** @var ServiceTariffEntity $tariff */
+                $tariff->setService($entity);
+            }
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 

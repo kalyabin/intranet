@@ -16,11 +16,12 @@ monolog:
         main:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
-            level: debug
-            channels: ['!event']
+            handler: file_log
+            channels: ['!request', '!event', '!security', '!doctrine']
+
         console:
             type: console
-            channels: ['!event', '!doctrine']
+            channels: ['!event', '!security', '!doctrine']
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

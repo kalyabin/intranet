@@ -4,6 +4,7 @@ namespace CustomerBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Модель для описания тарифов услуги
@@ -35,6 +36,8 @@ class ServiceTariffEntity implements \JsonSerializable
     /**
      * @ORM\Column(type="boolean", name="is_active", nullable=false)
      *
+     * @Assert\Type("bool")
+     *
      * @var boolean Активный тариф
      */
     protected $isActive;
@@ -42,12 +45,21 @@ class ServiceTariffEntity implements \JsonSerializable
     /**
      * @ORM\Column(type="string", length=50, name="title")
      *
+     * @Assert\NotBlank()
+     * @Assert\Length(max="50")
+     *
      * @var string Заголовок тарифа
      */
     protected $title;
 
     /**
      * @ORM\Column(type="float", name="monthly_cost", nullable=true)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Type(
+     *     type="float",
+     *     message="Ежемесячный платёж должен быть числом с точкой"
+     * )
      *
      * @var float Ежемесячный платёж
      */
