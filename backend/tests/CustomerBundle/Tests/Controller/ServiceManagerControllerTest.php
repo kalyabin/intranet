@@ -84,10 +84,11 @@ class ServiceManagerControllerTest extends WebTestCase
                 'title' => 'Test department',
                 'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 'tariff' => [
-                    (new ServiceTariffEntity())
-                        ->setTitle('testing tariff')
-                        ->setMonthlyCost(100.5)
-                        ->setIsActive(true)
+                    [
+                        'title' => 'testing tariff',
+                        'monthlyCost' => 100.5,
+                        'isActive' => true,
+                    ],
                 ]
             ]
         ];
@@ -168,7 +169,9 @@ class ServiceManagerControllerTest extends WebTestCase
             'id' => $itDepartment->getId()
         ]);
 
-        $itTariff->setTitle('changed tariff name');
+        $itTariff
+            ->setTitle('changed tariff name')
+            ->setMonthlyCost(500);
 
         $validData = [
             'service' => [
@@ -178,11 +181,12 @@ class ServiceManagerControllerTest extends WebTestCase
                 'description' => 'test update',
                 'enableCustomerRole' => 'ROLE_MAINTAINCE_CUSTOMER',
                 'tariff' => [
-                    $itTariff,
-                    (new ServiceTariffEntity())
-                        ->setTitle('new tariff')
-                        ->setMonthlyCost(2000.3)
-                        ->setIsActive(true)
+                    json_decode(json_encode($itTariff), true),
+                    [
+                        'title' => 'new tariff',
+                        'monthlyCost' => 2000.3,
+                        'isActive' => true,
+                    ],
                 ]
             ]
         ];

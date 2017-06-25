@@ -6,6 +6,7 @@ use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Entity\Repository\CustomerRepository;
 use CustomerBundle\Form\Type\CustomerType;
 use Doctrine\Common\Persistence\ObjectManager;
+use HttpHelperBundle\Annotation\DisableCsrfProtection;
 use HttpHelperBundle\Response\FormValidationJsonResponse;
 use HttpHelperBundle\Response\ListJsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

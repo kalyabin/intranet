@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Valid;
 
 /**
  * Форма создания и редактирования услуги
@@ -37,10 +38,12 @@ class ServiceType extends AbstractType
                 'label' => 'Право пользователей, назначаемое арендатору'
             ])
             ->add('tariff', CollectionType::class, [
+                'entry_type' => ServiceTariffType::class,
                 'label' => 'Тарифы',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'allow_extra_fields' => true,
+                'constraints' => [new Valid()],
             ]);
     }
 
@@ -48,6 +51,7 @@ class ServiceType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ServiceEntity::class,
+            'cascade_validation' => true,
             'allow_extra_fields' => true
         ]);
     }

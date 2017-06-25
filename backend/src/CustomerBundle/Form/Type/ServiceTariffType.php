@@ -35,6 +35,7 @@ class ServiceTariffType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ServiceTariffEntity::class,
+            'cascade_validation' => true,
             'allow_extra_fields' => true
         ]);
     }

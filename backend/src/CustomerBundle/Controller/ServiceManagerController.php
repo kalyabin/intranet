@@ -79,7 +79,7 @@ class ServiceManagerController extends Controller
      * Создание услуги
      *
      * @Method({"POST"})
-     * @Route("/manager/service/create", name="service.manager.create", options={"expose": true})
+     * @Route("/manager/service", name="service.manager.create", options={"expose": true})
      *
      * @param Request $request
      *
