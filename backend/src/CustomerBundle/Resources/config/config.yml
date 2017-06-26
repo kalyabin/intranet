@@ -3,6 +3,7 @@ parameters:
     customer.customer_voter: CustomerBundle\Security\CustomerVoter
     customer.service_manager_controller: CustomerBundle\Controller\ServiceManagerController
     customer.service_manager: CustomerBundle\Utils\ServiceManager
+    customer.service_customer_controller: CustomerBundle\Controller\ServiceCustomerController
     customer.service_notification_manager: CustomerBundle\Utils\ServiceNotificationManager
 
 services:
@@ -22,6 +23,13 @@ services:
     customer.service_manager_controller:
         class: '%customer.service_manager_controller%'
         arguments: ['@doctrine.orm.entity_manager']
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+
+    # Управление арендатором собственными услугами
+    customer.service_customer_controller:
+        class: '%customer.service_customer_controller%'
+        arguments: ['@doctrine.orm.entity_manager', '@customer.service_manager']
         calls:
             - [ setContainer, [ '@service_container' ] ]
 
