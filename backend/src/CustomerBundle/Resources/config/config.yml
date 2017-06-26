@@ -2,8 +2,22 @@ parameters:
     customer.customer_manager_controller: CustomerBundle\Controller\CustomerManagerController
     customer.customer_voter: CustomerBundle\Security\CustomerVoter
     customer.service_manager_controller: CustomerBundle\Controller\ServiceManagerController
+    customer.service_manager: CustomerBundle\Utils\ServiceManager
+    customer.service_notification_manager: CustomerBundle\Utils\ServiceNotificationManager
 
 services:
+    # Сервис управления услугами арендатора
+    customer.service_manager:
+        class: '%customer.service_manager%'
+        arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher']
+
+    # менеджер уведомлений об активации или деактивации услуг
+    customer.service_notification_manager:
+        class: '%customer.service_notification_manager%'
+        arguments: ['@doctrine.orm.entity_manager', '@user.roles_manager', '@event_dispatcher']
+        tags:
+            - { name: kernel.event_subscriber }
+
     # Администраторское управление дополнительными услугами
     customer.service_manager_controller:
         class: '%customer.service_manager_controller%'

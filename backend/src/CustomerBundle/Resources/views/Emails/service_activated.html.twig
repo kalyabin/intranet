@@ -1,0 +1,6 @@
+Услуга <strong>{{ service.title }}</strong> была успешно активирована.
+{% if tariff %}
+    <br />
+    <br />
+    Активированный тариф: <strong>{{ tariff.title }}</strong> ({{ tariff.monthlyCost }} руб./мес.<br />
+{% endif %}

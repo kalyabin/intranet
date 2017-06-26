@@ -4,6 +4,8 @@ namespace AppBundle\Tests\Entity;
 
 
 use AppBundle\Entity\UserNotificationEntity;
+use CustomerBundle\Entity\ServiceEntity;
+use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -59,6 +61,8 @@ class UserNotificationEntityTest extends WebTestCase
      * @covers UserNotificationEntity::getTicket()
      * @covers UserNotificationEntity::getTicketMessage()
      * @covers UserNotificationEntity::getTicketManager()
+     * @covers UserNotificationEntity::getService()
+     * @covers UserNotificationEntity::getTariff()
      *
      * @covers UserNotificationEntity::setCreatedAt()
      * @covers UserNotificationEntity::setType()
@@ -68,6 +72,8 @@ class UserNotificationEntityTest extends WebTestCase
      * @covers UserNotificationEntity::setTicket()
      * @covers UserNotificationEntity::setTicketMessage()
      * @covers UserNotificationEntity::setTicketManager()
+     * @covers UserNotificationEntity::setService()
+     * @covers UserNotificationEntity::setTariff()
      */
     public function testMe()
     {
@@ -79,6 +85,10 @@ class UserNotificationEntityTest extends WebTestCase
         $ticket = $this->fixtures->getReference('ticket');
         /** @var TicketMessageEntity $ticketMessage */
         $ticketMessage = $this->fixtures->getReference('ticket-message');
+        /** @var ServiceEntity $service */
+        $service = $this->fixtures->getReference('service-it');
+        /** @var ServiceTariffEntity $tariff */
+        $tariff = $this->fixtures->getReference('service-it-tariff');
 
         $entity = new UserNotificationEntity();
 
@@ -94,6 +104,8 @@ class UserNotificationEntityTest extends WebTestCase
         $this->assertNull($entity->getTicket());
         $this->assertNull($entity->getTicketMessage());
         $this->assertNull($entity->getTicketManager());
+        $this->assertNull($entity->getService());
+        $this->assertNull($entity->getTariff());
 
         // уведомление без дополнительных полей должно свободно создаваться
         $entity
@@ -119,6 +131,8 @@ class UserNotificationEntityTest extends WebTestCase
         $entity->setTicket($ticket);
         $entity->setTicketMessage($ticketMessage);
         $entity->setTicketManager($superadmin);
+        $entity->setService($service);
+        $entity->setTariff($tariff);
 
         $this->assertInstanceOf(UserEntity::class, $entity->getAuthor());
         $this->assertEquals($superadmin->getId(), $entity->getAuthor()->getId());
@@ -128,6 +142,10 @@ class UserNotificationEntityTest extends WebTestCase
         $this->assertEquals($ticketMessage->getId(), $entity->getTicketMessage()->getId());
         $this->assertInstanceOf(UserEntity::class, $entity->getTicketManager());
         $this->assertEquals($superadmin->getId(), $entity->getTicketManager()->getId());
+        $this->assertInstanceOf(ServiceEntity::class, $entity->getService());
+        $this->assertEquals($service->getId(), $entity->getService()->getId());
+        $this->assertInstanceOf(ServiceTariffEntity::class, $entity->getTariff());
+        $this->assertEquals($tariff->getId(), $entity->getTariff()->getId());
 
         $this->entityManager->persist($entity);
 

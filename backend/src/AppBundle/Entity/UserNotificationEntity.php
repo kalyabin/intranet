@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use CustomerBundle\Entity\ServiceEntity;
+use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\ORM\Mapping as ORM;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
@@ -45,6 +47,16 @@ class UserNotificationEntity implements \JsonSerializable
      * Закрыта заявка в тикетной системе
      */
     const TYPE_TICKET_CLOSED = 'ticket_closed';
+
+    /**
+     * Активирована услуга
+     */
+    const TYPE_SERVICE_ACTIVATED = 'service_activated';
+
+    /**
+     * Услуга деактивирована
+     */
+    const TYPE_SERVICE_DEACTIVATED = 'service_deactivated';
 
     /**
      * @ORM\Id()
@@ -129,6 +141,22 @@ class UserNotificationEntity implements \JsonSerializable
      * @var UserEntity Привязка к установленному менеджеру в тикетной системе
      */
     protected $ticketManager;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CustomerBundle\Entity\ServiceEntity")
+     * @ORM\JoinColumn(name="`service`", referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     *
+     * @var ServiceEntity Привязка к активированной или деактивированной услуге
+     */
+    protected $service;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CustomerBundle\Entity\ServiceTariffEntity")
+     * @ORM\JoinColumn(name="service_tariff", referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     *
+     * @var ServiceTariffEntity Привязка к тарифу активированной услуги
+     */
+    protected $tariff;
 
     /**
      * Get id
@@ -366,6 +394,44 @@ class UserNotificationEntity implements \JsonSerializable
     public function setTicketManager(?UserEntity $ticketManager): self
     {
         $this->ticketManager = $ticketManager;
+        return $this;
+    }
+
+    /**
+     * @return ServiceEntity
+     */
+    public function getService(): ?ServiceEntity
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param ServiceEntity $service
+     *
+     * @return UserNotificationEntity
+     */
+    public function setService(ServiceEntity $service): self
+    {
+        $this->service = $service;
+        return $this;
+    }
+
+    /**
+     * @return ServiceTariffEntity
+     */
+    public function getTariff(): ?ServiceTariffEntity
+    {
+        return $this->tariff;
+    }
+
+    /**
+     * @param ServiceTariffEntity $tariff
+     *
+     * @return UserNotificationEntity
+     */
+    public function setTariff(ServiceTariffEntity $tariff): self
+    {
+        $this->tariff = $tariff;
         return $this;
     }
 

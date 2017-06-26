@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * История добавления и удаления услуг по договору арендатора
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CustomerBundle\Entity\Repository\ServiceHistoryRepository")
  * @ORM\Table(name="service_customer_history")
  *
  * @package CustomerBundle\Entity

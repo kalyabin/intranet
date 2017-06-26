@@ -49,16 +49,37 @@ class ServiceTestFixture extends AbstractFixture implements OrderedFixtureInterf
             ->setMonthlyCost(100);
         $booker->addTariff($bookerTariff);
 
+        // неактивная услуга
+        $inactive = new ServiceEntity();
+        $inactive
+            ->setId('inactive-department')
+            ->setIsActive(false)
+            ->setDescription('inactive department')
+            ->setTitle('Inactive department')
+            ->setCustomerRole('ROLE_INACTIVE_CUSTOMER');
+        $inactiveTariff = new ServiceTariffEntity();
+        $inactiveTariff
+            ->setIsActive(false)
+            ->setTitle('testing rate')
+            ->setService($inactive)
+            ->setMonthlyCost(300);
+        $inactive->addTariff($inactiveTariff);
+
+
         $manager->persist($it);
         $manager->persist($itTariff);
         $manager->persist($booker);
         $manager->persist($bookerTariff);
+        $manager->persist($inactive);
+        $manager->persist($inactiveTariff);
         $manager->flush();
 
         $this->addReference('service-it', $it);
         $this->addReference('service-it-tariff', $itTariff);
         $this->addReference('service-booker', $booker);
         $this->addReference('service-booker-tariff', $bookerTariff);
+        $this->addReference('service-inactive', $inactive);
+        $this->addReference('service-inactive-tariff', $inactiveTariff);
     }
 
     /**

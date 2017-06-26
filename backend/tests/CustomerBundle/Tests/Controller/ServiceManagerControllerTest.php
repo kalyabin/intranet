@@ -48,6 +48,8 @@ class ServiceManagerControllerTest extends WebTestCase
         $itDepartment = $this->fixtures->getReference('service-it');
         /** @var ServiceEntity $bookerDepartment */
         $bookerDepartment = $this->fixtures->getReference('service-booker');
+        /** @var ServiceEntity $inactiveDepartment */
+        $inactiveDepartment = $this->fixtures->getReference('service-inactive');
 
         $url = $this->getUrl('service.manager.list');
 
@@ -59,14 +61,16 @@ class ServiceManagerControllerTest extends WebTestCase
         ]);
 
         $this->assertArrayHasKey('list', $result);
-        $this->assertCount(2, $result['list']);
+        $this->assertCount(3, $result['list']);
 
         foreach ($result['list'] as $item) {
             $this->assertArrayHasKey('id', $item);
             if ($item['id'] == $itDepartment->getId()) {
                 $this->assertArraySubset($item, json_decode(json_encode($itDepartment), true));
-            } else {
+            } else if ($item['id'] == $bookerDepartment->getId()) {
                 $this->assertArraySubset($item, json_decode(json_encode($bookerDepartment), true));
+            } else {
+                $this->assertArraySubset($item, json_decode(json_encode($inactiveDepartment), true));
             }
         }
     }

@@ -6,6 +6,8 @@ namespace Tests\DataFixtures\ORM;
 use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Entity\ServiceActivatedEntity;
 use CustomerBundle\Entity\ServiceEntity;
+use CustomerBundle\Entity\ServiceHistoryEntity;
+use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -24,8 +26,12 @@ class CustomerTestFixture extends AbstractFixture implements OrderedFixtureInter
     {
         /** @var ServiceEntity $itService */
         $itService = $this->getReference('service-it');
+        /** @var ServiceTariffEntity $itTariff */
+        $itTariff = $this->getReference('service-it-tariff');
         /** @var ServiceEntity $bookerService */
         $bookerService = $this->getReference('service-booker');
+        /** @var ServiceTariffEntity $bookerTariff */
+        $bookerTariff = $this->getReference('service-booker-tariff');
 
         // контрагент с доступом ко всем департаментам
         $allowAllCustomer = new CustomerEntity();
