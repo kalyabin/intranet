@@ -20,6 +20,7 @@ use UserBundle\Entity\UserEntity;
 /**
  * Управление собственными услугами арендатора: просмотр доступных, активация, деактивация
  *
+ * @Route(service="customer.service_customer_controller")
  * @Security("has_role('ROLE_SERVICE_CUSTOMER')")
  *
  * @package CustomerBundle\Controller
@@ -61,8 +62,11 @@ class ServiceCustomerController extends Controller
     }
 
     /**
-     * Получить список всех доступных услуг (включая уже подключенных)
+     * Получить список всех доступных услуг (включая уже подключенных).
      *
+     * Просматривать услуги могут все, в том числе и менеджеры.
+     *
+     * @Security("is_fully_authenticated()")
      * @Method({"GET"})
      * @Route("/customer/service", name="service.customer.list", options={"expose": true})
      *
@@ -147,7 +151,7 @@ class ServiceCustomerController extends Controller
         }
 
         $response = new FormValidationJsonResponse();
-        $response->jsonData = [
+        $response->setData([
             'service' => $service,
             'tariff' => $tariff,
             'success' => $success,
@@ -155,7 +159,10 @@ class ServiceCustomerController extends Controller
             'valid' => is_null($error),
             'validationErrors' => !is_null($error) ? [$error] : [],
             'firstError' => (string) $error
-        ];
+        ]);
+        if (!empty($error) || !$success) {
+            $response->setStatusCode(FormValidationJsonResponse::HTTP_BAD_REQUEST);
+        }
         return $response;
     }
 
@@ -192,14 +199,17 @@ class ServiceCustomerController extends Controller
         }
 
         $response = new FormValidationJsonResponse();
-        $response->jsonData = [
+        $response->setData([
             'service' => $service,
             'success' => $success,
             'submitted' => true,
             'valid' => is_null($error) && $success,
             'validationErrors' => !is_null($error) ? [$error] : [],
             'firstError' => (string) $error
-        ];
+        ]);
+        if (!empty($error) || !$success) {
+            $response->setStatusCode(FormValidationJsonResponse::HTTP_BAD_REQUEST);
+        }
         return $response;
     }
 }
