@@ -24,10 +24,10 @@ class ServiceEntity implements \JsonSerializable
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="string", name="id", length=20, nullable=false, unique=true)
+     * @ORM\Column(type="string", name="id", length=50, nullable=false, unique=true)
      *
      * @Assert\NotBlank()
-     * @Assert\Length(max="20")
+     * @Assert\Length(max="50")
      * @Assert\Regex(
      *     pattern="/^[a-zA-Z0-9-_]+$/i",
      *     message="Код должен содержать только буквы латинского алфавита, цифры, знак тире или знак подчеркивания"

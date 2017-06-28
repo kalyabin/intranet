@@ -12,32 +12,7 @@
 
                 <!-- sidebar menu -->
                 <div class="main_menu_side hidden-print main_menu">
-                    <div class="menu_section">
-                        <ul class="nav side-menu">
-                            <router-link
-                                v-for="(menuItem, index) in sideBarMenu"
-                                :key="index"
-                                tag="li"
-                                :to="menuItem.route"
-                                v-need-role="menuItem.role"
-                                active-class="active"
-                            >
-                                <a><i :class="'fa ' + menuItem.faIcon"></i> {{menuItem.menuName}}</a>
-                                <ul class="nav child_menu" v-if="menuItem.children && menuItem.children.length">
-                                    <router-link
-                                        v-for="(childItem, childIndex) in menuItem.children"
-                                        :key="'child' + index + '-' + childIndex"
-                                        tag="li"
-                                        :to="childItem.route"
-                                        v-need-role="childItem.role"
-                                        active-class="current-page"
-                                    >
-                                        <a>{{childItem.menuName}}</a>
-                                    </router-link>
-                                </ul>
-                            </router-link>
-                        </ul>
-                    </div>
+                    <side-bar-menu :items="sideBarMenu"></side-bar-menu>
                 </div>
                 <!-- /sidebar menu -->
 

@@ -11,6 +11,7 @@ import {TicketList} from "../page/ticket/list";
 import {TicketForm} from "../page/ticket/ticket-form";
 import {TicketDetails} from "../page/ticket/details";
 import {ManagerServiceList} from "../page/manager/service/list";
+import {CustomerServicePage} from "../page/customer/service/page";
 
 /**
  * Правила роутинга
@@ -89,6 +90,15 @@ export const routes: Array<RouteConfig> = [
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Заявка'
+                },
+            },
+            {
+                path: '/auth/service/:service',
+                name: 'cabinet_service_page',
+                component: CustomerServicePage,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Услуги'
                 },
             },
         ],

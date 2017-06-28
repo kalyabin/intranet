@@ -1,0 +1,43 @@
+<div class="col-sm-12">
+    <table ref="table" class="table table-striped projects">
+        <thead>
+        <tr>
+            <th>Заявка</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr v-for="ticket in list" style="cursor: pointer;" @click="openTicket(ticket)">
+            <td>
+                <small>{{ticket.createdAt | dateFormat}}</small>
+                <h4>
+                    {{ticket.number}}
+                    <small v-bind:class="ticket.currentStatus | ticketStatusColor">
+                        {{ticket.currentStatus | ticketStatus}}
+                    </small>
+                </h4>
+                <small>{{ticket.title}}</small>
+                <a>
+                    <i class="fa fa-user"></i>
+                    <small v-if="ticket.createdBy && !ticket.customer">
+                        {{ticket.createdBy.name}}
+                    </small>
+                    <small v-else-if="ticket.customer && ticket.createdBy">
+                        {{ticket.createdBy.name}} ({{ticket.customer.name}})
+                    </small>
+                    <small v-else-if="ticket.customer">
+                        {{ticket.customer.name}}
+                    </small>
+                </a><br />
+                <strong>Назначен ответственный:</strong> {{ticket.managedBy ? ticket.managedBy.name : '(нет)'}}
+            </td>
+        </tr>
+        <tr v-if="list.length == 0">
+            <td colspan="2" class="empty-table-row">
+                <p>Нет открытых заявок в данной категории.</p>
+                <router-link :to="createRoute" :class="{'btn btn-primary': true}" v-need-user-type="'customer'">Новая заявка</router-link>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

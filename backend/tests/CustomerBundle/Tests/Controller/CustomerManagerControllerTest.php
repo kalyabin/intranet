@@ -206,10 +206,8 @@ class CustomerManagerControllerTest extends WebTestCase
 
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
-        $customerData = $customer->jsonSerialize();
-
         $this->assertArraySubset([
-            'customer' => $customerData,
+            'customer' => json_decode(json_encode($customer), true),
             'success' => true,
             'valid' => true,
             'submitted' => true,

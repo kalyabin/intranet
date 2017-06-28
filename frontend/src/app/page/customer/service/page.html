@@ -1,0 +1,28 @@
+<div v-if="service">
+    <div v-if="!serviceIsActivated" class="x_panel">
+        <div class="x_title">
+            <h2>{{service.title}}</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <p v-html="service.description"></p>
+
+            <div v-if="!serviceHasTariff">
+                <button type="button" class="btn btn-primary" @click="activateService">Воспользоваться услугой</button>
+            </div>
+        </div>
+    </div>
+    <div v-if="serviceIsActivated" class="x_panel">
+        <div class="x_title">
+            <a href="#" @click.prevent="toggleDescription">
+                <h2>
+                    Описание услуги <template v-if="serviceHasTariff"> / Сменить тариф</template>
+                </h2>
+            </a>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <p v-html="service.description" ref="description" style="display: none;"></p>
+        </div>
+    </div>
+</div>

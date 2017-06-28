@@ -11,6 +11,10 @@
     <router-link v-if="notification.type == 'ticket_manager_set'" :to="getTicketRoute(notification.ticket)">
         По заявке №{{notification.ticket.number}} установлен ответственный - {{notification.ticketManager.name}}
     </router-link>
+    <router-link v-if="notification.type == 'service_activated'" :to="{name: 'cabinet_service_page', params: {service: notification.service.id}}">
+        <template v-if="notification.tariff">Подключена дополнительная услуга {{notification.service.title}} (тариф: {{notification.tariff.title}})</template>
+        <template v-if="!notification.tariff">Услуга {{notification.service.title}} успешно активирована</template>
+    </router-link>
     <div v-if="notification.type == 'incoming_call'">
         Входящий звонок с телефонного номера: {{notification.callerId}}.
         <span v-if="notification.comment">

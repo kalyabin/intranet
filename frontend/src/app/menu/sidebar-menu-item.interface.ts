@@ -2,7 +2,7 @@
  * Элемент меню для левой колонки
  */
 export interface SidebarMenuItem {
-    route: any;
+    route?: any;
     faIcon?: string;
     menuName: string;
     role?: string;

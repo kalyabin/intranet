@@ -190,8 +190,10 @@ class ServiceCustomerControllerTest extends WebTestCase
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
 
         $this->assertArraySubset([
-            'service' => json_decode(json_encode($itService), true),
-            'tariff' => json_decode(json_encode($itTariff), true),
+            'activated' => [
+                'service' => json_decode(json_encode($itService), true),
+                'tariff' => json_decode(json_encode($itTariff), true),
+            ],
             'success' => true,
             'valid' => true,
             'validationErrors' => [],

@@ -3,7 +3,6 @@ import {UserInterface} from "../service/model/user.interface";
 import Vue from "vue";
 import {authUserService} from "../service/auth-user.service";
 import {AuthInterface} from "../service/response/auth.interface";
-import {TicketCategoryInterface} from "../service/model/ticket-category.interface";
 
 Vue.use(Vuex);
 

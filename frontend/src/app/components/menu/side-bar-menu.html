@@ -1,0 +1,21 @@
+<div class="menu_section">
+    <ul class="nav side-menu">
+        <template v-for="(menuItem, index) in items">
+            <router-link
+                v-if="menuItem.route"
+                tag="li"
+                :to="menuItem.route"
+                v-need-role="menuItem.role"
+                active-class="active"
+                :key="index"
+            >
+                <a><i :class="'fa ' + menuItem.faIcon"></i> {{menuItem.menuName}}</a>
+                <children :parent="menuItem" :index="index"></children>
+            </router-link>
+            <li v-if="!menuItem.route" :key="index">
+                <a @click.stop="toggleActivate"><i :class="'fa ' + menuItem.faIcon"></i> {{menuItem.menuName}}</a>
+                <children :parent="menuItem" :index="index"></children>
+            </li>
+        </template>
+    </ul>
+</div>

@@ -1,0 +1,12 @@
+<ul class="nav child_menu" v-if="parent.children && parent.children.length">
+    <router-link
+            v-for="(childItem, childIndex) in parent.children"
+            :key="'child' + index + '-' + childIndex"
+            tag="li"
+            :to="childItem.route"
+            v-need-role="childItem.role"
+            active-class="current-page"
+    >
+        <a>{{childItem.menuName}}</a>
+    </router-link>
+</ul>

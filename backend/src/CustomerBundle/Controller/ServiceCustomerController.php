@@ -4,6 +4,7 @@ namespace CustomerBundle\Controller;
 
 
 use CustomerBundle\Entity\Repository\ServiceRepository;
+use CustomerBundle\Entity\ServiceActivatedEntity;
 use CustomerBundle\Entity\ServiceEntity;
 use CustomerBundle\Entity\ServiceTariffEntity;
 use CustomerBundle\Utils\ServiceManager;
@@ -150,10 +151,17 @@ class ServiceCustomerController extends Controller
             $success = $this->serviceManager->activateService($customer, $service, $tariff);
         }
 
+        $activated = null;
+        foreach ($customer->getService() as $activatedService) {
+            /** @var ServiceActivatedEntity $activatedService */
+            if ($activatedService->getService()->getId() == $service->getId()) {
+                $activated = $activatedService;
+            }
+        }
+
         $response = new FormValidationJsonResponse();
         $response->setData([
-            'service' => $service,
-            'tariff' => $tariff,
+            'activated' => $activated,
             'success' => $success,
             'submitted' => true,
             'valid' => is_null($error),

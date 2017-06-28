@@ -1,10 +1,10 @@
 
-import {SidebarMenuItem} from "./sidebar-menu-item";
+import {SidebarMenuItem} from "./sidebar-menu-item.interface";
 
 /**
  * Меню для менеджера
  */
-export const managerSidebarMenu: Array<SidebarMenuItem> = [
+export const managerSidebarMenuItems: Array<SidebarMenuItem> = [
     {
         route: {
             name: 'dashboard_index',

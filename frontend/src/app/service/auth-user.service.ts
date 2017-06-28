@@ -9,6 +9,7 @@ import {RestorePasswordInterface} from "./response/restore-password.interface";
 import {authUserStore} from "../store/auth-user.store";
 import {UserNotificationInterface} from "./model/user-notification.interface";
 import {cometClientService} from "./comet-client.service";
+import {extendedServiceStore} from "../store/extended-service.store";
 
 /**
  * Сервис для работы с текущим авторизованным пользователем
@@ -48,6 +49,16 @@ export class AuthUserService {
      */
     checkAuth(): Promise<AuthInterface> {
         const commitUserData = (data: AuthInterface) => {
+            if (!authUserStore.state.userData && data.user) {
+                // первичное заполнение данных о пользователе
+                // получить список доступных услуг
+                extendedServiceStore.dispatch('fetchActualList').then(() => {});
+                if (data.user.userType == 'customer') {
+                    // первичное заполнение данных арендатора
+                    // заполнить список активированных услуг арендатора
+                    extendedServiceStore.dispatch('fetchActivatedList').then(() => {});
+                }
+            }
             authUserStore.commit('isAuth', data.auth);
             authUserStore.commit('userData', data.user);
             authUserStore.commit('isTemporaryPassword', data.isTemporaryPassword);
@@ -117,6 +128,10 @@ export class AuthUserService {
                 authUserStore.commit('userData', null);
                 authUserStore.commit('isTemporaryPassword', false);
                 authUserStore.commit('roles', []);
+
+                // очистить доп услуги
+                extendedServiceStore.commit('clearActivatedList');
+                extendedServiceStore.commit('clearActualList');
 
                 // отключение comet-клиента
                 this.disconnectComet();

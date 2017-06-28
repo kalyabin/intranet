@@ -131,7 +131,6 @@ class ServiceActivatedEntity implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'customer' => $this->getCustomer(),
             'service' => $this->getService(),
             'tariff' => $this->getTariff(),
             'createdAt' => $this->getCreatedAt() ? $this->getCreatedAt()->format('Y-m-d H:i:s') : null,

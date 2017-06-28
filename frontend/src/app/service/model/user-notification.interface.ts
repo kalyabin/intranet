@@ -4,7 +4,9 @@
 import {UserInterface} from "./user.interface";
 import {TicketInterface} from "./ticket.interface";
 import {TicketMessageInterface} from "./ticket-message.interface";
-export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed' | 'incoming_call';
+import {ServiceInterface} from "./service.interface";
+import {ServiceTariffInterface} from "./service-tariff.interface";
+export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed' | 'incoming_call' | 'service_activated' | 'service_deactivated';
 
 /**
  * Модель системного уведомления для пользователя
@@ -46,6 +48,16 @@ export interface UserNotificationInterface {
      * Установленный менеджер по заявке
      */
     ticketManager?: UserInterface;
+
+    /**
+     * Подключенная или отключенная услуга
+     */
+    service?: ServiceInterface;
+
+    /**
+     * Подключенный тариф
+     */
+    tariff?: ServiceTariffInterface;
 
     /**
      * Входящий номер телефона, если тип уведомления incoming_call
