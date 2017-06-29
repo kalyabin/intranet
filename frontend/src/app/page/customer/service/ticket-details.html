@@ -1,0 +1,24 @@
+<div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2 v-if="ticket">{{category ? category.name : ''}} #{{ticket.number}}</h2>
+            <ul class="navbar-right panel_toolbox">
+                <li>
+                    <router-link :to="categoryRoute" v-if="service">
+                        <small>Обратно в {{service.title}}</small>
+                    </router-link>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+            <ticket-history v-if="ticket && details" :ticket="ticket" :details="details"></ticket-history>
+        </div>
+    </div>
+
+    <x-panel ref="message-panel" :title="'Оставить сообщение / Закрыть заявку'" :toggled="false" @on-toggled="showMessageForm = $event">
+        <div slot>
+            <message-form v-if="showMessageForm" @ticket-changed="updateData" :category="category" :ticket="ticket"></message-form>
+        </div>
+    </x-panel>
+</div>

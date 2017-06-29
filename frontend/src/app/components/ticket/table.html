@@ -35,7 +35,6 @@
         <tr v-if="list.length == 0">
             <td colspan="2" class="empty-table-row">
                 <p>Нет открытых заявок в данной категории.</p>
-                <router-link :to="createRoute" :class="{'btn btn-primary': true}" v-need-user-type="'customer'">Новая заявка</router-link>
             </td>
         </tr>
         </tbody>

@@ -7,9 +7,22 @@
         <div class="x_content">
             <p v-html="service.description"></p>
 
-            <div v-if="!serviceHasTariff">
-                <button type="button" class="btn btn-primary" @click="activateService">Воспользоваться услугой</button>
-            </div>
+            <form @submit.prevent="activateService">
+                <div class="form-group col-md-6 col-xs-12" v-if="serviceHasTariff" :class="{'has-error': errors.has('selectedTariff')}">
+                    <label>Выберите тариф</label>
+                    <select class="form-control" name="selectedTariff" v-model="selectedTariff" v-validate="'required'">
+                        <option></option>
+                        <option v-for="tariff in service.tariff" :value="tariff.id">
+                            {{tariff.title}} ({{tariff.monthlyCost}} руб./мес.)
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2 col-xs-12">
+                    <label>&nbsp;&nbsp;</label>
+                    <button type="submit" v-if="!serviceHasTariff" class="form-control btn btn-primary">Воспользоваться услугой</button>
+                    <button type="submit" v-if="serviceHasTariff" class="form-control btn btn-success">Подключить услугу</button>
+                </div>
+            </form>
         </div>
     </div>
     <div v-if="serviceIsActivated" class="x_panel">
@@ -19,15 +32,18 @@
                     <h2>Открытые заявки</h2>
                 </div>
                 <div class="pull-left x_title_button" v-need-user-type="'customer'">
-                    <router-link :to="createTicketRoute" :class="{'collapse-link btn btn-primary': true}">
-                        <i class="fa fa-plus"></i>
+                    <a href="#" @click.prevent="toggledTicketForm = !toggledTicketForm" class="collapse-link btn btn-primary">
+                        <i class="fa" :class="{'fa-toggle-down': !toggledTicketForm, 'fa-toggle-up': toggledTicketForm}"></i>
                         Новая заявка
-                    </router-link>
+                    </a>
                 </div>
                 <div class="clearfix"></div>
             </div>
+            <div class="x_content" v-if="toggledTicketForm">
+                <ticket-form :category="ticketCategory" @saved="ticketSaved" @cancel="toggledTicketForm = false"></ticket-form>
+            </div>
             <div class="x_content">
-                <tickets-table :service="service" :category="ticketCategory"></tickets-table>
+                <ticket-table :service="service" :category="ticketCategory"></ticket-table>
             </div>
         </template>
         <div class="x_title">

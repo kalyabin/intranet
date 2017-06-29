@@ -13,9 +13,6 @@ export const customerSidebarMenuItems: Array<SidebarMenuItem> = [
         menuName: 'Главная страница',
     },
     {
-        route: {
-            name: 'cabinet_ticket_root',
-        },
         faIcon: 'fa-question',
         menuName: 'Заявки',
         children: []

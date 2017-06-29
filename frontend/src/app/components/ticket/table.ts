@@ -7,7 +7,6 @@ import {TicketInterface} from "../../service/model/ticket.interface";
 import {ticketListStore} from "../../store/ticket-list.store";
 import {UserType} from "../../service/model/user.interface";
 import {authUserStore} from "../../store/auth-user.store";
-import {createTicketRouteHelper} from "../../helpers/create-ticket-route";
 import {router} from "../../router/router";
 import {ticketDetailsRouteHelper} from "../../helpers/ticket-details-route";
 import {ServiceInterface} from "../../service/model/service.interface";
@@ -83,13 +82,6 @@ export class TicketTable extends Vue {
      */
     beforeDestroy(): void {
         this.$store.commit('clear');
-    }
-
-    /**
-     * Получить ссылку на создание нового тикета
-     */
-    get createRoute() {
-        return createTicketRouteHelper(this.category);
     }
 
     /**

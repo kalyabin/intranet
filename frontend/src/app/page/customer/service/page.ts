@@ -10,8 +10,9 @@ import $ from "jquery";
 import {TicketCategoryInterface} from "../../../service/model/ticket-category.interface";
 import {ticketCategoriesStore} from "../../../store/ticket-categories.store";
 import {TicketTable} from "../../../components/ticket/table";
-import {Location} from "vue-router";
-import {createTicketRouteHelper} from "../../../helpers/create-ticket-route";
+import {TicketForm} from "../../../components/ticket/form";
+import {TicketInterface} from "../../../service/model/ticket.interface";
+import {ticketListStore} from "../../../store/ticket-list.store";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -25,7 +26,8 @@ Component.registerHooks([
 @Component({
     template: require('./page.html'),
     components: {
-        'tickets-table': TicketTable
+        'ticket-table': TicketTable,
+        'ticket-form': TicketForm
     }
 })
 export class CustomerServicePage extends Vue {
@@ -38,6 +40,16 @@ export class CustomerServicePage extends Vue {
      * Категория тикетной системы для работы с услугой
      */
     @Model() ticketCategory: TicketCategoryInterface = null;
+
+    /**
+     * Раскрыть форму создания заявки
+     */
+    @Model() toggledTicketForm: boolean = false;
+
+    /**
+     * Выбранный тариф при активации услуги
+     */
+    @Model() selectedTariff: number = null;
 
     /**
      * Установка услуги
@@ -83,13 +95,6 @@ export class CustomerServicePage extends Vue {
     }
 
     /**
-     * Роут на создание тикета
-     */
-    get createTicketRoute(): Location {
-        return createTicketRouteHelper(this.ticketCategory, this.service);
-    }
-
-    /**
      * Свернуть / развернуть описание
      */
     toggleDescription(): void {
@@ -100,8 +105,21 @@ export class CustomerServicePage extends Vue {
      * Активировать услугу
      */
     activateService(tariff?: ServiceTariffInterface): void {
-        if (!this.serviceIsActivated) {
+        if (this.serviceIsActivated) {
+            return;
+        }
+
+        this.$validator.validateAll().then(() => {
             pageMetaStore.commit('showPageLoader');
+            let tariff = null;
+            if (this.selectedTariff) {
+                for (let item of this.service.tariff) {
+                    if (item.id == this.selectedTariff) {
+                        tariff = item;
+                        break;
+                    }
+                }
+            }
             extendedServicesService.activate(this.service, tariff).then((response) => {
                 if (response.success) {
                     extendedServiceStore.commit('addActivatedItem', response.activated);
@@ -109,7 +127,7 @@ export class CustomerServicePage extends Vue {
                 }
                 pageMetaStore.commit('hidePageLoader');
             }, () => pageMetaStore.commit('hidePageLoader'));
-        }
+        }, () => {});
     }
 
     /**
@@ -148,5 +166,14 @@ export class CustomerServicePage extends Vue {
     beforeRouteLeave(to, from, next): void {
         ticketCategoriesStore.commit('clear');
         next();
+    }
+
+    /**
+     * Был создан новый тикет
+     */
+    ticketSaved(ticket: TicketInterface): void {
+        ticketListStore.dispatch('addTicket', ticket).then(() => {
+            this.toggledTicketForm = false;
+        });
     }
 }

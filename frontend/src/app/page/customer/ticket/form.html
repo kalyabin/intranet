@@ -1,0 +1,17 @@
+<div>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                Новая заявка
+                <span v-if="category && category.id"> в очередь {{category.name}}</span>
+                <router-link :to="categoryRoute">
+                    <small>Обратно в список заявок</small>
+                </router-link>
+            </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+            <ticket-form v-if="category" :category-route="categoryRoute" :category="category" @saved="saved" @cancel="cancel"></ticket-form>
+        </div>
+    </div>
+</div>

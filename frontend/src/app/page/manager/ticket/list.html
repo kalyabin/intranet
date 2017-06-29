@@ -1,0 +1,11 @@
+<div>
+    <div class="x_panel">
+        <div class="x_title">
+            <dropdown display-prop="name" :item="category" :items="categories" @select="selectCategory"></dropdown>
+            <div class="clearfix"></div>
+        </div>
+        <div class="row">
+            <ticket-table v-if="category" :category="category"></ticket-table>
+        </div>
+    </div>
+</div>

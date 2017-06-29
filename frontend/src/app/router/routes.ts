@@ -7,11 +7,14 @@ import {AccessDenied} from "../page/error/access-denied";
 import {Index} from "../page/index";
 import {ManagerUserList} from "../page/manager/user/list";
 import {ManagerCustomerList} from "../page/manager/customer/list";
-import {TicketList} from "../page/ticket/list";
-import {TicketForm} from "../page/ticket/ticket-form";
-import {TicketDetails} from "../page/ticket/details";
+import {CustomerTicketList} from "../page/customer/ticket/list";
+import {CustomerTicketForm} from "../page/customer/ticket/form";
+import {CustomerTicketDetails} from "../page/customer/ticket/details";
 import {ManagerServiceList} from "../page/manager/service/list";
 import {CustomerServicePage} from "../page/customer/service/page";
+import {CustomerServiceTicketDetails} from "../page/customer/service/ticket-details";
+import {ManagerTicketList} from "../page/manager/ticket/list";
+import {ManagerTicketDetails} from "../page/manager/ticket/details";
 
 /**
  * Правила роутинга
@@ -48,18 +51,9 @@ export const routes: Array<RouteConfig> = [
                 component: Index
             },
             {
-                path: '/auth/cabinet/ticket',
-                name: 'cabinet_ticket_root',
-                component: TicketList,
-                meta: {
-                    needType: 'customer',
-                    pageTitle: 'Заявки'
-                }
-            },
-            {
                 path: '/auth/cabinet/ticket/:category',
                 name: 'cabinet_ticket_list',
-                component: TicketList,
+                component: CustomerTicketList,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Заявки'
@@ -68,16 +62,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/cabinet/ticket/:category/create',
                 name: 'cabinet_ticket_create',
-                component: TicketForm,
-                meta: {
-                    needType: 'customer',
-                    pageTitle: 'Заявки'
-                }
-            },
-            {
-                path: '/auth/cabinet/ticket/create',
-                name: 'cabinet_ticket_create_root',
-                component: TicketForm,
+                component: CustomerTicketForm,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Заявки'
@@ -86,7 +71,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/cabinet/ticket/:category/:ticket',
                 name: 'cabinet_ticket_details',
-                component: TicketDetails,
+                component: CustomerTicketDetails,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Заявка'
@@ -104,7 +89,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/service/:service/ticket/create',
                 name: 'cabinet_service_ticket_create',
-                component: TicketForm,
+                component: CustomerTicketForm,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Услуги'
@@ -113,7 +98,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/service/:service/ticket/:ticket',
                 name: 'cabinet_service_ticket_details',
-                component: TicketDetails,
+                component: CustomerServiceTicketDetails,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Услуги'
@@ -156,7 +141,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/manager/ticket',
                 name: 'manager_ticket_root',
-                component: TicketList,
+                component: ManagerTicketList,
                 meta: {
                     needType: 'manager',
                     pageTitle: 'Заявки'
@@ -165,7 +150,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/manager/ticket/:category',
                 name: 'manager_ticket_list',
-                component: TicketList,
+                component: ManagerTicketList,
                 meta: {
                     needType: 'manager',
                     pageTitle: 'Заявки'
@@ -174,7 +159,7 @@ export const routes: Array<RouteConfig> = [
             {
                 path: '/auth/manager/ticket/:category/:ticket',
                 name: 'manager_ticket_details',
-                component: TicketDetails,
+                component: ManagerTicketDetails,
                 meta: {
                     needType: 'manager',
                     pageTitle: 'Заявка'
