@@ -13,6 +13,23 @@
         </div>
     </div>
     <div v-if="serviceIsActivated" class="x_panel">
+        <template v-if="ticketCategory" v-need-role="'customer'">
+            <div class="x_title">
+                <div class="pull-left x_title_button">
+                    <h2>Открытые заявки</h2>
+                </div>
+                <div class="pull-left x_title_button" v-need-user-type="'customer'">
+                    <router-link :to="createTicketRoute" :class="{'collapse-link btn btn-primary': true}">
+                        <i class="fa fa-plus"></i>
+                        Новая заявка
+                    </router-link>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <tickets-table :service="service" :category="ticketCategory"></tickets-table>
+            </div>
+        </template>
         <div class="x_title">
             <a href="#" @click.prevent="toggleDescription">
                 <h2>

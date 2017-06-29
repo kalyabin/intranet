@@ -101,6 +101,24 @@ export const routes: Array<RouteConfig> = [
                     pageTitle: 'Услуги'
                 },
             },
+            {
+                path: '/auth/service/:service/ticket/create',
+                name: 'cabinet_service_ticket_create',
+                component: TicketForm,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Услуги'
+                }
+            },
+            {
+                path: '/auth/service/:service/ticket/:ticket',
+                name: 'cabinet_service_ticket_details',
+                component: TicketDetails,
+                meta: {
+                    needType: 'customer',
+                    pageTitle: 'Услуги'
+                }
+            }
         ],
     },
     {

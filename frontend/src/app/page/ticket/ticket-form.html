@@ -14,7 +14,7 @@
             <form @submit.prevent="submit" @input="errorMessage = ''">
                 <div v-if="errorMessage" class="alert alert-danger">{{errorMessage}}</div>
                 <div class="col-sm-12">
-                    <div class="form-group" :class="{'has-error': errors.has('category')}">
+                    <div v-if="!service" class="form-group" :class="{'has-error': errors.has('category')}">
                         <div class="btn-group" data-toggle="buttons">
                             <label
                                 v-for="item in categories"

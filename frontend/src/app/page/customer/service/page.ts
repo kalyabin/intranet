@@ -9,17 +9,24 @@ import {extendedServicesService} from "../../../service/extended-services-servic
 import $ from "jquery";
 import {TicketCategoryInterface} from "../../../service/model/ticket-category.interface";
 import {ticketCategoriesStore} from "../../../store/ticket-categories.store";
+import {TicketTable} from "../../../components/ticket/table";
+import {Location} from "vue-router";
+import {createTicketRouteHelper} from "../../../helpers/create-ticket-route";
 
 Component.registerHooks([
     'beforeRouteEnter',
     'beforeRouteUpdate',
+    'beforeRouteLeave',
 ]);
 
 /**
  * Просмотр информации об услуги и пользование услугой
  */
 @Component({
-    template: require('./page.html')
+    template: require('./page.html'),
+    components: {
+        'tickets-table': TicketTable
+    }
 })
 export class CustomerServicePage extends Vue {
     /**
@@ -64,12 +71,22 @@ export class CustomerServicePage extends Vue {
      * Запомнить категорию тикетной системы
      */
     fetchTicketCategory(): void {
+        this.ticketCategory = null;
         ticketCategoriesStore.commit('clear');
         ticketCategoriesStore.dispatch('fetchList').then(() => {
             for (let category of ticketCategoriesStore.state.list) {
-                console.log(category);
+                if (category.customerRole == this.service.customerRole) {
+                    this.ticketCategory = category;
+                }
             }
         });
+    }
+
+    /**
+     * Роут на создание тикета
+     */
+    get createTicketRoute(): Location {
+        return createTicketRouteHelper(this.ticketCategory, this.service);
     }
 
     /**
@@ -126,5 +143,10 @@ export class CustomerServicePage extends Vue {
                 next();
             }, () => next('404'));
         });
+    }
+
+    beforeRouteLeave(to, from, next): void {
+        ticketCategoriesStore.commit('clear');
+        next();
     }
 }

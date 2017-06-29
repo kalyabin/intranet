@@ -11,6 +11,8 @@ import {TicketResponseInterface} from "../../service/response/ticket-response.in
 import {router} from "../../router/router";
 import {Location} from "vue-router";
 import {notificationStore} from "../../store/notification.store";
+import {ServiceInterface} from "../../service/model/service.interface";
+import {extendedServiceStore} from "../../store/extended-service.store";
 
 /**
  * Форма создания нового тикета для арендатора
@@ -24,6 +26,11 @@ export class TicketForm extends Vue {
      * Категория тикетной системы
      */
     @Model() category: TicketCategoryInterface = null;
+
+    /**
+     * Если переход произошёл со страницы услуги
+     */
+    @Model() service: ServiceInterface = null;
 
     /**
      * Модель заполнеяемого тикета
@@ -55,7 +62,15 @@ export class TicketForm extends Vue {
      * Получить ссылку на список всех тикетов в категории
      */
     get categoryRoute(): Location {
-        if (this.category && this.category.id) {
+        if (this.service) {
+            return {
+                name: 'cabinet_service_page',
+                params: {
+                    service: this.service.id
+                }
+            };
+        }
+        else if (this.category && this.category.id) {
             return {
                 name: 'cabinet_ticket_list',
                 params: {
@@ -70,10 +85,16 @@ export class TicketForm extends Vue {
     }
 
     /**
-     * Установка категории
+     * Установка категории и услуги, через котору произошёл переход в тикетную систему
      */
-    setCategory(category: TicketCategoryInterface): void{
+    setCategory(category: TicketCategoryInterface, service?: ServiceInterface): void {
         this.category = category;
+        this.ticket.category = category.id;
+        this.service = service;
+
+        if (this.service) {
+            pageMetaStore.commit('setPageTitle', `Услуги: ${this.service.title}`);
+        }
 
         if (this.category) {
             pageMetaStore.commit('setTitle', `Создание заявки: ${category.name}`);
@@ -98,6 +119,15 @@ export class TicketForm extends Vue {
                 }, () => {
                     next({name: '403'});
                 });
+        } else if (to.params.service) {
+            extendedServiceStore.dispatch('getServiceById', to.params.service).then((service: ServiceInterface) => {
+                ticketCategoriesStore.dispatch('checkCategory', service.id)
+                    .then((category: TicketCategoryInterface) => {
+                        next(vm => vm.setCategory(category, service));
+                    }, () => {
+                        next({name: '403'});
+                    });
+            });
         } else {
             next();
         }
@@ -118,6 +148,16 @@ export class TicketForm extends Vue {
                 }, () => {
                     next({name: '403'});
                 });
+        } else if (to.params.service) {
+            extendedServiceStore.dispatch('getServiceById', to.params.service).then((service: ServiceInterface) => {
+                ticketCategoriesStore.dispatch('checkCategory', service.id)
+                    .then((category: TicketCategoryInterface) => {
+                        this.setCategory(category, service);
+                        next();
+                    }, () => {
+                        next({name: '403'});
+                    });
+            }, () => next({name: '404'}));
         } else {
             next();
         }

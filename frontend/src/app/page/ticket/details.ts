@@ -13,6 +13,11 @@ import {ticketCategoriesStore} from "../../store/ticket-categories.store";
 import {pageMetaStore} from "../../router/page-meta-store";
 import {TicketMessageForm} from "./message-form";
 import {XPanel} from "../../components/x-panel";
+import {ServiceInterface} from "../../service/model/service.interface";
+import {extendedServiceStore} from "../../store/extended-service.store";
+import {Location} from "vue-router";
+import {createTicketRouteHelper} from "../../helpers/create-ticket-route";
+import {ticketCategoryListHelper} from "../../helpers/ticket-category-list";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -39,6 +44,11 @@ export class TicketDetails extends Vue {
      * Модель заявки
      */
     @Model() ticket: TicketInterface = null;
+
+    /**
+     * Услуга, через которую произошёл переход в тикет
+     */
+    @Model() service: ServiceInterface = null;
 
     /**
      * История изменений по тикету
@@ -140,15 +150,38 @@ export class TicketDetails extends Vue {
     }
 
     /**
+     * Установка услуги
+     */
+    setService(service: ServiceInterface): void {
+        this.service = service;
+
+        pageMetaStore.commit('setPagetitle', `Услуги: ${service.title}`);
+    }
+
+    /**
+     * Получить ссылку на категорию тикетной системы
+     */
+    get categoryRoute(): Location {
+        return ticketCategoryListHelper(this.category, this.service);
+    }
+
+    /**
      * Проверка прав и получение детальной информации о тикете
      */
     beforeRouteEnter(to, from, next): void {
-        ticketCategoriesStore.dispatch('checkCategory', to.params.category).then((category: TicketCategoryInterface) => {
+        let categoryId = to.params.category ? to.params.category : to.params.service;
+        ticketCategoriesStore.dispatch('checkCategory', categoryId).then((category: TicketCategoryInterface) => {
             ticketService.ticketDetails(to.params.ticket)
                 .then((response: TicketDetailsResponseInterface) => {
                     next(vm => {
                         vm.setData(response);
                         vm.setCategory(category);
+                        if (to.params.service) {
+                            extendedServiceStore.dispatch('getServiceById', to.params.service)
+                                .then((service: ServiceInterface) => {
+                                    vm.setService(service);
+                                }, () => {});
+                        }
                     });
                 }, () => next({name: '403'}));
         }, () => next({name: '403'}));
@@ -158,12 +191,19 @@ export class TicketDetails extends Vue {
      * Проверка прав и получение детальной информации о тикете
      */
     beforeRouteUpdate(to, from, next): void {
-        ticketCategoriesStore.dispatch('checkCategory', to.params.category).then((category: TicketCategoryInterface) => {
+        let categoryId = to.params.category ? to.params.category : to.params.service;
+        ticketCategoriesStore.dispatch('checkCategory', categoryId).then((category: TicketCategoryInterface) => {
             ticketService.ticketDetails(to.params.ticket)
                 .then((response: TicketDetailsResponseInterface) => {
                     next(vm => {
                         vm.setData(response);
                         vm.setCategory(category);
+                        if (to.params.service) {
+                            extendedServiceStore.dispatch('getServiceById', to.params.service)
+                                .then((service: ServiceInterface) => {
+                                    vm.setService(service);
+                                }, () => {});
+                        }
                     });
                 }, () => next({name: '403'}));
         }, () => next({name: '403'}));

@@ -4,10 +4,7 @@
             <h2 v-if="ticket">{{category ? category.name : ''}} #{{ticket.number}}</h2>
             <ul class="navbar-right panel_toolbox">
                 <li>
-                    <router-link v-need-user-type="'customer'" :to="{name: 'cabinet_ticket_list', params: {category: category ? category.id : ''}}">
-                        <small>Обратно в список заявок</small>
-                    </router-link>
-                    <router-link v-need-user-type="'manager'" :to="{name: 'manager_ticket_list', params: {category: category ? category.id : ''}}">
+                    <router-link :to="categoryRoute">
                         <small>Обратно в список заявок</small>
                     </router-link>
                 </li>

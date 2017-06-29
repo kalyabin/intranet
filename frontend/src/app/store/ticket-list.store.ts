@@ -56,6 +56,31 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
             }
         },
         /**
+         * Сортировка тикетов по актуальности
+         */
+        sortList: (state: TicketListStateInterface) => {
+            // отсортировать тикеты
+            state.list = state.list.sort((itemA: TicketInterface, itemB: TicketInterface) => {
+                // закрытие заявки идут ниже
+                if (itemA.currentStatus == 'closed' && itemA.currentStatus != itemB.currentStatus) {
+                    return 1;
+                } else if (itemB.currentStatus == 'closed' && itemB.currentStatus != itemA.currentStatus) {
+                    return -1;
+                }
+
+                let dateA = moment(itemA.updatedAt);
+                let dateB = moment(itemB.updatedAt);
+
+                if (dateA.isBefore(dateB)) {
+                    return -1;
+                } else if (dateB.isBefore(dateA)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        },
+        /**
          * Очистить весь стек тикетов
          */
         clear: (state: TicketListStateInterface) => {
@@ -83,26 +108,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
                         if (response.totalCount > cnt) {
                             fetchTickets();
                         } else {
-                            // отсортировать тикеты
-                            action.state.list = action.state.list.sort((itemA: TicketInterface, itemB: TicketInterface) => {
-                                // закрытие заявки идут ниже
-                                if (itemA.currentStatus == 'closed' && itemA.currentStatus != itemB.currentStatus) {
-                                    return 1;
-                                } else if (itemB.currentStatus == 'closed' && itemB.currentStatus != itemA.currentStatus) {
-                                    return -1;
-                                }
-
-                                let dateA = moment(itemA.updatedAt);
-                                let dateB = moment(itemB.updatedAt);
-
-                                if (dateA.isBefore(dateB)) {
-                                    return -1;
-                                } else if (dateB.isBefore(dateA)) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                            });
+                            action.commit('sortList');
                             resolve();
                         }
                     }).catch(() => reject());
@@ -125,6 +131,7 @@ export const ticketListStore = new Vuex.Store<TicketListStateInterface>({
         addTicket: (action, ticket: TicketInterface) => {
             return new Promise((resolve) => {
                 action.commit('addTicket', ticket);
+                action.commit('sortList');
                 resolve();
             });
         },

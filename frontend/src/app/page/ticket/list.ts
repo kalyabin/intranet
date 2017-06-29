@@ -3,13 +3,13 @@ import Component from "vue-class-component";
 import {TicketCategoryInterface} from "../../service/model/ticket-category.interface";
 import {ticketCategoriesStore} from "../../store/ticket-categories.store";
 import {pageMetaStore} from "../../router/page-meta-store";
-import {Model, Watch} from "vue-property-decorator";
-import {ticketListStore} from "../../store/ticket-list.store";
-import {TicketInterface} from "../../service/model/ticket.interface";
+import {Model} from "vue-property-decorator";
 import {authUserStore} from "../../store/auth-user.store";
 import {UserType} from "../../service/model/user.interface";
 import {router} from "../../router/router";
 import {Location} from "vue-router";
+import {TicketTable} from "../../components/ticket/table";
+import {createTicketRouteHelper} from "../../helpers/create-ticket-route";
 
 Component.registerHooks([
     'beforeRouteEnter',
@@ -27,7 +27,9 @@ Component.registerHooks([
  */
 @Component({
     template: require('./list.html'),
-    store: ticketListStore
+    components: {
+        'ticket-table': TicketTable
+    }
 })
 export class TicketList extends Vue {
     /**
@@ -35,50 +37,21 @@ export class TicketList extends Vue {
      */
     @Model() category: TicketCategoryInterface = null;
 
-    /**
-     * Получить список тикетов
-     */
-    fetchTicketList(categoryId: string): void {
-        let fetchList = (categoryId: string) => {
-            pageMetaStore.commit('showPageLoader');
-            this.$store.dispatch('clear').then(() => {
-                this.$store.dispatch('fetchList', categoryId).then(() => {
-                    pageMetaStore.commit('hidePageLoader');
-                }, () => pageMetaStore.commit('hidePageLoader'));
-            }, () => pageMetaStore.commit('hidePageLoader'));
+    get allCategories(): TicketCategoryInterface {
+        return {
+            id: null,
+            name: 'Все',
+            managerRole: null,
+            customerRole: null
         };
-
-        // проверить права на просмотр категории
-        if (categoryId) {
-            ticketCategoriesStore.dispatch('checkCategory', categoryId).then(() => {
-                fetchList(categoryId);
-            }, () => {
-                // если нет доступа к категории - показать все доступные тикеты
-                fetchList(null);
-            });
-        } else {
-            fetchList(null);
-        }
     }
 
     /**
      * Список категорий
      */
     get categories(): TicketCategoryInterface[] {
-        let list: TicketCategoryInterface[] = [{
-            id: null,
-            name: 'Все',
-            managerRole: '',
-            customerRole: ''
-        }];
+        let list: TicketCategoryInterface[] = [this.allCategories];
         return list.concat(ticketCategoriesStore.state.list);
-    }
-
-    /**
-     * Список тикетов
-     */
-    get list(): TicketInterface[] {
-        return this.$store.state.list as TicketInterface[];
     }
 
     /**
@@ -92,25 +65,7 @@ export class TicketList extends Vue {
      * Получить ссылку на создание нового тикета
      */
     get createRoute(): Location {
-        if (this.category && this.category.id) {
-            return {
-                name: 'cabinet_ticket_create',
-                params: {
-                    category: this.category.id
-                }
-            };
-        } else {
-            return {
-                name: 'cabinet_ticket_create_root'
-            };
-        }
-    }
-
-    /**
-     * При выходе из компонента очистить список тикетов
-     */
-    beforeDestroy(): void {
-        this.$store.commit('clear');
+        return createTicketRouteHelper(this.category);
     }
 
     /**
@@ -134,31 +89,16 @@ export class TicketList extends Vue {
     }
 
     /**
-     * Открыть страницу тикета
-     */
-    openTicket(ticket: TicketInterface): void {
-        router.push({
-            name: this.userType == 'customer' ? 'cabinet_ticket_details' : 'manager_ticket_details',
-            params: <any>{
-                category: ticket.category,
-                ticket: ticket.id
-            }
-        });
-    }
-
-    /**
      * Установка категории
      */
-    setCategory(category: TicketCategoryInterface): void{
+    setCategory(category: TicketCategoryInterface): void {
         if (category) {
             pageMetaStore.commit('setTitle', `Заявки: ${category.name}`);
         } else {
             pageMetaStore.commit('setTitle', `Заявки`);
         }
 
-        this.category = category;
-        let categoryId = category ? category.id : null;
-        this.fetchTicketList(categoryId);
+        this.category = category ? category : this.allCategories;
     }
 
     /**
