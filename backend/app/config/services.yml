@@ -9,6 +9,17 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
+    error_log_formatter:
+        class: Monolog\Formatter\LineFormatter
+        arguments: [~, ~, true]
+
+    error_trace_logger:
+        class: AppBundle\Listener\ErrorLoggerListener
+        arguments: [ '@logger' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException , priority: 1 }
+            - { name: monolog.logger, channel: main }
+
     # системный мейлер всего приложения
     mail_manager:
         class: AppBundle\Utils\MailManager

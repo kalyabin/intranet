@@ -2,6 +2,48 @@
 import {SidebarMenuItem} from "./sidebar-menu-item.interface";
 
 /**
+ * Перечисление всех доп. услуг
+ */
+const extendedServices: Array<{
+    code: string,
+    name: string,
+    role: string
+}> = [
+    {
+        code: 'it-department',
+        name: 'IT-аутсорсинг',
+        role: 'ROLE_IT_CUSTOMER',
+    },
+    {
+        code: 'booker-department',
+        name: 'Бухгалтер',
+        role: 'ROLE_BOOKER_CUSTOMER',
+    },
+    {
+        code: 'maintaince-department',
+        name: 'Хаус-мастер',
+        role: 'ROLE_MAINTAINCE_CUSTOMER'
+    }
+];
+
+const buildExtendedServices = (): SidebarMenuItem[] => {
+    let result = [];
+    for (let item of extendedServices) {
+        result.push({
+            route: {
+                name: 'cabinet_service_page',
+                params: {
+                    service: item.code,
+                }
+            },
+            role: item.role,
+            menuName: item.name
+        });
+    }
+    return result;
+};
+
+/**
  * Меню для арендатора
  */
 export const customerSidebarMenuItems: Array<SidebarMenuItem> = [
@@ -20,17 +62,21 @@ export const customerSidebarMenuItems: Array<SidebarMenuItem> = [
     {
         faIcon: 'fa-tag',
         menuName: 'Услуги',
+        children: buildExtendedServices(),
+    },
+    {
+        faIcon: 'fa-file',
+        menuName: 'Документы',
         children: [
             {
                 route: {
-                    name: 'cabinet_service_page',
+                    name: 'cabinet_ticket_list',
                     params: {
-                        service: 'it-department',
-                    },
+                        category: 'finance-department'
+                    }
                 },
-                role: 'ROLE_IT_CUSTOMER',
-                menuName: 'IT-аутсорсинг'
-            },
+                menuName: 'Задать вопрос'
+            }
         ],
     }
 ];

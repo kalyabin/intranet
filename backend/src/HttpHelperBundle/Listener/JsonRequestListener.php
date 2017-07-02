@@ -24,7 +24,10 @@ class JsonRequestListener
     {
         $request = $event->getRequest();
 
-        if (strtolower($request->getMethod()) == 'post' && $request->getContentType() == 'json') {
+        $requestContent = is_string($request->getContent()) ?
+            trim($request->getContent()) : '';
+
+        if (strtolower($request->getMethod()) == 'post' && $request->getContentType() == 'json' && !empty($requestContent)) {
             $decoder = new JsonDecode(true);
             try {
                 $data = $decoder->decode($request->getContent(), JsonEncoder::FORMAT);
