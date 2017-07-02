@@ -5,6 +5,8 @@ namespace RentBundle\Entity;
 
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Заявка на бронирование переговорной комнаты
@@ -55,6 +57,9 @@ class RoomRequestEntity
     /**
      * @ORM\Column(type="string", name="status", length=20, nullable=false)
      *
+     * @Assert\Type(type="string")
+     * @Assert\Choice(callback="getStatuses", strict=true)
+     *
      * @var string Статус заявки
      */
     protected $status;
@@ -62,6 +67,8 @@ class RoomRequestEntity
     /**
      * @ORM\ManyToOne(targetEntity="RentBundle\Entity\RoomEntity")
      * @ORM\JoinColumn(name="room_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     *
+     * @Assert\NotBlank()
      *
      * @var RoomEntity Привязка к помещению для бронирования
      */
@@ -78,12 +85,16 @@ class RoomRequestEntity
     /**
      * @ORM\Column(type="datetime", name="`from`", nullable=false)
      *
+     * @Assert\NotBlank()
+     *
      * @var \DateTime Дата начала действия аренды
      */
     protected $from;
 
     /**
      * @ORM\Column(type="datetime", name="`to`", nullable=false)
+     *
+     * @Assert\NotBlank()
      *
      * @var \DateTime Дата окончания действия аренды
      */
@@ -92,12 +103,18 @@ class RoomRequestEntity
     /**
      * @ORM\Column(type="text", name="manager_comment", nullable=true)
      *
+     * @Assert\Type(type="string")
+     * @Assert\Length(max="1000")
+     *
      * @var string Комментарий менеджера (например по статусу заявки)
      */
     protected $managerComment;
 
     /**
      * @ORM\Column(type="text", name="customer_comment", nullable=true)
+     *
+     * @Assert\Type(type="string")
+     * @Assert\Length(max="1000")
      *
      * @var string Комментарий арендатора
      */
@@ -168,7 +185,7 @@ class RoomRequestEntity
      *
      * @return RoomRequestEntity
      */
-    public function setFrom(\DateTime $from): self
+    public function setFrom(?\DateTime $from): self
     {
         $this->from = $from;
 
@@ -192,7 +209,7 @@ class RoomRequestEntity
      *
      * @return RoomRequestEntity
      */
-    public function setTo(\DateTime $to): self
+    public function setTo(?\DateTime $to): self
     {
         $this->to = $to;
 
@@ -303,5 +320,47 @@ class RoomRequestEntity
     public function getCustomerComment(): ?string
     {
         return $this->customerComment;
+    }
+
+    /**
+     * Валидация дат
+     *
+     * @Assert\Callback()
+     *
+     * @param ExecutionContextInterface $context
+     * @param mixed $payload
+     */
+    public function validateDates(ExecutionContextInterface $context, $payload)
+    {
+        if (!$this->from instanceof \DateTime) {
+            $context->buildViolation('Неверный формат даты в поле "с"')
+                ->atPath('from')
+                ->addViolation();
+            return;
+        }
+
+        if (!$this->to instanceof \DateTime) {
+            $context->buildViolation('Неверный формат даты в поле "по"')
+                ->atPath('to')
+                ->addViolation();
+            return;
+        }
+
+        if ($this->to->getTimestamp() <= $this->from->getTimestamp()) {
+            $context->buildViolation('Поле "с" не может быть больше или равно полю "по"')
+                ->atPath('from')
+                ->addViolation();
+            return;
+        }
+    }
+
+    /**
+     * Получить доступные статусы для валидации
+     *
+     * @return string[]
+     */
+    public static function getStatuses(): array
+    {
+        return [self::STATUS_APPROVED, self::STATUS_CANCELED, self::STATUS_DECLINED, self::STATUS_PENDING];
     }
 }
