@@ -5,6 +5,7 @@ use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use HttpHelperBundle\HttpHelperBundle;
 use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
+use RentBundle\RentBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use TicketBundle\TicketBundle;
@@ -27,6 +28,7 @@ class AppKernel extends Kernel
             new CustomerBundle(),
             new UserBundle(),
             new TicketBundle(),
+            new RentBundle(),
             new AppBundle\AppBundle(),
         ];
 

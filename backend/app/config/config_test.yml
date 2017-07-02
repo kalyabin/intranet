@@ -34,3 +34,8 @@ doctrine:
         password: '%database_test_password%'
 
 liip_functional_test: ~
+
+monolog:
+    handlers:
+        main:
+            type: test
