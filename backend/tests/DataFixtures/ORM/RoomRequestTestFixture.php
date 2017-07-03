@@ -23,9 +23,9 @@ class RoomRequestTestFixture extends AbstractFixture implements OrderedFixtureIn
         /** @var CustomerEntity $allCustomer */
         $allCustomer = $this->getReference('all-customer');
 
-        $entity = new RoomRequestEntity();
-
-        $entity
+        // актуальная заявка
+        $allCustomerRequest = new RoomRequestEntity();
+        $allCustomerRequest
             ->setCreatedAt(new \DateTime())
             ->setCustomer($allCustomer)
             ->setRoom($everyDayRoom)
@@ -34,11 +34,24 @@ class RoomRequestTestFixture extends AbstractFixture implements OrderedFixtureIn
             ->setTo((new \DateTime())->add(new \DateInterval('P2D')))
             ->setStatus(RoomRequestEntity::STATUS_PENDING);
 
-        $manager->persist($entity);
+        // устаревшая заявка
+        $oldRequest = new RoomRequestEntity();
+        $oldRequest
+            ->setCreatedAt(new \DateTime())
+            ->setCustomer($allCustomer)
+            ->setRoom($everyDayRoom)
+            ->setCustomerComment('testing comment')
+            ->setFrom((new \DateTime())->sub(new \DateInterval('P3M')))
+            ->setTo((new \DateTime())->sub(new \DateInterval('P3M'))->add(new \DateInterval('P1D')))
+            ->setStatus(RoomRequestEntity::STATUS_APPROVED);
+
+        $manager->persist($oldRequest);
+        $manager->persist($allCustomerRequest);
 
         $manager->flush();
 
-        $this->addReference('all-customer-everyday-room-request', $entity);
+        $this->addReference('all-customer-everyday-room-request', $allCustomerRequest);
+        $this->addReference('all-customer-everyday-room-old-request', $oldRequest);
     }
 
     /**

@@ -11,12 +11,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * Заявка на бронирование переговорной комнаты
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="RentBundle\Entity\Repository\RoomRequestRepository")
  * @ORM\Table(name="room_request")
  *
  * @package RentBundle\Entity
  */
-class RoomRequestEntity
+class RoomRequestEntity implements \JsonSerializable
 {
     /**
      * Ожидание подтверждения
@@ -362,5 +362,28 @@ class RoomRequestEntity
     public static function getStatuses(): array
     {
         return [self::STATUS_APPROVED, self::STATUS_CANCELED, self::STATUS_DECLINED, self::STATUS_PENDING];
+    }
+
+    /**
+     * Сериализация в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        $dateFormat = 'Y-m-d H:i:s';
+
+        return [
+            'id' => $this->getId(),
+            'createdAt' => $this->getCreatedAt() ? $this->getCreatedAt()->format($dateFormat) : null,
+            'status' => $this->getStatus(),
+            'room' => $this->getRoom(),
+            'customer' => $this->getCustomer(),
+            'status' => $this->getStatus(),
+            'from' => $this->getFrom() ? $this->getFrom()->format($dateFormat) : null,
+            'to' => $this->getTo() ? $this->getTo()->format($dateFormat) : null,
+            'managerComment' => $this->getManagerComment(),
+            'customerComment' => $this->getCustomerComment(),
+        ];
     }
 }

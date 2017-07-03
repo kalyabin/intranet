@@ -1,6 +1,6 @@
 <?php
 
-namespace RentBundle\Tests;
+namespace RentBundle\Tests\Entity;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;

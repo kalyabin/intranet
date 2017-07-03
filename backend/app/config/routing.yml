@@ -17,3 +17,8 @@ ticket:
     resource: "@TicketBundle/Controller/"
     type: annotation
     prefix: /api/
+
+rent:
+    resource: "@RentBundle/Controller/"
+    type: annotation
+    prefix: /api/

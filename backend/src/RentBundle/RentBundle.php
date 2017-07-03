@@ -2,6 +2,7 @@
 
 namespace RentBundle;
 
+use RentBundle\DependencyInjection\RentExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -9,5 +10,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class RentBundle extends Bundle
 {
-
+    public function getContainerExtension(): RentExtension
+    {
+        return new RentExtension();
+    }
 }

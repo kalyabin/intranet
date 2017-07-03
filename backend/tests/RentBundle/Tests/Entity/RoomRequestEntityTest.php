@@ -1,6 +1,6 @@
 <?php
 
-namespace RentBundle\Tests;
+namespace RentBundle\Tests\Entity;
 
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;

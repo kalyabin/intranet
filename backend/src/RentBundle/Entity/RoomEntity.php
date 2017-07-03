@@ -10,12 +10,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * Модель переговорной комнаты
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="RentBundle\Entity\Repository\RoomRepository")
  * @ORM\Table(name="rent_room")
  *
  * @package RentBundle\Entity
  */
-class RoomEntity
+class RoomEntity implements \JsonSerializable
 {
     /**
      * Переговорка
@@ -91,7 +91,7 @@ class RoomEntity
     protected $hourlyCost;
 
     /**
-     * @ORM\Column(type="json_array", name="schedule", nullable=false)
+     * @ORM\Column(type="json_array", name="schedule", nullable=true)
      *
      * @Assert\Type(type="array")
      *
@@ -106,21 +106,21 @@ class RoomEntity
     protected $schedule;
 
     /**
-     * @ORM\Column(type="json_array", name="schedule_break", nullable=false)
+     * @ORM\Column(type="json_array", name="schedule_break", nullable=true)
      *
      * @Assert\Type(type="array")
      *
      * Обязательный перерыв в расписании для каждого рабочего дня недели (например, обеденный перерыв)
      * Заносится в JSON-формате:
-     * - from - время начала действия в формате HH:mm;
-     * - to - время окончания действия в формате HH:mm.
+     * - from - время начала перерыва в формате HH:mm;
+     * - to - время окончания перерыва в формате HH:mm.
      *
      * @var array
      */
     protected $scheduleBreak;
 
     /**
-     * @ORM\Column(type="json_array", name="holidays", nullable=false)
+     * @ORM\Column(type="json_array", name="holidays", nullable=true)
      *
      * @Assert\Type(type="array")
      *
@@ -158,7 +158,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setType(string $type): self
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
@@ -182,7 +182,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
 
@@ -206,7 +206,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -230,7 +230,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setAddress(string $address): self
+    public function setAddress(?string $address): self
     {
         $this->address = $address;
 
@@ -254,7 +254,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setHourlyCost(float $hourlyCost): self
+    public function setHourlyCost(?float $hourlyCost): self
     {
         $this->hourlyCost = $hourlyCost;
 
@@ -278,7 +278,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setSchedule(array $schedule): self
+    public function setSchedule(?array $schedule): self
     {
         $this->schedule = $schedule;
 
@@ -302,7 +302,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setScheduleBreak(array $scheduleBreak): self
+    public function setScheduleBreak(?array $scheduleBreak): self
     {
         $this->scheduleBreak = $scheduleBreak;
 
@@ -326,7 +326,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setHolidays(array $holidays): self
+    public function setHolidays(?array $holidays): self
     {
         $this->holidays = $holidays;
 
@@ -350,7 +350,7 @@ class RoomEntity
      *
      * @return RoomEntity
      */
-    public function setRequestPause(int $requestPause): self
+    public function setRequestPause(?int $requestPause): self
     {
         $this->requestPause = $requestPause;
 
@@ -529,5 +529,26 @@ class RoomEntity
                 return;
             }
         }
+    }
+
+    /**
+     * Сериализация объекта в JSON
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'type' => $this->getType(),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'address' => $this->getAddress(),
+            'hourlyCost' => $this->getHourlyCost(),
+            'schedule' => $this->getSchedule() ?: [],
+            'scheduleBreak' => $this->getScheduleBreak(),
+            'holidays' => $this->getHolidays() ?: [],
+            'requestPause' => $this->getRequestPause(),
+        ];
     }
 }
