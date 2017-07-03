@@ -36,7 +36,7 @@ class RoomRequestEntity implements \JsonSerializable
     /**
      * Отмена со стороны арендатора
      */
-    const STATUS_CANCELED = 'canceled';
+    const STATUS_CANCELED = 'cancelled';
 
     /**
      * @ORM\Id()
@@ -379,7 +379,6 @@ class RoomRequestEntity implements \JsonSerializable
             'status' => $this->getStatus(),
             'room' => $this->getRoom(),
             'customer' => $this->getCustomer(),
-            'status' => $this->getStatus(),
             'from' => $this->getFrom() ? $this->getFrom()->format($dateFormat) : null,
             'to' => $this->getTo() ? $this->getTo()->format($dateFormat) : null,
             'managerComment' => $this->getManagerComment(),

@@ -546,7 +546,7 @@ class RoomEntity implements \JsonSerializable
             'address' => $this->getAddress(),
             'hourlyCost' => $this->getHourlyCost(),
             'schedule' => $this->getSchedule() ?: [],
-            'scheduleBreak' => $this->getScheduleBreak(),
+            'scheduleBreak' => $this->getScheduleBreak() ?: [],
             'holidays' => $this->getHolidays() ?: [],
             'requestPause' => $this->getRequestPause(),
         ];
