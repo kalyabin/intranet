@@ -15,6 +15,7 @@ import {CustomerServicePage} from "../page/customer/service/page";
 import {CustomerServiceTicketDetails} from "../page/customer/service/ticket-details";
 import {ManagerTicketList} from "../page/manager/ticket/list";
 import {ManagerTicketDetails} from "../page/manager/ticket/details";
+import {ManagerRoomList} from "../page/manager/rent/room-list";
 
 /**
  * Правила роутинга
@@ -172,6 +173,15 @@ export const routes: Array<RouteConfig> = [
                 meta: {
                     needRole: 'ROLE_SERVICE_MANAGEMENT',
                     pageTitle: 'Дополнительные услуги'
+                },
+            },
+            {
+                path: '/auth/manager/rent/room',
+                name: 'manager_room_list',
+                component: ManagerRoomList,
+                meta: {
+                    needRole: 'ROLE_RENT_MANAGEMENT',
+                    pageTitle: 'Переговорные комнаты'
                 },
             },
         ]

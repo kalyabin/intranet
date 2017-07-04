@@ -46,10 +46,10 @@ export const managerSidebarMenuItems: Array<SidebarMenuItem> = [
     },
     {
         route: {
-            name: 'dashboard_index',
+            name: 'manager_room_list',
         },
         faIcon: 'fa-building',
-        menuName: 'Служба аренды',
+        menuName: 'Переговорные комнаты',
         role: 'ROLE_RENT_MANAGEMENT'
     },
     {

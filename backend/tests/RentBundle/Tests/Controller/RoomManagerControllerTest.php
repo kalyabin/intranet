@@ -186,16 +186,13 @@ class RoomManagerControllerTest extends WebTestCase
         $hourlyCost = 500.5;
         $schedule = [
             [
-                'weekday' => 1,
-                'schedule' => [
-                    [
-                        'from' => '09:00',
-                        'to' => '13:00',
-                    ],
-                    [
-                        'from' => '14:00',
-                        'to' => '18:00'
-                    ]
+                [
+                    'from' => '09:00',
+                    'to' => '13:00',
+                ],
+                [
+                    'from' => '14:00',
+                    'to' => '18:00'
                 ]
             ],
         ];

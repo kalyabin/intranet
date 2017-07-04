@@ -97,9 +97,8 @@ class RoomEntity implements \JsonSerializable
      *
      * График работы JSON.
      * Всего должно быть 7 элементов (на каждый день недели).
-     * Каждый элемент должен содержать:
-     * - weekday - порядковый день недели;
-     * - schedule - массив диапазонов времени (каждый диапазон содержит from, to);
+     * Каждый элемент должен содержать массив элементов с:
+     * - from, to (формат HH:mm)
      *
      * @var array
      */
@@ -401,38 +400,27 @@ class RoomEntity implements \JsonSerializable
             return;
         }
 
-        if (!is_array($schedule)) {
+        if (!is_array($schedule) || count($schedule) > 7) {
             $buildMessage('Неверный формат расписания');
             return;
         }
 
-        $alreadySet = [];
-        foreach ($schedule as $k => $item) {
-            if (!is_array($item)) {
+        foreach ($schedule as $k => $day) {
+            if (!is_array($day)) {
                 $buildMessage('Неверный формат элемента расписания: ' . $k);
                 return;
             }
-            if (!isset($item['weekday']) || $item['weekday'] < 1 || $item['weekday'] > 7) {
-                $buildMessage('Неверный формат элемента расписания ' . $k . ': день недели должно быть числом между 1 и 7');
-                return;
-            }
-            if (in_array($item['weekday'], $alreadySet)) {
-                $buildMessage('Для дня ' . $item['weekday'] . ' расписание установлено дважды');
-                return;
-            }
-            $alreadySet[] = $item['weekday'];
-            if (empty($item['schedule']) || !is_array($item['schedule'])) {
-                $buildMessage('Отсутствует расписание на день ' . $item['weekday']);
-                return;
-            }
-            foreach ($item['schedule'] as $i => $schedule) {
-                $message = 'Неверный формат расписания для дня недели ' . $item['weekday'];
-                if (!is_array($schedule) || empty($schedule['from']) || empty($schedule['to'])) {
+            foreach ($day as $i => $item) {
+                $message = 'Неверный формат расписания для дня недели ' . $i;
+                if (isset($item['avail']) && !$item['avail']) {
+                    continue;
+                }
+                if (!is_array($item) || empty($item['from']) || empty($item['to'])) {
                     $buildMessage($message);
                     return;
                 }
-                $dateFrom = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $schedule['from']);
-                $dateTo = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $schedule['to']);
+                $dateFrom = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $item['from']);
+                $dateTo = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $item['to']);
                 if (
                     !($dateFrom instanceof \DateTime) || !($dateTo instanceof \DateTime) ||
                     $dateFrom->getTimestamp() >= $dateTo->getTimestamp()
@@ -472,7 +460,14 @@ class RoomEntity implements \JsonSerializable
         }
 
         foreach ($scheduleBreak as $k => $item) {
-            if (empty($item) || !is_array($item) || !isset($item['from']) || !isset($item['to']) || !is_string($item['from']) || !is_string($item['to'])) {
+            if (!is_array($item)) {
+                $buildMessage('Неверный формат перерыва в расписании (элемент: ' . $k . ')');
+                return;
+            }
+            if (empty($item) || (isset($item['avail']) && !$item['avail'])) {
+                continue;
+            }
+            if (!isset($item['from']) || !isset($item['to']) || !is_string($item['from']) || !is_string($item['to'])) {
                 $buildMessage('Неверный формат перерыва в расписании (элемент: ' . $k . ')');
                 return;
             }
@@ -538,6 +533,18 @@ class RoomEntity implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
+        // формирование расписания
+        $schedule = $this->getSchedule();
+        if (count($schedule) < 7) {
+            while(count($schedule) < 7) {
+                $schedule[] = [
+                    'avail' => true,
+                    'from' => '00:00',
+                    'to' => '24:00'
+                ];
+            }
+        }
+
         return [
             'id' => $this->getId(),
             'type' => $this->getType(),

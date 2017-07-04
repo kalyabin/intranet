@@ -40,21 +40,13 @@ export interface RoomInterface {
     /**
      * Еженеделеньое расписание работы помещения
      */
-    schedule: Array<{
-        /**
-         * Порядковый день недели (1-7)
-         */
-        weekday: number,
-        /**
-         * Отрезки времени в формате HH:mm
-         */
-        schedule: Array<{from: string, to: string}>
-    }>;
+    schedule: Array<Array<{avail?: boolean, from: string, to: string}>>;
 
     /**
      * Ежедневные перерывы в работе помещения в формате HH:mm
      */
     scheduleBreak: Array<{
+        avail?: boolean,
         from: string,
         to: string
     }>;

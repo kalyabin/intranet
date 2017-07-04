@@ -1,0 +1,98 @@
+<div class="x_panel">
+    <div class="x_title">
+        <h2 v-if="!inputRoom">Новое помещение</h2>
+        <h2 v-if="inputRoom">Редактирование помещения</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <form @submit.prevent="submit">
+            <loader :visible="awaitOfSubmit"></loader>
+            <div class="alert alert-danger" v-if="errorMessage">{{errorMessage}}</div>
+            <tabs>
+                <tab-pane label="Описание" :has-error="hasCommonError">
+                    <div class="form-group" :class="{'has-error': errors.has('type')}">
+                        <label class="control-label">Тип помещения</label>
+                        <select class="form-control" name="type" v-model="room.type" v-validate="'required'">
+                            <option value="meeting">Переговорка</option>
+                            <option value="conference">Конференц-зал</option>
+                        </select>
+                        <p class="help-block" v-if="errors.has('type')">
+                            {{errors.first('type')}}
+                        </p>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('title')}">
+                        <label class="control-label">Заголовок</label>
+                        <input class="form-control" v-model="room.title" v-validate="'required|max:100'" name="title" />
+                        <p class="help-block" v-if="errors.has('title')">
+                            {{errors.first('title')}}
+                        </p>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('hourlyCost')}">
+                        <label class="control-label">Стоимость аренды в час</label>
+                        <input class="form-control" v-model="room.hourlyCost" v-validate="'required|numeric|min_value:1'" name="hourlyCost" />
+                        <p class="help-block" v-if="errors.has('hourlyCost')">
+                            {{errors.first('hourlyCost')}}
+                        </p>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('description')}">
+                        <label class="control-label">Описание</label>
+                        <textarea rows="5" class="form-control" v-model="room.description" v-validate="'max:1000'" name="description"></textarea>
+                        <p class="help-block" v-if="errors.has('description')">
+                            {{errors.first('description')}}
+                        </p>
+                    </div>
+                    <div class="form-group" :class="{'has-error': errors.has('address')}">
+                        <label class="control-label">Месторасположение</label>
+                        <textarea rows="2" class="form-control" v-model="room.address" v-validate="'max:255'" name="address"></textarea>
+                        <p class="help-block" v-if="errors.has('address')">
+                            {{errors.first('address')}}
+                        </p>
+                    </div>
+                </tab-pane>
+                <tab-pane label="Режим работы" :has-error="hasScheduleError">
+                    <table class="table" v-if="room.schedule.length > 0">
+                        <thead>
+                        <tr>
+                            <th>День недели</th>
+                            <th></th>
+                            <th>Диапазон в формате ЧЧ:ММ</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item, index) in room.schedule" class="form-group" :class="{'has-error': hasScheduleItemError(index)}">
+                            <td><label class="control-label">{{getWeekDay(index)}}</label></td>
+                            <td><input v-model="item[0].avail" :name="'scheduleAvail' + index" type="checkbox" /></td>
+                            <td>
+                                <template v-if="item[0].avail">
+                                    <input type="text" class="form-control" v-model="item[0].from" style="display: inline; width: 70px;" maxlength="5" v-validate="'required'" :name="'scheduleFrom' + index" />
+                                    &mdash;
+                                    <input type="text" class="form-control" v-model="item[0].to" style="display: inline; width: 70px;" maxlength="5" v-validate="'required'" :name="'scheduleTo' + index" />
+                                </template>
+                            </td>
+                        </tr>
+                        <tr class="form-group" :class="{'has-error': errors.has('scheduleBreakFrom') || errors.has('scheduleBreakTo')}" v-if="room.scheduleBreak.length">
+                            <td>
+                               <label class="control-label">Перерыв</label>
+                            </td>
+                            <td>
+                                <input v-model="room.scheduleBreak[0].avail" name="scheduleBreakAvail" type="checkbox" />
+                            </td>
+                            <td>
+                                <template v-if="room.scheduleBreak[0].avail">
+                                    <input type="text" v-model="room.scheduleBreak[0].from" v-validate="'required'" name="scheduleBreakFrom" class="form-control" style="display: inline; width: 70px;" maxlength="5" />
+                                    &mdash;
+                                    <input type="text" v-model="room.scheduleBreak[0].to" v-validate="'required'" name="scheduleBreakTo" class="form-control" style="display: inline; width: 70px;" maxlength="5" />
+                                </template>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </tab-pane>
+            </tabs>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-default" @click.prevent="cancel">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>

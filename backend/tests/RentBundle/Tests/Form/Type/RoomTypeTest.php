@@ -63,13 +63,8 @@ class RoomTypeTest extends FormWebTestCase
                     'hourlyCost' => 100.5,
                     'schedule' => [
                         [
-                            'weekday' => -1,
-                            'schedule' => [
-                                [
-                                    'from' => '09:00',
-                                    'to' => '18:00'
-                                ]
-                            ]
+                            'wrong_date' => '09:00',
+                            'wrong_date_2' => '18:00',
                         ]
                     ],
                     'scheduleBreak' => [
@@ -91,12 +86,9 @@ class RoomTypeTest extends FormWebTestCase
                     'hourlyCost' => 500,
                     'schedule' => [
                         [
-                            'weekday' => 8,
-                            'schedule' => [
-                                [
-                                    'from' => '09:00',
-                                    'to' => '18:00'
-                                ]
+                            [
+                                'from' => '09:00',
+                                'to' => '18:00'
                             ]
                         ]
                     ],
@@ -109,7 +101,7 @@ class RoomTypeTest extends FormWebTestCase
                     'holidays' => ['2017-01-01'],
                 ],
                 'errorKeys' => [
-                    'schedule', 'scheduleBreak',
+                    'scheduleBreak',
                 ],
             ],
             [
@@ -120,12 +112,9 @@ class RoomTypeTest extends FormWebTestCase
                     'hourlyCost' => 500,
                     'schedule' => [
                         [
-                            'weekday' => 5,
-                            'schedule' => [
-                                [
-                                    'from' => 'wrong format',
-                                    'to' => 'wrong format'
-                                ]
+                            [
+                                'from' => 'wrong format',
+                                'to' => 'wrong format'
                             ]
                         ]
                     ],
@@ -149,12 +138,9 @@ class RoomTypeTest extends FormWebTestCase
                     'hourlyCost' => 500,
                     'schedule' => [
                         [
-                            'weekday' => 5,
-                            'schedule' => [
-                                [
-                                    'from' => '18:00',
-                                    'to' => '09:00'
-                                ]
+                            [
+                                'from' => '18:00',
+                                'to' => '09:00'
                             ]
                         ]
                     ],
@@ -192,21 +178,15 @@ class RoomTypeTest extends FormWebTestCase
                     'hourlyCost' => 100500,
                     'schedule' => [
                         [
-                            'weekday' => 1,
-                            'schedule' => [
-                                [
-                                    'from' => '09:00',
-                                    'to' => '19:00'
-                                ]
+                            [
+                                'from' => '09:00',
+                                'to' => '19:00'
                             ]
                         ],
                         [
-                            'weekday' => 2,
-                            'schedule' => [
-                                [
-                                    'from' => '10:00',
-                                    'to' => '20:00'
-                                ]
+                            [
+                                'from' => '10:00',
+                                'to' => '20:00'
                             ]
                         ]
                     ],
