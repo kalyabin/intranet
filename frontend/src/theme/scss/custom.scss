@@ -4907,3 +4907,54 @@ ul.notifications {
   border: 1px solid #e5e5e5;
 }
 /** /Dropzone.js **/
+
+.date-pick-table {
+  width: auto;
+  background-color: #ffffff;
+
+  .date-pick-table-toggle-month {
+    font-weight: bold;
+    font-size: 20px;
+    color: #5a738e;
+    cursor: pointer;
+    padding: 10px 20px;
+    text-align: center;
+
+    &:hover, &:hover a {
+      background-color: #5a738e;
+      color: #ffffff;
+    }
+  }
+
+  .date-pick-table-weekday {
+    text-align: center;
+  }
+
+  .date-pick-table-day {
+    padding: 10px 20px;
+    font-size: 14px;
+    text-align: center;
+    color: #5a738e;
+    cursor: pointer;
+
+    &:hover, &:hover a {
+      background-color: #86a0bc;
+      color: #ffffff;
+    }
+
+    &.marked, &.marked a {
+      background-color: #5a738e;
+      color: #ffffff;
+    }
+
+    &.other {
+      color: #d7d7d7;
+    }
+  }
+
+  .date-pick-table-month {
+    font-size: 16px;
+    text-align: center;
+    vertical-align: middle;
+  }
+}

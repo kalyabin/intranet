@@ -21,6 +21,7 @@ import {CustomScrollbarDirective} from "./app/directive/custom-scrollbar.directi
 import {FlashNotificationInterface, notificationStore} from "./app/store/notification.store";
 import {FlashNotifications} from "./app/components/user-notification/flash-notifications";
 import {ManagerIncomingCallWindow} from "./app/components/user-notification/manager-incoming-call-window";
+import {PickMeUp} from "./app/components/pick-me-up";
 
 /**
  * Точка входа приложения
@@ -45,6 +46,7 @@ Vue.component('dropdown', Dropdown);
 Vue.component('notification-message', UserNotificationMessage);
 Vue.component('flash-notifications', FlashNotifications);
 Vue.component('manager-incoming-call-window', ManagerIncomingCallWindow);
+Vue.component('pick-me-up', PickMeUp);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
