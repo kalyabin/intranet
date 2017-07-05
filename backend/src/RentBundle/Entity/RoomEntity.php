@@ -131,6 +131,18 @@ class RoomEntity implements \JsonSerializable
     protected $holidays;
 
     /**
+     * @ORM\Column(type="json_array", name="work_weekends", nullable=true)
+     *
+     * @Assert\Type(type="array")
+     *
+     * Рабочие выходные дни
+     * Каждый день указывается в формате Y-m-d.
+     *
+     * @var array
+     */
+    protected $workWeekends;
+
+    /**
      * @ORM\Column(type="integer", name="request_pause", nullable=true)
      *
      * @Assert\Type(type="integer")
@@ -343,6 +355,29 @@ class RoomEntity implements \JsonSerializable
     }
 
     /**
+     * Get working weekends
+     *
+     * @return array
+     */
+    public function getWorkWeekends(): ?array
+    {
+        return $this->workWeekends;
+    }
+
+    /**
+     * Set working weekends
+     *
+     * @param array $workWeekends
+     *
+     * @return RoomEntity
+     */
+    public function setWorkWeekends(?array $workWeekends): self
+    {
+        $this->workWeekends = $workWeekends;
+        return $this;
+    }
+
+    /**
      * Set requestPause
      *
      * @param integer $requestPause
@@ -527,6 +562,47 @@ class RoomEntity implements \JsonSerializable
     }
 
     /**
+     * Валидация рабочих выходных дней
+     *
+     * @Assert\Callback()
+     *
+     * @param ExecutionContextInterface $context
+     * @param mixed $payload
+     */
+    public function validateWorkWeekends(ExecutionContextInterface $context, $payload)
+    {
+        $workWeekends = $this->getWorkWeekends();
+
+        if (empty($workWeekends)) {
+            return;
+        }
+
+        $buildMessage = function(string $message) use ($context) {
+            $context->buildViolation($message)
+                ->atPath('holidays')
+                ->addViolation();
+        };
+
+        if (!is_array($workWeekends)) {
+            $buildMessage('Неверный формат перенесённых выходных');
+            return;
+        }
+
+        foreach ($workWeekends as $item) {
+            if (!is_string($item)) {
+                $buildMessage('Неверный формат даты');
+                return;
+            }
+
+            $date = \DateTime::createFromFormat('Y-m-d', $item);
+            if (!($date instanceof \DateTime)) {
+                $buildMessage('Неверный формат даты: ' . $item);
+                return;
+            }
+        }
+    }
+
+    /**
      * Сериализация объекта в JSON
      *
      * @return array
@@ -555,6 +631,7 @@ class RoomEntity implements \JsonSerializable
             'schedule' => $this->getSchedule() ?: [],
             'scheduleBreak' => $this->getScheduleBreak() ?: [],
             'holidays' => $this->getHolidays() ?: [],
+            'workWeekends' => $this->getWorkWeekends() ?: [],
             'requestPause' => $this->getRequestPause(),
         ];
     }

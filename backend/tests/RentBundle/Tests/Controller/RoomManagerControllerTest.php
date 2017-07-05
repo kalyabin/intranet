@@ -124,6 +124,7 @@ class RoomManagerControllerTest extends WebTestCase
                 'schedule' => [],
                 'scheduleBreak' => null,
                 'holidays' => [],
+                'workWeekends' => [],
                 'requestPause' => null,
             ],
             'success' => true,
@@ -203,6 +204,7 @@ class RoomManagerControllerTest extends WebTestCase
             ]
         ];
         $holidays = ['2017-09-01', '2017-03-08'];
+        $workWeekends = ['2017-05-01', '2017-05-09'];
         $requestPause = 30;
 
         $result = $this->assertAccessToAction($url, 'POST', [
@@ -225,6 +227,7 @@ class RoomManagerControllerTest extends WebTestCase
                 'schedule' => $schedule,
                 'scheduleBreak' => $scheduleBreaks,
                 'holidays' => $holidays,
+                'workWeekends' => $workWeekends,
                 'requestPause' => $requestPause
             ]
         ]);
@@ -238,6 +241,7 @@ class RoomManagerControllerTest extends WebTestCase
             ->setSchedule($schedule)
             ->setScheduleBreak($scheduleBreaks)
             ->setHolidays($holidays)
+            ->setWorkWeekends($workWeekends)
             ->setRequestPause($requestPause);
 
         $this->assertArraySubset([

@@ -76,6 +76,44 @@ export class ManagerRoomForm extends Vue {
         }, () => {});
     }
 
+    /**
+     * Добавить праздник
+     */
+    addHoliday(date: string): void {
+        if (this.room.holidays.indexOf(date) === -1) {
+            this.room.holidays.push(date);
+        }
+    }
+
+    /**
+     * Удалить праздник
+     */
+    removeHoliday(date: string): void {
+        let index = this.room.holidays.indexOf(date);
+        if (index != -1) {
+            this.room.holidays.splice(index, 1);
+        }
+    }
+
+    /**
+     * Добавить перенесённый выходной
+     */
+    addWorkWeekend(date: string): void {
+        if (this.room.workWeekends.indexOf(date) === -1) {
+            this.room.workWeekends.push(date);
+        }
+    }
+
+    /**
+     * Удалить перенесённый выходной
+     */
+    removeWorkWeekend(date: string): void {
+        let index = this.room.workWeekends.indexOf(date);
+        if (index != -1) {
+            this.room.workWeekends.splice(index, 1);
+        }
+    }
+
     @Watch('inputRoom', {
         immediate: true
     })
@@ -89,6 +127,7 @@ export class ManagerRoomForm extends Vue {
             schedule: [],
             scheduleBreak: [],
             holidays: [],
+            workWeekends: [],
             requestPause: null
         };
         if (this.room.schedule.length < 7) {

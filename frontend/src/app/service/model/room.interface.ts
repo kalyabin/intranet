@@ -57,6 +57,11 @@ export interface RoomInterface {
     holidays: string[];
 
     /**
+     * Перенесённые праздничные дни в формате Y-m-d
+     */
+    workWeekends: string[];
+
+    /**
      * Перерыв между заявками в минутах
      */
     requestPause: number;

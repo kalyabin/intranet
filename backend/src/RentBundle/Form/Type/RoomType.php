@@ -45,6 +45,9 @@ class RoomType extends AbstractType
             ->add('holidays', TextType::class, [
                 'label' => 'Праздничные дни'
             ])
+            ->add('workWeekends', TextType::class, [
+                'label' => 'Рабочие выходные'
+            ])
             ->add('requestPause', TextType::class, [
                 'label' => 'Перерыв между бронированиями'
             ]);

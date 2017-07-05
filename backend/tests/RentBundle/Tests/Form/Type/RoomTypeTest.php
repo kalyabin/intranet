@@ -50,9 +50,10 @@ class RoomTypeTest extends FormWebTestCase
                     'schedule' => ['wrong schedule'],
                     'scheduleBreak' => ['wrong schedule break'],
                     'holidays' => ['wrong holiday item'],
+                    'workWeekends' => ['wrong date item'],
                 ],
                 'errorKeys' => [
-                    'schedule', 'scheduleBreak', 'holidays',
+                    'schedule', 'scheduleBreak', 'holidays', 'workWeekends',
                 ],
             ],
             [
@@ -73,6 +74,7 @@ class RoomTypeTest extends FormWebTestCase
                         ]
                     ],
                     'holidays' => ['01.01.2017'],
+                    'workWeekends' => ['01.05.2017'],
                 ],
                 'errorKeys' => [
                     'schedule', 'scheduleBreak', 'holidays',
@@ -99,6 +101,7 @@ class RoomTypeTest extends FormWebTestCase
                         ]
                     ],
                     'holidays' => ['2017-01-01'],
+                    'workWeekends' => ['2017-05-01'],
                 ],
                 'errorKeys' => [
                     'scheduleBreak',
@@ -125,6 +128,7 @@ class RoomTypeTest extends FormWebTestCase
                         ]
                     ],
                     'holidays' => ['2017-01-01'],
+                    'workWeekends' => ['2017-05-01'],
                 ],
                 'errorKeys' => [
                     'schedule',
@@ -201,6 +205,7 @@ class RoomTypeTest extends FormWebTestCase
                         ]
                     ],
                     'holidays' => ['2017-01-01', '2017-01-13'],
+                    'workWeekends' => ['2017-05-01', '2017-05-09'],
                     'requestPause' => 20
                 ]
             ]

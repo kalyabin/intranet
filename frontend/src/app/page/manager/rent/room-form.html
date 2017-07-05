@@ -88,6 +88,14 @@
                         </tbody>
                     </table>
                 </tab-pane>
+                <tab-pane label="Праздничные дни" :has-error="errors.has('holidays')">
+                    <p>Выберите рабочие дни, в которые помещение не будет работать.</p>
+                    <calendar-chooser :mark-days="room.holidays" @mark-day="addHoliday" @unmark-day="removeHoliday"></calendar-chooser>
+                </tab-pane>
+                <tab-pane label="Перенесённые выходные" :has-error="errors.has('workWeekends')">
+                    <p>Выберите выходные дни, в которые помещение будет работать.</p>
+                    <calendar-chooser :mark-days="room.workWeekends" @mark-day="addWorkWeekend" @unmark-day="removeWorkWeekend"></calendar-chooser>
+                </tab-pane>
             </tabs>
             <div class="col-md-12">
                 <button type="submit" class="btn btn-primary">Сохранить</button>

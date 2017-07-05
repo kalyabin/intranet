@@ -4952,6 +4952,26 @@ ul.notifications {
     }
   }
 
+  .date-pick-table-selected {
+    padding: 0px;
+    vertical-align: top;
+    .dates-wrapper {
+      padding: 0px 0px 0px 10px;
+
+      .item {
+        margin: 10px 0px 10px 0px;
+        .remove, .remove:hover, .remove:visited, .remove:active {
+          color: #FF0000;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .date-pick-weekend {
+    color: rgba(231, 76, 60, 0.88);
+  }
+
   .date-pick-table-month {
     font-size: 16px;
     text-align: center;

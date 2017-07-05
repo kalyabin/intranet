@@ -11,7 +11,7 @@ use RentBundle\Entity\RoomEntity;
  *
  * @package RentBundle\Tests
  */
-class RoomBundleTest extends WebTestCase
+class RoomEntityTest extends WebTestCase
 {
     /**
      * @var EntityManagerInterface
@@ -36,6 +36,7 @@ class RoomBundleTest extends WebTestCase
      * @covers RoomEntity::getRequestPause()
      * @covers RoomEntity::getSchedule()
      * @covers RoomEntity::getScheduleBreak()
+     * @covers RoomEntity::getWorkWeekends()
      *
      * @covers RoomEntity::setTitle()
      * @covers RoomEntity::setDescription()
@@ -46,6 +47,7 @@ class RoomBundleTest extends WebTestCase
      * @covers RoomEntity::setRequestPause()
      * @covers RoomEntity::setSchedule()
      * @covers RoomEntity::setScheduleBreak()
+     * @covers RoomEntity::setWorkWeekends()
      */
     public function testMe()
     {
@@ -54,6 +56,7 @@ class RoomBundleTest extends WebTestCase
         $type = RoomEntity::TYPE_MEETING;
         $address = 'testing address';
         $holidays = ['2017-01-01', '2017-01-02', '2017-01-03'];
+        $workingWeekends = ['2017-05-01', '2017-05-09'];
         $hourlyCost = 2000;
         $requestPause = 15;
         $schedule = [
@@ -93,6 +96,7 @@ class RoomBundleTest extends WebTestCase
         $this->assertNull($entity->getRequestPause());
         $this->assertNull($entity->getSchedule());
         $this->assertNull($entity->getScheduleBreak());
+        $this->assertNull($entity->getWorkWeekends());
 
         $entity
             ->setTitle($title)
@@ -103,7 +107,8 @@ class RoomBundleTest extends WebTestCase
             ->setHourlyCost($hourlyCost)
             ->setRequestPause($requestPause)
             ->setSchedule($schedule)
-            ->setScheduleBreak($scheduleBreak);
+            ->setScheduleBreak($scheduleBreak)
+            ->setWorkWeekends($workingWeekends);
 
         $this->assertEquals($title, $entity->getTitle());
         $this->assertEquals($description, $entity->getDescription());
@@ -114,6 +119,7 @@ class RoomBundleTest extends WebTestCase
         $this->assertEquals($requestPause, $entity->getRequestPause());
         $this->assertArraySubset($schedule, $entity->getSchedule());
         $this->assertArraySubset($scheduleBreak, $entity->getScheduleBreak());
+        $this->assertArraySubset($workingWeekends, $entity->getWorkWeekends());
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();

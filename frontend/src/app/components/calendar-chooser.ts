@@ -1,16 +1,23 @@
 import Vue from "vue";
 import Component from "vue-class-component";
-import {Model, Prop} from "vue-property-decorator";
+import {Model, Prop, Watch} from "vue-property-decorator";
 import * as moment from "moment";
 
 /**
  * Датапикер с возможностью выбора нескольких дат
  */
 @Component({
-    template: require('./pick-me-up.html')
+    template: require('./calendar-chooser.html')
 })
-export class PickMeUp extends Vue {
+export class CalendarChooser extends Vue {
     @Prop(Array) markDays: string[];
+
+    /**
+     * Формат для вывода даты
+     */
+    @Prop(String) dateFormat: string;
+
+    @Model() markedFormat: string = this.dateFormat ? this.dateFormat : 'DD.MM.YYYY';
 
     /**
      * Помеченные дни
@@ -73,6 +80,11 @@ export class PickMeUp extends Vue {
         ];
     }
 
+    @Watch('markDays')
+    onChangeMarkDays(days: string[]): void {
+        this.marked = days;
+    }
+
     /**
      * Возвращает true, если день был помечен
      */
@@ -86,23 +98,38 @@ export class PickMeUp extends Vue {
     clickDay(day: moment.Moment): void {
         let dayIndex: string = day.format('YYYY-MM-DD');
         if (this.marked.indexOf(dayIndex) != -1) {
-            this.unmarkDay(day);
-            this.$emit('unmark-day', day);
+            this.unmarkDay(dayIndex);
+
         } else {
-            this.marked.push(dayIndex);
-            this.$emit('mark-day', day);
+            this.markDay(dayIndex);
         }
     }
 
     /**
-     * Снять пометку с дня.
-     * Нужен как отдельный метод для доступа из внешнего компонента
+     * Получить отформатированную дату
      */
-    unmarkDay(day: moment.Moment): void {
-        let dayIndex = day.format('YYYY-MM-DD');
+    getDateFormatted(date: string | moment.Moment): string {
+        return moment(date).format(this.markedFormat);
+    }
+
+    /**
+     * Снять пометку с дня
+     */
+    unmarkDay(dayIndex: string): void {
         let index = this.marked.indexOf(dayIndex);
         if (index !== -1) {
             this.marked.splice(index, 1);
+            this.$emit('unmark-day', dayIndex);
+        }
+    }
+
+    /**
+     * Пометить день
+     */
+    markDay(dayIndex: string): void {
+        if (this.marked.indexOf(dayIndex) === -1) {
+            this.marked.push(dayIndex);
+            this.$emit('mark-day', dayIndex);
         }
     }
 
@@ -116,7 +143,7 @@ export class PickMeUp extends Vue {
             this.currentMonth = 0;
             this.currentYear = this.currentYear + 1;
         } else if (month < 0) {
-            this.currentMonth = 12;
+            this.currentMonth = 11;
             this.currentYear = this.currentYear - 1;
         } else {
             this.currentMonth = month;
