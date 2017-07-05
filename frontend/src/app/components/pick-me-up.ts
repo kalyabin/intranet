@@ -15,12 +15,7 @@ export class PickMeUp extends Vue {
     /**
      * Помеченные дни
      */
-    @Model() marked: string[] = this.markDays ? this.markDays : [
-        '20170701',
-        '20170702',
-        '20170703',
-        '20170704',
-    ];
+    @Model() marked: string[] = this.markDays ? this.markDays : [];
 
     /**
      * Сегодняшний день
@@ -82,21 +77,32 @@ export class PickMeUp extends Vue {
      * Возвращает true, если день был помечен
      */
     dayIsMarked(day: moment.Moment): boolean {
-        return this.marked.indexOf(day.format('YYYYMMDD')) !== -1
+        return this.marked.indexOf(day.format('YYYY-MM-DD')) !== -1
     }
 
     /**
      * Клик по дню
      */
     clickDay(day: moment.Moment): void {
-        let dayIndex: string = day.format('YYYYMMDD');
+        let dayIndex: string = day.format('YYYY-MM-DD');
         if (this.marked.indexOf(dayIndex) != -1) {
-            let index = this.marked.indexOf(dayIndex);
-            this.marked.splice(index, 1);
+            this.unmarkDay(day);
             this.$emit('unmark-day', day);
         } else {
             this.marked.push(dayIndex);
             this.$emit('mark-day', day);
+        }
+    }
+
+    /**
+     * Снять пометку с дня.
+     * Нужен как отдельный метод для доступа из внешнего компонента
+     */
+    unmarkDay(day: moment.Moment): void {
+        let dayIndex = day.format('YYYY-MM-DD');
+        let index = this.marked.indexOf(dayIndex);
+        if (index !== -1) {
+            this.marked.splice(index, 1);
         }
     }
 
