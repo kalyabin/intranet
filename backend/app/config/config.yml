@@ -46,6 +46,7 @@ twig:
         '%kernel.root_dir%/../src/TicketBundle/Resources/views/Emails': 'ticket_emails'
         '%kernel.root_dir%/Resources/views/Emails': 'app_emails'
         '%kernel.root_dir%/../src/CustomerBundle/Resources/views/Emails': 'customer_emails'
+        '%kernel.root_dir%/../src/RentBundle/Resources/views/Emails': 'rent_emails'
 
 # Doctrine Configuration
 doctrine:

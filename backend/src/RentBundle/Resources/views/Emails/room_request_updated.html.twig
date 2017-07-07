@@ -1,0 +1,12 @@
+Заявка на аренду помещения {{ room.title }} с {{ from }} по {{ to }} была изменена.<br />
+<br />
+{% if status %}
+    Статус: {{ status }}<br />
+    <br />
+{% endif %}
+{% if managerComment %}
+    Комментарий менеджера:<br />
+    <br />
+    {{ managerComment }}
+    <br />
+{% endif %}

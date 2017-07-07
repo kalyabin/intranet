@@ -1,19 +1,33 @@
 parameters:
     rent.room_manager.controller: RentBundle\Controller\RoomManagerController
     rent.room_customer.controller: RentBundle\Controller\RoomCustomerController
+    rent.request_manager: RentBundle\Utils\RoomRequestManager
+    rent.request_notification_manager: RentBundle\Utils\RoomRequestNotificationManager
 
 services:
+    # уведомления по заявкам
+    rent.request_notification_manager:
+        class: '%rent.request_notification_manager%'
+        arguments: [ '@doctrine.orm.entity_manager', '@user.roles_manager', '@event_dispatcher' ]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # менеджер заявок
+    rent.request_manager:
+        class: '%rent.request_manager%'
+        arguments: [ '@doctrine.orm.entity_manager', '@event_dispatcher' ]
+
     # контроллер управления помещениями
     rent.room_manager.controller:
         class: '%rent.room_manager.controller%'
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        arguments: [ '@doctrine.orm.entity_manager', '@rent.request_manager' ]
         calls:
             - [ setContainer, [ '@service_container' ] ]
 
     # контролле просмотра и заявок в помещениях для арендатора
     rent.room_customer.controller:
         class: '%rent.room_customer.controller%'
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        arguments: [ '@rent.request_manager' ]
         calls:
             - [ setContainer, [ '@service_container' ] ]
 

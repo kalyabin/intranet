@@ -275,8 +275,10 @@ class RoomCustomerControllerTest extends WebTestCase
             'superadmin-user',
         ]);
 
+        $expectedRequest->setStatus(RoomRequestEntity::STATUS_CANCELED);
+
         $this->assertArraySubset([
-            'id' => $expectedRequest->getId(),
+            'request' => json_decode(json_encode($expectedRequest), true),
             'success' => true
         ], $result);
     }

@@ -179,6 +179,34 @@ class RoomRequestEntity implements \JsonSerializable
     }
 
     /**
+     * Получить текст статуса
+     *
+     * @return null|string
+     */
+    public function getStatusName(): ?string
+    {
+        switch ($this->status) {
+            case self::STATUS_DECLINED:
+                return 'Отказана';
+                break;
+
+            case self::STATUS_CANCELED:
+                return 'Отменена';
+                break;
+
+            case self::STATUS_PENDING:
+                return 'Ожидает подтверждения';
+                break;
+
+            case self::STATUS_APPROVED:
+                return 'Подтверждена';
+                break;
+        }
+
+        return null;
+    }
+
+    /**
      * Set from
      *
      * @param \DateTime $from

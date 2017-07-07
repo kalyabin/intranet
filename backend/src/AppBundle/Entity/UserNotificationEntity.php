@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Entity\ServiceEntity;
 use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -59,6 +60,21 @@ class UserNotificationEntity implements \JsonSerializable
     const TYPE_SERVICE_DEACTIVATED = 'service_deactivated';
 
     /**
+     * Создание заявки на бронирование комнаты
+     */
+    const TYPE_ROOM_REQUEST_CREATED = 'room_request_created';
+
+    /**
+     * Отменена заявка на бронирование комнаты со стороны пользователя
+     */
+    const TYPE_ROOM_REQUEST_CANCELLED = 'room_request_cancelled';
+
+    /**
+     * Изменена заявка на бронирование комнаты со стороны менеджера
+     */
+    const TYPE_ROOM_REQUEST_UPDATED = 'room_request_updated';
+
+    /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="bigint")
@@ -75,7 +91,7 @@ class UserNotificationEntity implements \JsonSerializable
     protected $createdAt;
 
     /**
-     * @ORM\Column(name="`type`", type="string", length=20, nullable=false)
+     * @ORM\Column(name="`type`", type="string", length=50, nullable=false)
      *
      * @var string Тип уведомления
      */
@@ -157,6 +173,21 @@ class UserNotificationEntity implements \JsonSerializable
      * @var ServiceTariffEntity Привязка к тарифу активированной услуги
      */
     protected $tariff;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CustomerBundle\Entity\CustomerEntity")
+     * @ORM\JoinColumn(name="customer", referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     *
+     * @var CustomerEntity Привязка к контрагенту
+     */
+    protected $customer;
+
+    /**
+     * @ORM\Column(name="`from`", type="datetime", nullable=true)
+     *
+     * @var \DateTime Время начала (например, время начала аренды для заявки аренды помещений)
+     */
+    protected $from;
 
     /**
      * Get id
@@ -436,6 +467,44 @@ class UserNotificationEntity implements \JsonSerializable
     }
 
     /**
+     * @return CustomerEntity
+     */
+    public function getCustomer(): ?CustomerEntity
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @param CustomerEntity $customer
+     *
+     * @return UserNotificationEntity
+     */
+    public function setCustomer(CustomerEntity $customer): self
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getFrom(): ?\DateTime
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param \DateTime $from
+     *
+     * @return UserNotificationEntity
+     */
+    public function setFrom(\DateTime $from): self
+    {
+        $this->from = $from;
+        return $this;
+    }
+
+    /**
      * Сериализация данных для JSON
      *
      * @return array
@@ -445,6 +514,7 @@ class UserNotificationEntity implements \JsonSerializable
         return [
             'id' => $this->id,
             'createdAt' => $this->createdAt ? $this->createdAt->format('Y-m-d H:i:s') : null,
+            'from' => $this->from ? $this->from->format('Y-m-d H:i') : null,
             'type' => $this->type,
             'isRead' => $this->isRead,
             'author' => $this->author,
@@ -453,6 +523,7 @@ class UserNotificationEntity implements \JsonSerializable
             'ticketManager' => $this->ticketManager,
             'service' => $this->service,
             'tariff' => $this->tariff,
+            'customer' => $this->customer,
             'callerId' => $this->callerId,
             'comment' => $this->comment,
         ];

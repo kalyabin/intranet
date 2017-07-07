@@ -11,12 +11,14 @@ use RentBundle\Entity\RoomEntity;
 use RentBundle\Entity\RoomRequestEntity;
 use RentBundle\Form\Type\RoomRequestManagerType;
 use RentBundle\Form\Type\RoomType;
+use RentBundle\Utils\RoomRequestManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use UserBundle\Entity\UserEntity;
 
 /**
  * Контроллер для управления помещениями: заведение новых помещений, удаление и календарь
@@ -43,8 +45,14 @@ class RoomManagerController extends Controller
      */
     protected $requestRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @var RoomRequestManager
+     */
+    protected $requestManager;
+
+    public function __construct(EntityManagerInterface $entityManager, RoomRequestManager $requestManager)
     {
+        $this->requestManager = $requestManager;
         $this->entityManager = $entityManager;
         $this->roomRepository = $entityManager->getRepository(RoomEntity::class);
         $this->requestRepository = $entityManager->getRepository(RoomRequestEntity::class);
@@ -236,8 +244,9 @@ class RoomManagerController extends Controller
 
         $success = false;
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
+            /** @var UserEntity $user */
+            $user = $this->getUser();
+            $this->requestManager->updateRequestByManager($entity, $user);
             $success = true;
         }
 

@@ -11,6 +11,7 @@ use RentBundle\Entity\Repository\RoomRequestRepository;
 use RentBundle\Entity\RoomEntity;
 use RentBundle\Entity\RoomRequestEntity;
 use RentBundle\Form\Type\RoomRequestType;
+use RentBundle\Utils\RoomRequestManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -40,15 +41,15 @@ class RoomCustomerController extends Controller
     protected $roomRequestRepository;
 
     /**
-     * @var EntityManagerInterface
+     * @var RoomRequestManager
      */
-    protected $entityManager;
+    protected $requestManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(RoomRequestManager $requestManager)
     {
-        $this->roomRepository = $entityManager->getRepository(RoomEntity::class);
-        $this->roomRequestRepository = $entityManager->getRepository(RoomRequestEntity::class);
-        $this->entityManager = $entityManager;
+        $this->requestManager = $requestManager;
+        $this->roomRepository = $requestManager->getEntityManager()->getRepository(RoomEntity::class);
+        $this->roomRequestRepository = $requestManager->getEntityManager()->getRepository(RoomRequestEntity::class);
     }
 
     /**
@@ -176,10 +177,7 @@ class RoomCustomerController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entity->setCreatedAt(new \DateTime());
-            $entity->setStatus(RoomRequestEntity::STATUS_PENDING);
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
+            $this->requestManager->createRequest($entity, $user);
         }
 
         $response = new FormValidationJsonResponse();
@@ -213,12 +211,10 @@ class RoomCustomerController extends Controller
             throw $this->createNotFoundException('Заявка не найдена');
         }
 
-        $entity->setStatus(RoomRequestEntity::STATUS_CANCELED);
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        $this->requestManager->cancelRequest($entity, $user);
 
         return new JsonResponse([
-            'id' => $id,
+            'request' => $entity,
             'success' => true,
         ]);
     }
