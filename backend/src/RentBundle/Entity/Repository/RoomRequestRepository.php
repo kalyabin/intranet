@@ -15,6 +15,29 @@ use RentBundle\Entity\RoomRequestEntity;
 class RoomRequestRepository extends EntityRepository
 {
     /**
+     * Получить все актуальне заявки для всех помещений.
+     * Актуальными считаются заявки, которые будут в будущем или не старше 2-х месяцев.
+     *
+     * @return RoomRequestEntity[]
+     */
+    public function findAllActual(): array
+    {
+        // выводить заявки не старше 2-х месяцев
+        // старше скорее всего не актуальны и никого не интересуют
+        $dateFrom = new \DateTime();
+        $dateFrom->sub(new \DateInterval('P2M'));
+        $dateFrom->setTime(0, 0, 0);
+
+        return $this->createQueryBuilder('r')
+            ->where('r.from >= :from')
+            ->setParameters([
+                'from' => $dateFrom
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Получить актуальный список заявок для помещения.
      * Актуальным считается список заявок, которые будут в будущем и не старше 2-х месяцев.
      *
@@ -82,6 +105,24 @@ class RoomRequestRepository extends EntityRepository
             ->setParameters([
                 'id' => $id,
                 'customer' => $customer,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Получить заявку по идентификатору
+     *
+     * @param int $id
+     *
+     * @return null|RoomRequestEntity
+     */
+    public function findOneById(int $id): ?RoomRequestEntity
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.id = :id')
+            ->setParameters([
+                'id' => $id
             ])
             ->getQuery()
             ->getOneOrNullResult();

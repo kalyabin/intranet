@@ -9,6 +9,7 @@ use RentBundle\Entity\Repository\RoomRepository;
 use RentBundle\Entity\Repository\RoomRequestRepository;
 use RentBundle\Entity\RoomEntity;
 use RentBundle\Entity\RoomRequestEntity;
+use RentBundle\Form\Type\RoomRequestManagerType;
 use RentBundle\Form\Type\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -195,5 +196,57 @@ class RoomManagerController extends Controller
             'id' => $id,
             'success' => true,
         ]);
+    }
+
+    /**
+     * Просмотреть список всех актуальных заявок
+     *
+     * @Method({"GET"})
+     * @Route("/manager/room/request", name="room.manager.request_list", options={"expose": true})
+     *
+     * @return ListJsonResponse
+     */
+    public function actualRequestListAction(): ListJsonResponse
+    {
+        $list = $this->requestRepository->findAllActual();
+
+        return new ListJsonResponse($list, count($list), 0, count($list));
+    }
+
+    /**
+     * Форма редактирования заявки (отказ или подтверждение)
+     *
+     * @Method({"POST"})
+     * @Route("/manager/room/request/{id}", name="room.manager.request_update", options={"expose": true})
+     *
+     * @param int $id
+     * @param Request $request
+     *
+     * @return FormValidationJsonResponse
+     */
+    public function updateRequestAction(int $id, Request $request): FormValidationJsonResponse
+    {
+        $entity = $this->requestRepository->findOneById($id);
+        if (!$entity instanceof RoomRequestEntity) {
+            throw $this->createNotFoundException('Заявка не найдена');
+        }
+
+        $form = $this->createForm(RoomRequestManagerType::class, $entity);
+        $form->handleRequest($request);
+
+        $success = false;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+            $success = true;
+        }
+
+        $response = new FormValidationJsonResponse();
+        $response->jsonData = [
+            'success' => $success,
+            'request' => $entity,
+        ];
+        $response->handleForm($form);
+        return $response;
     }
 }

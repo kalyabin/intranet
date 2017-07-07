@@ -49,6 +49,21 @@ class RoomRequestRepositoryTest extends WebTestCase
     }
 
     /**
+     * @covers RoomRequestRepository::findAllActual()
+     */
+    public function testFindAllActual()
+    {
+        /** @var RoomRequestEntity $expectedRequest */
+        $expectedRequest = $this->fixtures->getReference('all-customer-everyday-room-request');
+
+        $list = $this->repository->findAllActual();
+
+        $this->assertContainsOnlyInstancesOf(RoomRequestEntity::class, $list);
+        $this->assertCount(1, $list);
+        $this->assertEquals($list[0]->getId(), $expectedRequest->getId());
+    }
+
+    /**
      * @covers RoomRequestRepository::findActualByRoom()
      */
     public function testFindActualByRoom()

@@ -280,4 +280,73 @@ class RoomManagerControllerTest extends WebTestCase
             'success' => true
         ], $result);
     }
+
+    /**
+     * @covers RoomManagerController::actualRequestListAction()
+     */
+    public function testActualRequestListAction()
+    {
+        /** @var RoomRequestEntity $expectedRequest */
+        $expectedRequest = $this->fixtures->getReference('all-customer-everyday-room-request');
+
+        $url = $this->getUrl('room.manager.request_list');
+
+        $result = $this->assertAccessToAction($url, 'GET', [
+            'superadmin-user',
+        ], [
+            'none-customer-user',
+            'document-manager-user',
+            'it-manager-user',
+            'active-user',
+        ]);
+
+        $this->assertArraySubset([
+            'list' => [
+                json_decode(json_encode($expectedRequest), true),
+            ],
+            'pageSize' => 1,
+            'pageNum' => 0,
+            'totalCount' => 1,
+        ], $result);
+    }
+
+    /**
+     * @covers RoomManagerController::updateRequestAction()
+     */
+    public function testUpdateRequestAction()
+    {
+        /** @var RoomRequestEntity $expectedRequest */
+        $expectedRequest = $this->fixtures->getReference('all-customer-everyday-room-request');
+
+        $url = $this->getUrl('room.manager.request_update', [
+            'id' => $expectedRequest->getId()
+        ]);
+
+        $result = $this->assertAccessToAction($url, 'POST', [
+            'superadmin-user',
+        ], [
+            'none-customer-user',
+            'document-manager-user',
+            'it-manager-user',
+            'active-user',
+        ], null, [
+            'room_request_manager' => [
+                'status' => RoomRequestEntity::STATUS_DECLINED,
+                'managerComment' => 'testing comment',
+            ]
+        ]);
+
+        $expectedRequest
+            ->setStatus(RoomRequestEntity::STATUS_DECLINED)
+            ->setManagerComment('testing comment');
+
+        $this->assertArraySubset([
+            'success' => true,
+            'request' => json_decode(json_encode($expectedRequest), true),
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => [],
+            'firstError' => ''
+        ], $result);
+    }
 }
