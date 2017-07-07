@@ -1,5 +1,6 @@
 parameters:
     rent.room_manager.controller: RentBundle\Controller\RoomManagerController
+    rent.room_customer.controller: RentBundle\Controller\RoomCustomerController
 
 services:
     # контроллер управления помещениями
@@ -8,3 +9,11 @@ services:
         arguments: [ '@doctrine.orm.entity_manager' ]
         calls:
             - [ setContainer, [ '@service_container' ] ]
+
+    # контролле просмотра и заявок в помещениях для арендатора
+    rent.room_customer.controller:
+        class: '%rent.room_customer.controller%'
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+

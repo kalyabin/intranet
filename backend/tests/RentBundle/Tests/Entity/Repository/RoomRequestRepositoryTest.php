@@ -2,6 +2,7 @@
 
 namespace RentBundle\Tests\Entity\Repository;
 
+use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -64,5 +65,30 @@ class RoomRequestRepositoryTest extends WebTestCase
         $this->assertContainsOnlyInstancesOf(RoomRequestEntity::class, $list);
         $this->assertCount(1, $list);
         $this->assertEquals($list[0]->getId(), $expectedRequest->getId());
+    }
+
+    /**
+     * @covers RoomRequestRepository::findActualByCustomer()
+     */
+    public function testFindActualByCustomer()
+    {
+        /** @var CustomerEntity $expectedCustomer */
+        $expectedCustomer = $this->fixtures->getReference('all-customer');
+        /** @var CustomerEntity $unexpectedCustomer */
+        $unexpectedCustomer = $this->fixtures->getReference('none-customer');
+
+        $list = $this->repository->findActualByCustomer($expectedCustomer);
+
+        $this->assertContainsOnlyInstancesOf(RoomRequestEntity::class, $list);
+        $this->assertNotEmpty($list);
+        foreach ($list as $item) {
+            $this->assertInstanceOf(CustomerEntity::class, $item->getCustomer());
+            $this->assertEquals($expectedCustomer->getId(), $item->getCustomer()->getId());
+        }
+
+        // проверка для другого арендатора
+        $list = $this->repository->findActualByCUstomer($unexpectedCustomer);
+
+        $this->assertEmpty($list);
     }
 }

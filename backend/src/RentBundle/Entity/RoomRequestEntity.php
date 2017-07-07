@@ -365,13 +365,33 @@ class RoomRequestEntity implements \JsonSerializable
     }
 
     /**
+     * Возвращает true, если заявка была или будет исполнена
+     *
+     * @return bool
+     */
+    public function isOpened(): bool
+    {
+        return in_array($this->status, [self::STATUS_APPROVED, self::STATUS_PENDING]);
+    }
+
+    /**
+     * Возвращает true, если заявка была отменена или отказана
+     *
+     * @return bool
+     */
+    public function isCanceled(): bool
+    {
+        return in_array($this->status, [self::STATUS_CANCELED, self::STATUS_DECLINED]);
+    }
+
+    /**
      * Сериализация в JSON
      *
      * @return array
      */
     public function jsonSerialize(): array
     {
-        $dateFormat = 'Y-m-d H:i:s';
+        $dateFormat = 'Y-m-d H:i';
 
         return [
             'id' => $this->getId(),
