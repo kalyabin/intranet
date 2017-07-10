@@ -3,8 +3,16 @@ parameters:
     rent.room_customer.controller: RentBundle\Controller\RoomCustomerController
     rent.request_manager: RentBundle\Utils\RoomRequestManager
     rent.request_notification_manager: RentBundle\Utils\RoomRequestNotificationManager
+    rent.request_time.validator: RentBundle\Validator\RequestTimeValidator
 
 services:
+    # валидатор для времени заявок
+    rent.request_time.validator:
+        class: '%rent.request_time.validator%'
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags:
+            - { name: validator.constraint_validator }
+
     # уведомления по заявкам
     rent.request_notification_manager:
         class: '%rent.request_notification_manager%'

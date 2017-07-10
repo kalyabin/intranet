@@ -635,4 +635,99 @@ class RoomEntity implements \JsonSerializable
             'requestPause' => $this->getRequestPause(),
         ];
     }
+
+    /**
+     * Проверка доступности даты для регистрации заявки
+     *
+     * @param \DateTime $date
+     *
+     * @return bool
+     */
+    public function checkDayIsAvailable(\DateTime $date)
+    {
+        $dateFormatted = $date->format('Y-m-d');
+
+        if (is_array($this->workWeekends) && in_array($dateFormatted, $this->workWeekends)) {
+            // рабочий выходной - целый день
+            return true;
+        }
+
+        if (is_array($this->holidays) && in_array($dateFormatted, $this->holidays)) {
+            // праздничный день
+            return true;
+        }
+
+        // проверка на доступность в обычный день
+        // индексация: 0 - понедельник, 6 - воскресение
+        $weekDay = (int) $date->format('w');
+        $weekDay = $weekDay == 0 ? 6 : $weekDay - 1;
+
+        return !is_array($this->schedule) ||
+            !isset($this->schedule[$weekDay]) ||
+            (
+                !empty($this->schedule[$weekDay]['avail']) &&
+                $this->schedule[$weekDay]['avail'] == true
+            );
+    }
+
+    /**
+     * Возвращает false, если переговорка недоступна на указанное время
+     *
+     * @param \DateTime $timeFrom
+     * @param \DateTime $timeTo
+     *
+     * @return bool
+     */
+    public function checkTimeIsAvailable(\DateTime $timeFrom, \DateTime $timeTo)
+    {
+        // день недельи
+        // индексация: 0 - понедельник, 6 - воскресение
+        $weekDay = (int) $timeFrom->format('w');
+        $weekDay = $weekDay == 0 ? 6 : $weekDay - 1;
+
+        $from = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $timeFrom->format('H:i'));
+        $to = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $timeTo->format('H:i'));
+
+        if (is_array($this->scheduleBreak)) {
+            // проверка перерывов
+            foreach ($this->scheduleBreak as $scheduleBreak) {
+                if (!isset($scheduleBreak['from']) || !isset($scheduleBreak['to'])) {
+                    continue;
+                }
+                $checkFrom = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $scheduleBreak['from']);
+                $checkTo = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $scheduleBreak['to']);
+                if (!$checkFrom || !$checkTo) {
+                    continue;
+                }
+
+                if (
+                    ($from->getTimestamp() <= $checkFrom->getTimestamp() && $to->getTimestamp() >= $checkTo->getTimestamp()) ||
+                    ($from->getTimestamp() >= $checkFrom->getTimestamp() && $from->getTimestamp() <= $checkTo->getTimestamp()) ||
+                    ($to->getTimestamp() >= $checkFrom->getTimestamp() && $to->getTimestamp() <= $checkTo->getTimestamp())
+                ) {
+                    return false;
+                }
+            }
+        }
+
+        if (is_array($this->schedule) && isset($this->schedule[$weekDay]) && $this->schedule[$weekDay]['avail'] && !empty($this->schedule[$weekDay]['schedule'])) {
+            // проверка рабочего времени
+            foreach ($this->schedule[$weekDay]['schedule'] as $schedule) {
+                if (!isset($schedule['from']) || !isset($schedule['to'])) {
+                    continue;
+                }
+                $checkFrom = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $schedule['from']);
+                $checkTo = \DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d ') . $schedule['to']);
+                if (!$checkFrom || !$checkTo) {
+                    continue;
+                }
+
+                if ($from->getTimestamp() < $checkFrom->getTimestamp() || $to->getTimestamp() > $checkTo->getTimestamp()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

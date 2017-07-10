@@ -30,9 +30,62 @@ class RoomTestFixture extends AbstractFixture implements OrderedFixtureInterface
             ->setHolidays([])
             ->setRequestPause(15);
 
+        $mondayOnlyRoom = new RoomEntity();
+
+        $mondayOnlyRoom
+            ->setType(RoomEntity::TYPE_CONFERENCE)
+            ->setTitle('monday only room')
+            ->setDescription('testing description')
+            ->setAddress('testing address')
+            ->setHourlyCost(200)
+            ->setSchedule([
+                [
+                    'avail' => true,
+                    'schedule' => [
+                        [
+                            'from' => '14:00',
+                            'to' => '18:00',
+                        ]
+                    ]
+                ],
+                [
+                    'avail' => false,
+                ],
+                [
+                    'avail' => false,
+                ],
+                [
+                    'avail' => false,
+                ],
+                [
+                    'avail' => false,
+                ],
+                [
+                    'avail' => false,
+                ],
+                [
+                    'avail' => false,
+                ]
+            ])
+            ->setScheduleBreak([
+                [
+                    'from' => '15:00',
+                    'to' => '17:00'
+                ]
+            ])
+            ->setHolidays([
+                (new \DateTime())->add(new \DateInterval('P1D'))->format('Y-m-d')
+            ])
+            ->setWorkWeekends([
+                (new \DateTime())->add(new \DateInterval('P2D'))->format('Y-m-d')
+            ])
+            ->setRequestPause(15);
+
+        $manager->persist($mondayOnlyRoom);
         $manager->persist($everyDayRoom);
         $manager->flush();
 
+        $this->addReference('monday-only-room', $mondayOnlyRoom);
         $this->addReference('everyday-room', $everyDayRoom);
     }
 

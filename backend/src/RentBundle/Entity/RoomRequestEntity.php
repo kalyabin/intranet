@@ -5,6 +5,7 @@ namespace RentBundle\Entity;
 
 use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\ORM\Mapping as ORM;
+use RentBundle\Validator\Constraints\RequestTime;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *
  * @ORM\Entity(repositoryClass="RentBundle\Entity\Repository\RoomRequestRepository")
  * @ORM\Table(name="room_request")
+ * @RequestTime()
  *
  * @package RentBundle\Entity
  */
