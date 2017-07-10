@@ -16,6 +16,7 @@ import {CustomerServiceTicketDetails} from "../page/customer/service/ticket-deta
 import {ManagerTicketList} from "../page/manager/ticket/list";
 import {ManagerTicketDetails} from "../page/manager/ticket/details";
 import {ManagerRoomList} from "../page/manager/rent/room-list";
+import {ManagerRoomCalendar} from "../page/manager/rent/room-calendar";
 
 /**
  * Правила роутинга
@@ -184,6 +185,15 @@ export const routes: Array<RouteConfig> = [
                     pageTitle: 'Переговорные комнаты'
                 },
             },
+            {
+                path: '/auth/manager/rent/room/:id',
+                name: 'manager_room_calendar',
+                component: ManagerRoomCalendar,
+                meta: {
+                    needRole: 'ROLE_RENT_MANAGEMENT',
+                    pageTitle: 'Переговорные комнаты'
+                }
+            }
         ]
     },
     {

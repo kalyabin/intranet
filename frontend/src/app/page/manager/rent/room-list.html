@@ -21,9 +21,14 @@
                             <strong>{{room.title}}</strong><br />
                             {{room.address}}
                         </td>
+                        <td style="text-align: right;">
+                            <router-link :to="{name: 'manager_room_calendar', params: {id: room.id}}">
+                                <i class="fa fa-calendar"></i> Календарь
+                            </router-link>
+                        </td>
                     </tr>
                     <tr v-if="list.length == 0">
-                        <td class="empty-table-row">
+                        <td class="empty-table-row" colspan="2">
                             <p>Отсутствуют помещения для отображения</p>
                             <button @click="openForm(null)" type="button" class="btn btn-primary">
                                 <i class="fa fa-plus"></i>
