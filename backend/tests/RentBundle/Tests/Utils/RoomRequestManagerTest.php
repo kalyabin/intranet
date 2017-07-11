@@ -156,6 +156,8 @@ class RoomRequestManagerTest extends WebTestCase
         /** @var UserEntity $user */
         $user = $this->fixtures->getReference('superadmin-user');
 
+        $oldStatus = $request->getStatus();
+
         $request
             ->setStatus(RoomRequestEntity::STATUS_DECLINED)
             ->setManagerComment('testing comment');
@@ -174,8 +176,14 @@ class RoomRequestManagerTest extends WebTestCase
             $eventDispatched = true;
         });
 
-        $this->manager->updateRequestByManager($request, $user);
+        $this->manager->updateRequestByManager($request, $user, $oldStatus);
 
         $this->assertTrue($eventDispatched);
+
+        $eventDispatched = false;
+
+        // при неизменном статусе уведомление не должно отсылаться
+        $this->manager->updateRequestByManager($request, $user, $request->getStatus());
+        $this->assertFalse($eventDispatched);
     }
 }

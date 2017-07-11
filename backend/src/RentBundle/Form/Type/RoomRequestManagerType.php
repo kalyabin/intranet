@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Форма отказа или подтверждения заявки
+ * Форма смены статуса заявки на бронирование помещения от менеджера
  *
  * @package RentBundle\Form\Type
  */

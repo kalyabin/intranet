@@ -75,14 +75,17 @@ class RoomRequestManager
      *
      * @param RoomRequestEntity $request
      * @param UserEntity $author Автор события
+     * @param string $oldStatus Предыдущий статус (для отправки уведомления об изменении статуса)
      */
-    public function updateRequestByManager(RoomRequestEntity $request, UserEntity $author)
+    public function updateRequestByManager(RoomRequestEntity $request, UserEntity $author, ?string $oldStatus = null)
     {
         $this->entityManager->persist($request);
         $this->entityManager->flush();
 
-        $event = new RoomRequestUpdatedEvent($request, $author);
-        $this->eventDispatcher->dispatch(RoomRequestUpdatedEvent::NAME, $event);
+        if (is_null($oldStatus) || $oldStatus != $request->getStatus()) {
+            $event = new RoomRequestUpdatedEvent($request, $author);
+            $this->eventDispatcher->dispatch(RoomRequestUpdatedEvent::NAME, $event);
+        }
     }
 
     public function getEntityManager(): EntityManagerInterface

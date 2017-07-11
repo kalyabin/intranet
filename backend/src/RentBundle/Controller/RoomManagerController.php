@@ -9,6 +9,7 @@ use RentBundle\Entity\Repository\RoomRepository;
 use RentBundle\Entity\Repository\RoomRequestRepository;
 use RentBundle\Entity\RoomEntity;
 use RentBundle\Entity\RoomRequestEntity;
+use RentBundle\Form\Type\RoomRequestCreateManagerType;
 use RentBundle\Form\Type\RoomRequestManagerType;
 use RentBundle\Form\Type\RoomType;
 use RentBundle\Utils\RoomRequestManager;
@@ -222,6 +223,38 @@ class RoomManagerController extends Controller
     }
 
     /**
+     * Создание заявки на бронирование от лица арендатора
+     *
+     * @Method({"POST"})
+     * @Route("/manager/room/request", name="room.manager.request_create", options={"expose": true})
+     *
+     * @param Request $request
+     *
+     * @return FormValidationJsonResponse
+     */
+    public function createRequestAction(Request $request): FormValidationJsonResponse
+    {
+        $entity = new RoomRequestEntity();
+
+        $form = $this->createForm(RoomRequestCreateManagerType::class, $entity);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UserEntity $user */
+            $user = $this->getUser();
+            $this->requestManager->createRequest($entity, $user);
+        }
+
+        $response = new FormValidationJsonResponse();
+        $response->jsonData = [
+            'success' => $entity->getId() > 0,
+            'request' => $entity
+        ];
+        $response->handleForm($form);
+        return $response;
+    }
+
+    /**
      * Форма редактирования заявки (отказ или подтверждение)
      *
      * @Method({"POST"})
@@ -239,6 +272,8 @@ class RoomManagerController extends Controller
             throw $this->createNotFoundException('Заявка не найдена');
         }
 
+        $oldStatus = $entity->getStatus();
+
         $form = $this->createForm(RoomRequestManagerType::class, $entity);
         $form->handleRequest($request);
 
@@ -246,7 +281,7 @@ class RoomManagerController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UserEntity $user */
             $user = $this->getUser();
-            $this->requestManager->updateRequestByManager($entity, $user);
+            $this->requestManager->updateRequestByManager($entity, $user, $oldStatus);
             $success = true;
         }
 

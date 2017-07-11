@@ -3,6 +3,7 @@
 namespace RentBundle\Tests\Controller;
 
 
+use CustomerBundle\Entity\CustomerEntity;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use RentBundle\Controller\RoomManagerController;
@@ -308,6 +309,54 @@ class RoomManagerControllerTest extends WebTestCase
             'pageNum' => 0,
             'totalCount' => 1,
         ], $result);
+    }
+
+    /**
+     * @covers RoomManagerController::createRequestAction()
+     */
+    public function testCreateRequestAction()
+    {
+        $url = $this->getUrl('room.manager.request_create');
+
+        /** @var RoomEntity $room */
+        $room = $this->fixtures->getReference('everyday-room');
+        /** @var CustomerEntity $customer */
+        $customer = $this->fixtures->getReference('all-customer');
+
+        $data = [
+            'room' => $room->getId(),
+            'from' => date('Y-m-d H:i', time() + 86400),
+            'to' => date('Y-m-d H:i', time() + 86400 + 86400),
+            'customerComment' => 'testing comment for customer',
+            'managerComment' => 'testing comment for manager',
+            'customer' => $customer->getId()
+        ];
+
+        $result = $this->assertAccessToAction($url, 'POST', [
+            'superadmin-user',
+        ], [
+            'none-customer-user',
+            'document-manager-user',
+            'it-manager-user',
+            'active-user',
+        ], null, [
+            'room_request_create_manager' => $data
+        ]);
+
+        $expectedData = $data;
+        $expectedData['room'] = json_decode(json_encode($room), true);
+        $expectedData['customer'] = json_decode(json_encode($customer), true);
+
+        $this->assertArraySubset([
+            'request' => $expectedData,
+            'success' => true,
+            'submitted' => true,
+            'valid' => true,
+            'validationErrors' => [],
+            'firstError' => ''
+        ], $result);
+
+        $this->assertGreaterThan(0, $result['request']['id']);
     }
 
     /**
