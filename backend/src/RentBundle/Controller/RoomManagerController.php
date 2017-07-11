@@ -242,6 +242,8 @@ class RoomManagerController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UserEntity $user */
             $user = $this->getUser();
+            // все заявки, созданные от лица менеджера являются подтвержденными
+            $entity->setStatus(RoomRequestEntity::STATUS_APPROVED);
             $this->requestManager->createRequest($entity, $user);
         }
 

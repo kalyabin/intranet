@@ -1,0 +1,84 @@
+<form @submit.prevent="submit" @input="errorMessage = ''">
+    <loader :visible="awaitOfSubmit"></loader>
+    <div class="modal-body">
+        <div class="alert alert-danger" v-if="errorMessage">{{errorMessage}}</div>
+
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Помещение</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{room.title}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Режим работы на {{dateFormatted}}</label>
+            <div class="col-md-12">
+                <template v-if="schedule">
+                    с {{schedule.from}} по {{schedule.to}},
+                    &nbsp;перерыв:&nbsp;
+                    <template v-if="scheduleBreak">
+                        с {{scheduleBreak.from}} по {{scheduleBreak.to}}
+                    </template>
+                    <template v-else>
+                        без перерыва
+                    </template>
+                </template>
+                <template v-else>
+                    не работает
+                </template>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Дата заявки</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{date}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('timeFrom')}">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Время начала бронирования</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <time-picker
+                    v-if="timeFrom"
+                    :min-time="schedule && schedule.from ? schedule.from : null"
+                    :max-time="schedule && schedule.to ? schedule.to : null"
+                    :time="timeFrom"
+                    @set-time="timeFrom = $event"
+                ></time-picker>
+            </div>
+            <input type="hidden" v-model="timeFrom" name="timeFrom" v-validate="'required'" />
+            <div class="clearfix"></div>
+            <p class="help-block" v-if="errors.has('timeFrom')">
+                {{errors.first('timeFrom')}}
+            </p>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('timeTo')}">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Время окончания бронирования</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <time-picker
+                    v-if="timeTo"
+                    :min-time="schedule && schedule.from ? schedule.from : null"
+                    :max-time="schedule && schedule.to ? schedule.to : null"
+                    :time="timeTo"
+                    @set-time="timeTo = $event"
+                ></time-picker>
+            </div>
+            <input type="hidden" v-model="timeTo" name="timeTo" v-validate="'required'" />
+            <div class="clearfix"></div>
+            <p class="help-block" v-if="errors.has('timeTo')">
+                {{errors.first('timeTo')}}
+            </p>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('customerComment')}">
+            <label class="control-label">Комментарий</label>
+            <textarea v-model="customerComment" name="customerComment" class="form-control" v-validate="'max:200'"></textarea>
+            <p class="help-block" v-if="errors.has('customerComment')">
+                {{errors.first('customerComment')}}
+            </p>
+        </div>
+    </div>
+    <div class="modal-footer" slot="footer">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

@@ -22,7 +22,9 @@ module.exports = {
             'datatables.net': 'datatables.net/js/jquery.dataTables.js',
             'datatables.net-bs': 'datatables.net-bs/js/dataTables.bootstrap.js',
             moment: 'moment/moment.js',
-            axios: 'axios/dist/axios.js'
+            axios: 'axios/dist/axios.js',
+            'timepicker': 'timepicker/jquery.timepicker.js',
+            'jquery.timepicker': 'timepicker/jquery.timepicker.js'
         }
     },
     output: {

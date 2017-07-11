@@ -15,6 +15,7 @@ import 'axios';
 import 'malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js';
 import 'fullcalendar';
 import 'fullcalendar/dist/locale/ru.js';
+import 'jquery.timepicker';
 
 // стили
 require('bootstrap/less/bootstrap.less');
@@ -22,3 +23,4 @@ require('../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
 require('font-awesome/scss/font-awesome.scss');
 require('malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css');
 require('fullcalendar/dist/fullcalendar.css');
+require('../node_modules/timepicker/jquery.timepicker.css');

@@ -63,30 +63,6 @@ export class RoomManagerService {
                 return response.data as RoomResponseInterface;
             });
     }
-
-    /**
-     * Проверка, доступен ли день для регистрации заявки или нет
-     */
-    dayIsAvailable(room: RoomInterface, date: string | Date | moment.Moment): boolean {
-        let momentDate = moment(date);
-        let dateFormatted = momentDate.format('YYYY-MM-DD');
-        let weekday = momentDate.weekday();
-
-        let schedule = room.schedule;
-        let holidays = room.holidays;
-        let workWeekends = room.workWeekends;
-        if (workWeekends.indexOf(dateFormatted) !== -1) {
-            // рабочий выходной
-            return true;
-        } else if (holidays.indexOf(dateFormatted) !== -1) {
-            // праздичный день
-            return false;
-        } else if (schedule[weekday] && schedule[weekday][0] && !schedule[weekday][0].avail) {
-            // выходной день
-            return false;
-        }
-        return true;
-    }
 }
 
 export const roomManagerService = new RoomManagerService(backendService);

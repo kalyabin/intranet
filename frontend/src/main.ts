@@ -18,10 +18,10 @@ import {ticketStatusColorFilter} from "./app/filter/ticket-status-color.filter";
 import {Dropdown} from "./app/components/dropdown";
 import {UserNotificationMessage} from "./app/components/user-notification/message";
 import {CustomScrollbarDirective} from "./app/directive/custom-scrollbar.directive";
-import {FlashNotificationInterface, notificationStore} from "./app/store/notification.store";
 import {FlashNotifications} from "./app/components/user-notification/flash-notifications";
 import {ManagerIncomingCallWindow} from "./app/components/user-notification/manager-incoming-call-window";
 import {CalendarChooser} from "./app/components/calendar-chooser";
+import {TimePicker} from "./app/components/time-picker";
 
 /**
  * Точка входа приложения
@@ -47,6 +47,7 @@ Vue.component('notification-message', UserNotificationMessage);
 Vue.component('flash-notifications', FlashNotifications);
 Vue.component('manager-incoming-call-window', ManagerIncomingCallWindow);
 Vue.component('calendar-chooser', CalendarChooser);
+Vue.component('time-picker', TimePicker);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);
