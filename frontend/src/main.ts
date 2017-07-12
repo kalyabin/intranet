@@ -22,6 +22,8 @@ import {FlashNotifications} from "./app/components/user-notification/flash-notif
 import {ManagerIncomingCallWindow} from "./app/components/user-notification/manager-incoming-call-window";
 import {CalendarChooser} from "./app/components/calendar-chooser";
 import {TimePicker} from "./app/components/time-picker";
+import {UserType} from "./app/service/model/user.interface";
+import {authUserStore} from "./app/store/auth-user.store";
 
 /**
  * Точка входа приложения
@@ -63,6 +65,9 @@ export const app = new Vue({
     template: require('./main.html'),
     router: router,
     computed: {
+        userType: (): UserType => {
+            return authUserStore.state.userData ? authUserStore.state.userData.userType : null
+        },
         pageLoader: (): boolean => {
             return pageMetaStore.state.pageLoader;
         },

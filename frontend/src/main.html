@@ -2,5 +2,5 @@
     <div class="loading loading-page" :class="{'visible': pageLoader}"></div>
     <router-view></router-view>
     <flash-notifications></flash-notifications>
-    <manager-incoming-call-window></manager-incoming-call-window>
+    <manager-incoming-call-window v-if="userType == 'manager'"></manager-incoming-call-window>
 </div>
