@@ -12,45 +12,45 @@ export interface RoomRequestInterface {
     /**
      * Идентификатор
      */
-    id: number;
+    id?: number;
 
     /**
      * Время создания заявки в формате Y-m-d H:i:s
      */
-    createdAt: string;
+    createdAt?: string;
 
     /**
      * Статус заявки
      */
-    status: RoomRequestStatus;
+    status?: RoomRequestStatus;
 
     /**
      * Заказанное помещение
      */
-    room: RoomInterface;
+    room?: RoomInterface | number;
 
     /**
      * Заказчик
      */
-    customer: CustomerInterface;
+    customer?: CustomerInterface | number;
 
     /**
      * Дата и время начала заявки в формате Y-m-d H:i:s
      */
-    from: string;
+    from?: string;
 
     /**
      * Дата и время окончания заявки в формате Y-m-d H:i:s
      */
-    to: string;
+    to?: string;
 
     /**
      * Комментарий менеджера
      */
-    managerComment: string;
+    managerComment?: string;
 
     /**
      * Комментарий арендатора
      */
-    customerComment: string;
+    customerComment?: string;
 }

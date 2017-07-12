@@ -628,7 +628,7 @@ class RoomEntity implements \JsonSerializable
             'description' => $this->getDescription(),
             'address' => $this->getAddress(),
             'hourlyCost' => $this->getHourlyCost(),
-            'schedule' => $this->getSchedule() ?: [],
+            'schedule' => $schedule ?: [],
             'scheduleBreak' => $this->getScheduleBreak() ?: [],
             'holidays' => $this->getHolidays() ?: [],
             'workWeekends' => $this->getWorkWeekends() ?: [],
@@ -665,8 +665,8 @@ class RoomEntity implements \JsonSerializable
         return !is_array($this->schedule) ||
             !isset($this->schedule[$weekDay]) ||
             (
-                !empty($this->schedule[$weekDay]['avail']) &&
-                $this->schedule[$weekDay]['avail'] == true
+                !empty($this->schedule[$weekDay][0]['avail']) &&
+                $this->schedule[$weekDay][0]['avail'] == true
             );
     }
 
@@ -701,18 +701,18 @@ class RoomEntity implements \JsonSerializable
                 }
 
                 if (
-                    ($from->getTimestamp() <= $checkFrom->getTimestamp() && $to->getTimestamp() >= $checkTo->getTimestamp()) ||
-                    ($from->getTimestamp() >= $checkFrom->getTimestamp() && $from->getTimestamp() <= $checkTo->getTimestamp()) ||
-                    ($to->getTimestamp() >= $checkFrom->getTimestamp() && $to->getTimestamp() <= $checkTo->getTimestamp())
+                    ($from->getTimestamp() < $checkFrom->getTimestamp() && $to->getTimestamp() > $checkTo->getTimestamp()) ||
+                    ($from->getTimestamp() > $checkFrom->getTimestamp() && $from->getTimestamp() < $checkTo->getTimestamp()) ||
+                    ($to->getTimestamp() > $checkFrom->getTimestamp() && $to->getTimestamp() < $checkTo->getTimestamp())
                 ) {
                     return false;
                 }
             }
         }
 
-        if (is_array($this->schedule) && isset($this->schedule[$weekDay]) && $this->schedule[$weekDay]['avail'] && !empty($this->schedule[$weekDay]['schedule'])) {
+        if (is_array($this->schedule) && isset($this->schedule[$weekDay][0]) && $this->schedule[$weekDay][0]['avail']) {
             // проверка рабочего времени
-            foreach ($this->schedule[$weekDay]['schedule'] as $schedule) {
+            foreach ($this->schedule[$weekDay] as $schedule) {
                 if (!isset($schedule['from']) || !isset($schedule['to'])) {
                     continue;
                 }

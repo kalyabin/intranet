@@ -5,6 +5,8 @@ import * as moment from "moment";
 import {CustomerInterface} from "../../../service/model/customer.interface";
 import {RoomInterface} from "../../../service/model/room.interface";
 import {roomRequestHelper} from "../../../helpers/room-request-helper";
+import {customerListStore} from "../../../store/customer-list.store";
+import {roomManagerService} from "../../../service/room-manager.service";
 
 /**
  * Форма создания заявки
@@ -61,7 +63,7 @@ export class ManagerRentCreateRequestForm extends Vue {
     /**
      * Модель арендатора
      */
-    @Model() customer: CustomerInterface = null;
+    @Model() customer: number = null;
 
     /**
      * Комментарий
@@ -78,11 +80,21 @@ export class ManagerRentCreateRequestForm extends Vue {
      */
     @Model() awaitOfSubmit: boolean = false;
 
+    /**
+     * Список арендаторов
+     */
+    get customers(): CustomerInterface[] {
+        return customerListStore.state.list;
+    }
+
     mounted(): void {
+        customerListStore.dispatch('fetchList');
         this.date = this.from.format('YYYY-MM-DD');
         this.dateFormatted = this.from.format('DD.MM.YYYY');
-        this.timeFrom = this.from.format('HH:mm');
-        this.timeTo = this.to.format('HH:mm');
+        let timeFrom = this.from.format('HH:mm');
+        let timeTo = this.to.format('HH:mm');
+        this.timeFrom = timeFrom != timeTo ? timeFrom : '';
+        this.timeTo = timeFrom != timeTo ? timeTo : '';
         this.schedule = roomRequestHelper.getScheduleByDate(this.room, this.date);
         this.scheduleBreak = roomRequestHelper.getScheduleBreak(this.room);
     }
@@ -90,7 +102,21 @@ export class ManagerRentCreateRequestForm extends Vue {
     submit(): void {
         this.errorMessage = '';
         this.$validator.validateAll().then(() => {
-            alert('success!');
+            this.awaitOfSubmit = true;
+            roomManagerService.createRequest({
+                room: this.room.id,
+                customer: this.customer,
+                from: this.date + ' ' + this.timeFrom,
+                to: this.date + ' ' + this.timeTo,
+                customerComment: this.customerComment
+            }).then((response) => {
+                if (response.success) {
+                    alert('success!');
+                } else {
+                    this.errorMessage = response.firstError;
+                }
+                this.awaitOfSubmit = false;
+            });
         }, () => {});
     }
 }

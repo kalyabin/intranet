@@ -4,6 +4,7 @@ import {AxiosResponse} from "axios";
 import {RoomResponseInterface} from "./response/room-response.interface";
 import {RoomRequestInterface} from "./model/room-request.interface";
 import * as moment from "moment";
+import {RoomRequestResponseInterface} from "./response/room-request-response.interface";
 
 /**
  * Сервис для управления помещениями для аренды
@@ -62,6 +63,17 @@ export class RoomManagerService {
             .then((response: AxiosResponse) => {
                 return response.data as RoomResponseInterface;
             });
+    }
+
+    /**
+     * Создание заявки
+     */
+    createRequest(request: RoomRequestInterface): Promise<RoomRequestResponseInterface> {
+        return this.backendService.makeRequest('POST', `manager/room/request`, {
+            room_request_create_manager: request
+        }).then((response: AxiosResponse) => {
+            return response.data as RoomRequestResponseInterface;
+        })
     }
 }
 

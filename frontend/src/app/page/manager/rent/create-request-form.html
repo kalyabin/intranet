@@ -36,14 +36,15 @@
             </div>
             <div class="clearfix"></div>
         </div>
-        <div class="form-group" :class="{'has-error': errors.has('timeFrom')}">
+        <div class="form-group" :class="{'has-error': errors.has('timeFrom')}" v-if="room && date">
             <label class="control-label col-md-5 col-sm-5 col-xs-12">Время начала бронирования</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <time-picker
-                    v-if="timeFrom"
-                    :min-time="schedule && schedule.from ? schedule.from : null"
-                    :max-time="schedule && schedule.to ? schedule.to : null"
+                    :room="room"
+                    :date="date"
+                    :is-from="true"
                     :time="timeFrom"
+                    :max-time="timeTo != timeFrom ? timeTo : null"
                     @set-time="timeFrom = $event"
                 ></time-picker>
             </div>
@@ -53,14 +54,15 @@
                 {{errors.first('timeFrom')}}
             </p>
         </div>
-        <div class="form-group" :class="{'has-error': errors.has('timeTo')}">
+        <div class="form-group" :class="{'has-error': errors.has('timeTo')}" v-if="room && date">
             <label class="control-label col-md-5 col-sm-5 col-xs-12">Время окончания бронирования</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <time-picker
-                    v-if="timeTo"
-                    :min-time="schedule && schedule.from ? schedule.from : null"
-                    :max-time="schedule && schedule.to ? schedule.to : null"
+                    :room="room"
+                    :date="date"
+                    :is-from="false"
                     :time="timeTo"
+                    :min-time="timeFrom != timeTo ? timeFrom : null"
                     @set-time="timeTo = $event"
                 ></time-picker>
             </div>
@@ -68,6 +70,19 @@
             <div class="clearfix"></div>
             <p class="help-block" v-if="errors.has('timeTo')">
                 {{errors.first('timeTo')}}
+            </p>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('customer')}">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Арендатор</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <select class="form-control" v-model="customer" name="customer" v-validate="'required'">
+                    <option :value="null">Выберите арендатора</option>
+                    <option v-for="customer in customers" :value="customer.id">{{customer.name}}</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+            <p class="help-block" v-if="errors.has('customer')">
+                {{errors.first('customer')}}
             </p>
         </div>
         <div class="form-group" :class="{'has-error': errors.has('customerComment')}">

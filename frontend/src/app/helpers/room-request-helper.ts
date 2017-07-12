@@ -60,6 +60,75 @@ export class RoomRequestHelper {
             return false;
         }
     }
+
+    /**
+     * Получить блокирующие время для установки времени начала действия заявки
+     */
+    getDisabledTimeFromRanges(room: RoomInterface, date: string | Date | moment.Moment): Array<string[]> {
+        let result: Array<string[]> = [];
+
+        let schedule = this.getScheduleByDate(room, date);
+        if (!schedule) {
+            // весь день не доступен
+            return [['00:00', '23:59']];
+        }
+
+        let getMomentForTime = (time: string): moment.Moment => {
+            return moment(moment().format('YYYY-MM-DD') + ' ' + time + ':00');
+        };
+
+        if (schedule.from != '00:00') {
+            result.push(['00:00', getMomentForTime(schedule.from).subtract(1, 'minute').format('HH:mm')]);
+        }
+
+        if (schedule.to != '24:00') {
+            result.push([getMomentForTime(schedule.to).subtract(29, 'minutes').format('HH:mm'), '23:59']);
+        }
+
+        let scheduleBreak = this.getScheduleBreak(room);
+        if (scheduleBreak) {
+            result.push([scheduleBreak.from, getMomentForTime(scheduleBreak.to).subtract(29, 'minutes').format('HH:mm')]);
+        }
+
+        return result;
+    }
+
+    /**
+     * Получить блокирующие время для установки времени окончания действия заявки
+     */
+    getDisabledTimeToRanges(room: RoomInterface, date: string | Date | moment.Moment): Array<string[]> {
+        let result: Array<string[]> = [];
+
+        let schedule = this.getScheduleByDate(room, date);
+        if (!schedule) {
+            // весь день недоступен
+            return [['00:00', '23:59']];
+        }
+
+        let getMomentForTime = (time: string): moment.Moment => {
+            return moment(moment().format('YYYY-MM-DD') + ' ' + time + ':00');
+        };
+
+        if (schedule.from == '00:00') {
+            result.push(['00:00', '00:29']);
+        } else {
+            result.push(['00:00', getMomentForTime(schedule.from).add(1, 'minutes').format('HH:mm')]);
+        }
+
+        if (schedule.to != '24:00') {
+            result.push([getMomentForTime(schedule.to).add(1, 'minutes').format('HH:mm'), '23:59']);
+        }
+
+        let scheduleBreak = this.getScheduleBreak(room);
+        if (scheduleBreak) {
+            result.push([
+                getMomentForTime(scheduleBreak.from).add(1, 'minutes').format('HH:mm'),
+                getMomentForTime(scheduleBreak.to).add(29, 'minutes').format('HH:mm')
+            ]);
+        }
+
+        return result;
+    }
 }
 
 export const roomRequestHelper = new RoomRequestHelper();
