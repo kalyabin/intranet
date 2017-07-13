@@ -3900,8 +3900,16 @@ header {
 
 /* *********  end nprogress  **************************** */
 
+.fc-event {
+  cursor: pointer;
+}
+.flash-notification-wrapper {
+  position: absolute;
+  z-index: 99999;
+}
 .flash-notification {
   position: fixed;
+  z-index: 99999;
   bottom: 0px;
   right: 0px;
   margin-bottom: 50px;

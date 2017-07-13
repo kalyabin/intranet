@@ -87,6 +87,13 @@ export class ManagerRentCreateRequestForm extends Vue {
         return customerListStore.state.list;
     }
 
+    /**
+     * Получить итоговую сумму
+     */
+    get totalCost(): number {
+        return roomRequestHelper.getTotalCost(this.room, this.timeFrom, this.timeTo);
+    }
+
     mounted(): void {
         customerListStore.dispatch('fetchList');
         this.date = this.from.format('YYYY-MM-DD');
@@ -111,7 +118,7 @@ export class ManagerRentCreateRequestForm extends Vue {
                 customerComment: this.customerComment
             }).then((response) => {
                 if (response.success) {
-                    alert('success!');
+                    this.$emit('created', response.request);
                 } else {
                     this.errorMessage = response.firstError;
                 }

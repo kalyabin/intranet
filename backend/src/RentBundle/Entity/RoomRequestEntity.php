@@ -421,7 +421,7 @@ class RoomRequestEntity implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $dateFormat = 'Y-m-d H:i';
+        $dateFormat = 'Y-m-d H:i:s';
 
         return [
             'id' => $this->getId(),

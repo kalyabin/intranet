@@ -1,0 +1,101 @@
+<form @submit.prevent="submit" @input="errorMessage = ''">
+    <loader :visible="awaitOfSubmit"></loader>
+    <div class="modal-body">
+        <div class="alert alert-danger" v-if="errorMessage">{{errorMessage}}</div>
+
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Помещение</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{request.room.title}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Дата заявки</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{dateFormatted}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Режим работы на {{dateFormatted}}</label>
+            <div class="col-md-12">
+                <template v-if="schedule">
+                    с {{schedule.from}} по {{schedule.to}},
+                    &nbsp;перерыв:&nbsp;
+                    <template v-if="scheduleBreak">
+                        с {{scheduleBreak.from}} по {{scheduleBreak.to}}
+                    </template>
+                    <template v-else>
+                        без перерыва
+                    </template>
+                </template>
+                <template v-else>
+                    не работает
+                </template>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Время начала бронирования</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{timeFrom}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Время окончания бронирования</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{timeTo}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Стоимость аренды в час</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{request.room.hourlyCost}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Сумма</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{totalCost ? totalCost : '--'}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Арендатор</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{request.customer.name}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Комментарий арендатора</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{request.customerComment}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('status')}">
+            <label class="control-label">Статус заявки</label>
+            <select class="form-control" v-model="requestInternal.status" name="status" v-validate="'required'">
+                <option v-for="status in statuses" :value="status.id">{{status.name}}</option>
+            </select>
+            <p class="help-block" v-if="errors.has('status')">
+                {{errors.first('status')}}
+            </p>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('managerComment')}">
+            <label class="control-label">Комментарий к статусу</label>
+            <textarea v-model="requestInternal.managerComment" name="managerComment" class="form-control" v-validate="'max:200'"></textarea>
+            <p class="help-block" v-if="errors.has('managerComment')">
+                {{errors.first('managerComment')}}
+            </p>
+        </div>
+    </div>
+    <div class="modal-footer" slot="footer">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

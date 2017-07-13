@@ -33,6 +33,7 @@ class RoomRequestCancelledNotificationEvent extends GenericEvent implements User
     {
         $notification
             ->setType(UserNotificationEntity::TYPE_ROOM_REQUEST_CANCELLED)
+            ->setRoom($this->getRequest()->getRoom())
             ->setCustomer($this->getRequest()->getCustomer())
             ->setFrom($this->getRequest()->getFrom());
 

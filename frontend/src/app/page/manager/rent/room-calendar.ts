@@ -9,6 +9,7 @@ import $ from "jquery";
 import * as moment from "moment";
 import {ModalWindow} from "../../../components/modal-window";
 import {ManagerRentCreateRequestForm} from "./create-request-form";
+import {ManagerRentUpdateRequestForm} from "./update-request-form";
 import {roomRequestHelper} from "../../../helpers/room-request-helper";
 
 Component.registerHooks([
@@ -22,7 +23,8 @@ Component.registerHooks([
 @Component({
     template: require('./room-calendar.html'),
     components: {
-        'create-request': ManagerRentCreateRequestForm
+        'create-request': ManagerRentCreateRequestForm,
+        'update-request': ManagerRentUpdateRequestForm
     }
 })
 export class ManagerRoomCalendar extends Vue {
@@ -52,6 +54,63 @@ export class ManagerRoomCalendar extends Vue {
     @Model() viewCreateForm: boolean = false;
 
     /**
+     * Всплывающее сообщение
+     */
+    @Model() alertMessage: string = '';
+
+    /**
+     * Заявка для редактирования
+     */
+    @Model() request: RoomRequestInterface = null;
+
+    /**
+     * Показать всплывающее уведомление
+     */
+    protected openAlert(message: string): void {
+        this.alertMessage = message;
+        let modal = <ModalWindow>this.$refs['alert-modal'];
+        modal.show();
+    }
+
+    /**
+     * Открыть редактирование заявки
+     */
+    protected openRequest(request: RoomRequestInterface) {
+        this.request = request;
+        let modal = <ModalWindow>this.$refs['update-request-modal'];
+        modal.show();
+    }
+
+    protected getEventObject(request: RoomRequestInterface) {
+        return {
+            id: request.id,
+            title: `Забронировано: ${request.customer.name}`,
+            start: request.from,
+            end: request.to,
+            request: request
+        };
+    }
+    /**
+     * Добавить заявку в календарь
+     */
+    protected addRequestToCalendar(request: RoomRequestInterface): void {
+        if (request.status !== 'cancelled' && request.status !== 'declined') {
+            $(this.$refs['calendar']).fullCalendar('renderEvent', this.getEventObject(request), true);
+        }
+    }
+
+    /**
+     * Отредактировать заявку в календаре
+     */
+    protected updateRequestToCalendar(request: RoomRequestInterface): void {
+        let event = this.getEventObject(request);
+        if (request.status === 'cancelled' || request.status == 'declined') {
+            // удалить заявку из календаря
+            $(this.$refs['calendar']).fullCalendar('removeEvents', event.id);
+        }
+    }
+
+    /**
      * Подключение календаря
      */
     configureFullCalendar(): void {
@@ -61,7 +120,9 @@ export class ManagerRoomCalendar extends Vue {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay'
             },
+            eventLimit: true,
             dayRender: (date, cell) => {
+                // если день недоступен для бронирования
                 if (!roomRequestHelper.dayIsAvailable(this.room, date)) {
                     $(cell).addClass('fc-nonbusiness fc-bgevent');
                 } else {
@@ -69,7 +130,16 @@ export class ManagerRoomCalendar extends Vue {
                 }
             },
             selectable: true,
+            eventClick: (event) => {
+                let request: RoomRequestInterface = <RoomRequestInterface>event.request;
+                this.openRequest(request);
+            },
             select: (start: moment.Moment, end: moment.Moment) => {
+                if (!roomRequestHelper.dayIsAvailable(this.room, start)) {
+                    this.openAlert(`${moment(start).format('DD.MM.YYYY')} помещение не работает`);
+                    return;
+                }
+
                 this.createFrom = start;
                 this.createTo = end;
 
@@ -79,6 +149,32 @@ export class ManagerRoomCalendar extends Vue {
                 this.viewCreateForm = true;
             }
         });
+
+        for (let request of this.requests) {
+            this.addRequestToCalendar(request);
+        }
+    }
+
+    /**
+     * Создана заявка
+     */
+    createdRequest(request: RoomRequestInterface): void {
+        // закрыть окно и очистить форму
+        this.viewCreateForm = false;
+        let createModal = <ModalWindow>this.$refs['create-request-modal'];
+        createModal.hide();
+        // добавить в календарь
+        this.addRequestToCalendar(request);
+    }
+
+    /**
+     * Обновить заявку
+     */
+    updatedRequest(request: RoomRequestInterface): void {
+        this.request = null;
+        let updateModal = <ModalWindow>this.$refs['update-request-modal'];
+        updateModal.hide();
+        this.updateRequestToCalendar(request);
     }
 
     setData(room: RoomInterface, requests: RoomRequestInterface[]) {

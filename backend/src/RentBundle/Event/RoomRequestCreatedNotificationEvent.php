@@ -40,6 +40,7 @@ class RoomRequestCreatedNotificationEvent extends GenericEvent implements UserNo
     {
         $notification
             ->setType(UserNotificationEntity::TYPE_ROOM_REQUEST_CREATED)
+            ->setRoom($this->getRequest()->getRoom())
             ->setCustomer($this->getRequest()->getCustomer())
             ->setFrom($this->getRequest()->getFrom());
 

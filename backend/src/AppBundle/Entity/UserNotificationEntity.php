@@ -6,6 +6,7 @@ use CustomerBundle\Entity\CustomerEntity;
 use CustomerBundle\Entity\ServiceEntity;
 use CustomerBundle\Entity\ServiceTariffEntity;
 use Doctrine\ORM\Mapping as ORM;
+use RentBundle\Entity\RoomEntity;
 use TicketBundle\Entity\TicketEntity;
 use TicketBundle\Entity\TicketMessageEntity;
 use UserBundle\Entity\UserEntity;
@@ -181,6 +182,14 @@ class UserNotificationEntity implements \JsonSerializable
      * @var CustomerEntity Привязка к контрагенту
      */
     protected $customer;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="RentBundle\Entity\RoomEntity")
+     * @ORM\JoinColumn(name="room", referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     *
+     * @var RoomEntity Комната для бронирования
+     */
+    protected $room;
 
     /**
      * @ORM\Column(name="`from`", type="datetime", nullable=true)
@@ -486,6 +495,25 @@ class UserNotificationEntity implements \JsonSerializable
     }
 
     /**
+     * @return RoomEntity
+     */
+    public function getRoom(): ?RoomEntity
+    {
+        return $this->room;
+    }
+
+    /**
+     * @param RoomEntity $room
+     *
+     * @return UserNotificationEntity
+     */
+    public function setRoom(RoomEntity $room): self
+    {
+        $this->room = $room;
+        return $this;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getFrom(): ?\DateTime
@@ -524,6 +552,7 @@ class UserNotificationEntity implements \JsonSerializable
             'service' => $this->service,
             'tariff' => $this->tariff,
             'customer' => $this->customer,
+            'room' => $this->room,
             'callerId' => $this->callerId,
             'comment' => $this->comment,
         ];

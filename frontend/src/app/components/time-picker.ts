@@ -32,13 +32,17 @@ export class TimePicker extends Vue {
     @Watch('minTime')
     onChangeMinTime(newVal: string): void {
         let ref = this.$refs['button'];
-        $(ref).timepicker('option', {'minTime': newVal});
+        if (newVal) {
+            $(ref).timepicker('option', {'minTime': newVal});
+        }
     }
 
     @Watch('maxTime')
     onChangeMaxTIme(newVal: string): void {
         let ref = this.$refs['button'];
-        $(ref).timepicker('option', {'maxTime': newVal});
+        if (newVal) {
+            $(ref).timepicker('option', {'maxTime': newVal});
+        }
     }
 
     mounted(): void {

@@ -19,9 +19,24 @@
     </div>
     <div class="clearfix"></div>
 
+    <modal-window ref="alert-modal" title="Забронировать помещение">
+        <div slot="body">
+            <div class="modal-body">
+                Невозможно забронировать помещение в указанное время:<br />
+                <strong>{{alertMessage}}</strong>
+            </div>
+        </div>
+    </modal-window>
+
+    <modal-window ref="update-request-modal" title="Редактирование заявки">
+        <div slot="body">
+            <update-request v-if="request" @updated="updatedRequest" :request="request"></update-request>
+        </div>
+    </modal-window>
+
     <modal-window ref="create-request-modal" title="Забронировать помещение">
         <div slot="body">
-            <create-request v-if="viewCreateForm" :from="createFrom" :to="createTo" :room="room"></create-request>
+            <create-request v-if="viewCreateForm" @created="createdRequest" :from="createFrom" :to="createTo" :room="room"></create-request>
         </div>
     </modal-window>
 </div>

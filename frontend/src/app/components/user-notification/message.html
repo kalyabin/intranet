@@ -22,4 +22,16 @@
             <strong>Комментарий менеджера:</strong> {{notification.comment}}
         </span>
     </div>
+    <div v-if="notification.type == 'room_request_created' && userType == 'manager'">
+        Арендатор {{notification.customer.name}} забронировал помещение {{notification.room.title}} на {{formatDate(notification.from)}}.
+    </div>
+    <div v-if="notification.type == 'room_request_created' && userType == 'customer'">
+        Забронировано помещение {{notification.room.title}} на {{formatDate(notification.from)}}.
+    </div>
+    <div v-if="notification.type == 'room_request_cancelled'">
+        Арендатор {{notification.customer.name}} отменил бронь помещения {{notification.room.title}} на {{formatDate(notification.from)}}.
+    </div>
+    <div v-if="notification.type == 'room_request_updated'">
+        Статус заявки на бронирование помещения {{notification.customer.name}} изменён.
+    </div>
 </div>

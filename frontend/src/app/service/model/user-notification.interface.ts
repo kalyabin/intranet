@@ -6,7 +6,11 @@ import {TicketInterface} from "./ticket.interface";
 import {TicketMessageInterface} from "./ticket-message.interface";
 import {ServiceInterface} from "./service.interface";
 import {ServiceTariffInterface} from "./service-tariff.interface";
-export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed' | 'incoming_call' | 'service_activated' | 'service_deactivated';
+import {CustomerInterface} from "./customer.interface";
+import {RoomInterface} from "./room.interface";
+export type UserNotificationType = 'ticket_new' | 'ticket_message' | 'ticket_manager_set' | 'ticket_closed' |
+    'incoming_call' | 'service_activated' | 'service_deactivated' |
+    'room_request_created' | 'room_request_cancelled' | 'room_request_updated';
 
 /**
  * Модель системного уведомления для пользователя
@@ -67,5 +71,20 @@ export interface UserNotificationInterface {
     /**
      * Сопроводительный комментарий
      */
-    comment: string;
+    comment?: string;
+
+    /**
+     * Дата и время заявки на бронирование комнаты
+     */
+    from?: string;
+
+    /**
+     * Модель арендатора для бронирования комнаты
+     */
+    customer?: CustomerInterface;
+
+    /**
+     * Модель комнаты для бронирования
+     */
+    room?: RoomInterface;
 }

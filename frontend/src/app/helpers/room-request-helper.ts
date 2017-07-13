@@ -1,10 +1,51 @@
 import {RoomInterface} from "../service/model/room.interface";
 import * as moment from "moment";
+import {RoomRequestStatus} from "../service/model/room-request.interface";
 
 /**
  * Хелпер для работы с помещениями для аренды
  */
 export class RoomRequestHelper {
+    getMomentForTime(time: string): moment.Moment {
+        return moment(moment().format('YYYY-MM-DD') + ' ' + time + ':00');
+    }
+
+    /**
+     * Получить стоимость аренды комнаты на указанный срок
+     */
+    getTotalCost(room: RoomInterface, timeFrom: string, timeTo: string): number {
+        if (timeFrom && timeTo) {
+
+            let momentFrom = this.getMomentForTime(timeFrom);
+            let momentTo = this.getMomentForTime(timeTo);
+
+            let diff = momentTo.diff(momentFrom, 'minutes');
+            return room.hourlyCost * (diff / 60);
+        }
+        return null;
+    }
+
+    /**
+     * Получить подпись для статуса
+     */
+    getStatusLabel(status: RoomRequestStatus): string {
+        switch (status) {
+            case 'pending':
+                return 'Ожидает подтверждения';
+
+            case 'approved':
+                return 'Подтверждена';
+
+            case 'declined':
+                return 'Отклонена';
+
+            case 'cancelled':
+                return 'Отменена арендатором';
+        }
+
+        return '';
+    }
+
     /**
      * Проверка, доступен ли день для регистрации заявки или нет
      */
@@ -73,21 +114,17 @@ export class RoomRequestHelper {
             return [['00:00', '23:59']];
         }
 
-        let getMomentForTime = (time: string): moment.Moment => {
-            return moment(moment().format('YYYY-MM-DD') + ' ' + time + ':00');
-        };
-
         if (schedule.from != '00:00') {
-            result.push(['00:00', getMomentForTime(schedule.from).subtract(1, 'minute').format('HH:mm')]);
+            result.push(['00:00', this.getMomentForTime(schedule.from).subtract(1, 'minute').format('HH:mm')]);
         }
 
         if (schedule.to != '24:00') {
-            result.push([getMomentForTime(schedule.to).subtract(29, 'minutes').format('HH:mm'), '23:59']);
+            result.push([this.getMomentForTime(schedule.to).subtract(29, 'minutes').format('HH:mm'), '23:59']);
         }
 
         let scheduleBreak = this.getScheduleBreak(room);
         if (scheduleBreak) {
-            result.push([scheduleBreak.from, getMomentForTime(scheduleBreak.to).subtract(29, 'minutes').format('HH:mm')]);
+            result.push([scheduleBreak.from, this.getMomentForTime(scheduleBreak.to).subtract(29, 'minutes').format('HH:mm')]);
         }
 
         return result;
@@ -105,25 +142,21 @@ export class RoomRequestHelper {
             return [['00:00', '23:59']];
         }
 
-        let getMomentForTime = (time: string): moment.Moment => {
-            return moment(moment().format('YYYY-MM-DD') + ' ' + time + ':00');
-        };
-
         if (schedule.from == '00:00') {
             result.push(['00:00', '00:29']);
         } else {
-            result.push(['00:00', getMomentForTime(schedule.from).add(1, 'minutes').format('HH:mm')]);
+            result.push(['00:00', this.getMomentForTime(schedule.from).add(1, 'minutes').format('HH:mm')]);
         }
 
         if (schedule.to != '24:00') {
-            result.push([getMomentForTime(schedule.to).add(1, 'minutes').format('HH:mm'), '23:59']);
+            result.push([this.getMomentForTime(schedule.to).add(1, 'minutes').format('HH:mm'), '23:59']);
         }
 
         let scheduleBreak = this.getScheduleBreak(room);
         if (scheduleBreak) {
             result.push([
-                getMomentForTime(scheduleBreak.from).add(1, 'minutes').format('HH:mm'),
-                getMomentForTime(scheduleBreak.to).add(29, 'minutes').format('HH:mm')
+                this.getMomentForTime(scheduleBreak.from).add(1, 'minutes').format('HH:mm'),
+                this.getMomentForTime(scheduleBreak.to).add(29, 'minutes').format('HH:mm')
             ]);
         }
 
