@@ -17,6 +17,8 @@ import {ManagerTicketList} from "../page/manager/ticket/list";
 import {ManagerTicketDetails} from "../page/manager/ticket/details";
 import {ManagerRoomList} from "../page/manager/rent/room-list";
 import {ManagerRoomCalendar} from "../page/manager/rent/room-calendar";
+import {CustomerRoomList} from "../page/customer/rent/room-list";
+import {CustomerRoomCalendar} from "../page/customer/rent/room-calendar";
 
 /**
  * Правила роутинга
@@ -80,7 +82,7 @@ export const routes: Array<RouteConfig> = [
                 },
             },
             {
-                path: '/auth/service/:service',
+                path: '/auth/cabinet/service/:service',
                 name: 'cabinet_service_page',
                 component: CustomerServicePage,
                 meta: {
@@ -89,7 +91,7 @@ export const routes: Array<RouteConfig> = [
                 },
             },
             {
-                path: '/auth/service/:service/ticket/create',
+                path: '/auth/cabinet/service/:service/ticket/create',
                 name: 'cabinet_service_ticket_create',
                 component: CustomerTicketForm,
                 meta: {
@@ -98,12 +100,30 @@ export const routes: Array<RouteConfig> = [
                 }
             },
             {
-                path: '/auth/service/:service/ticket/:ticket',
+                path: '/auth/cabinet/service/:service/ticket/:ticket',
                 name: 'cabinet_service_ticket_details',
                 component: CustomerServiceTicketDetails,
                 meta: {
                     needType: 'customer',
                     pageTitle: 'Услуги'
+                }
+            },
+            {
+                path: '/auth/cabinet/rent/room',
+                name: 'cabinet_room_list',
+                component: CustomerRoomList,
+                meta: {
+                    needRole: 'ROLE_RENT_CUSTOMER',
+                    pageTitle: 'Переговорные комнаты'
+                }
+            },
+            {
+                path: '/auth/cabinet/rent/room/:id',
+                name: 'cabinet_room_calendar',
+                component: CustomerRoomCalendar,
+                meta: {
+                    needRole: 'ROLE_RENT_CUSTOMER',
+                    pageTitle: 'Переговорные комнаты'
                 }
             }
         ],

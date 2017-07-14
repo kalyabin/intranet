@@ -1,6 +1,7 @@
 import {RoomInterface} from "../service/model/room.interface";
 import Vuex from "vuex";
 import {roomManagerService} from "../service/room-manager.service";
+import {roomCustomerService} from "../service/room-customer.service";
 
 /**
  * Список комнат для отображения
@@ -61,6 +62,19 @@ export const roomListStore = new Vuex.Store<RoomListStateInterface>({
         fetchManagerList: (action): Promise<boolean> => {
             return new Promise((resolve) => {
                 roomManagerService.list().then((list: RoomInterface[]) => {
+                    action.commit('addItems', list);
+                    resolve(true);
+                }, () => {
+                    resolve(false);
+                });
+            });
+        },
+        /**
+         * Заполнить пользовательский список
+         */
+        fetchCustomerList: (action): Promise<boolean> => {
+            return new Promise((resolve) => {
+                roomCustomerService.list().then((list: RoomInterface[]) => {
                     action.commit('addItems', list);
                     resolve(true);
                 }, () => {

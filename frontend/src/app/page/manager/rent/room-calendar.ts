@@ -90,6 +90,7 @@ export class ManagerRoomCalendar extends Vue {
             request: request
         };
     }
+
     /**
      * Добавить заявку в календарь
      */
@@ -113,7 +114,7 @@ export class ManagerRoomCalendar extends Vue {
     /**
      * Подключение календаря
      */
-    configureFullCalendar(): void {
+    protected configureCalendar(): void {
         $(this.$refs['calendar']).fullCalendar({
             header: {
                 left: 'prev,next today',
@@ -184,7 +185,7 @@ export class ManagerRoomCalendar extends Vue {
         pageMetaStore.commit('setTitle', `Календарь для помещения ${this.room.title}`);
         pageMetaStore.commit('setPageTitle', `Переговорные комнаты`);
 
-        this.configureFullCalendar();
+        this.configureCalendar();
     }
 
     beforeRouteEnter(to, from, next) {

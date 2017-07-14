@@ -65,6 +65,14 @@ export const customerSidebarMenuItems: Array<SidebarMenuItem> = [
         children: buildExtendedServices(),
     },
     {
+        route: {
+            name: 'cabinet_room_list',
+        },
+        faIcon: 'fa-building',
+        menuName: 'Переговорные комнаты',
+        role: 'ROLE_RENT_CUSTOMER'
+    },
+    {
         faIcon: 'fa-file',
         menuName: 'Документы',
         children: [
