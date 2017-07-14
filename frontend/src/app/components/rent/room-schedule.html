@@ -1,0 +1,15 @@
+<div>
+    <template v-if="schedule">
+        с {{schedule.from}} по {{schedule.to}},
+        &nbsp;перерыв:&nbsp;
+        <template v-if="scheduleBreak">
+            с {{scheduleBreak.from}} по {{scheduleBreak.to}}
+        </template>
+        <template v-else>
+            без перерыва
+        </template>
+    </template>
+    <template v-else>
+        не работает
+    </template>
+</div>

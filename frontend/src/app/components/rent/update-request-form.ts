@@ -1,31 +1,26 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import {Model, Prop} from "vue-property-decorator";
-import {RoomRequestInterface, RoomRequestStatus} from "../../../service/model/room-request.interface";
-import {roomRequestHelper} from "../../../helpers/room-request-helper";
+import {RoomRequestInterface, RoomRequestStatus} from "../../service/model/room-request.interface";
+import {roomRequestHelper} from "../../helpers/room-request-helper";
 import * as moment from "moment";
-import {roomManagerService} from "../../../service/room-manager.service";
+import {roomManagerService} from "../../service/room-manager.service";
+import {UserType} from "../../service/model/user.interface";
+import {authUserStore} from "../../store/auth-user.store";
+import {roomCustomerService} from "../../service/room-customer.service";
 
 /**
- * Форма редактирования заявки
+ * Форма редактирования заявки.
+ *
+ * В зависимости от типа пользователей подключаются или отключаются дополнительные поля.
  */
 @Component({
     template: require('./update-request-form.html')
 })
-export class ManagerRentUpdateRequestForm extends Vue {
+export class RentUpdateRequestForm extends Vue {
     @Prop(Object) request: RoomRequestInterface;
 
     @Model() requestInternal: RoomRequestInterface = this.request;
-
-    /**
-     * Режим работы
-     */
-    @Model() schedule: {from: string, to: string} | false = null;
-
-    /**
-     * Перерыв
-     */
-    @Model() scheduleBreak: {from: string, to: string} | false = null;
 
     /**
      * Сообщение об ошибке
@@ -53,6 +48,13 @@ export class ManagerRentUpdateRequestForm extends Vue {
     @Model() dateFormatted: string = '';
 
     /**
+     * Получить тип пользователя
+     */
+    get userType(): UserType {
+        return authUserStore.state.userData ? authUserStore.state.userData.userType : null;
+    }
+
+    /**
      * Получить итоговую сумму
      */
     get totalCost(): number {
@@ -74,6 +76,13 @@ export class ManagerRentUpdateRequestForm extends Vue {
         return result;
     }
 
+    /**
+     * Получить описание статуса
+     */
+    get statusText(): string {
+        return roomRequestHelper.getStatusLabel(this.request.status);
+    }
+
     mounted(): void {
         let from = moment(this.request.from);
         let to = moment(this.request.to);
@@ -81,12 +90,36 @@ export class ManagerRentUpdateRequestForm extends Vue {
         this.dateFormatted = from.format('DD.MM.YYYY');
         this.timeFrom = from.format('HH:mm');
         this.timeTo = to.format('HH:mm');
-
-        this.schedule = roomRequestHelper.getScheduleByDate(this.request.room, from);
-        this.scheduleBreak = roomRequestHelper.getScheduleBreak(this.request.room);
     }
 
-    submit(): void {
+    /**
+     * Для арендатора - субмит отмены заявки
+     */
+    cancelRequest(): void {
+        if (this.userType != 'customer') {
+            return;
+        }
+        if (confirm('Вы уверены, что хотите отменить заявку на бронирование переговорной?')) {
+            this.errorMessage = '';
+            this.awaitOfSubmit = true;
+            roomCustomerService.cancelRequest(this.request.id).then((response) => {
+                this.awaitOfSubmit = false;
+                if (!response.success) {
+                    this.errorMessage = 'Не удалось отменить заявку. Обратитесь к администратору.'
+                } else {
+                    this.$emit('canceled', response.request);
+                }
+            });
+        }
+    }
+
+    /**
+     * Для менеджера - субмит изменения заявки
+     */
+    submitUpdate(): void {
+        if (this.userType != 'manager') {
+            return;
+        }
         this.errorMessage = '';
         this.$validator.validateAll().then(() => {
             this.awaitOfSubmit = true;

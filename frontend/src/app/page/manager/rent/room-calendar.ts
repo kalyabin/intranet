@@ -8,8 +8,8 @@ import {roomManagerService} from "../../../service/room-manager.service";
 import $ from "jquery";
 import * as moment from "moment";
 import {ModalWindow} from "../../../components/modal-window";
-import {ManagerRentCreateRequestForm} from "./create-request-form";
-import {ManagerRentUpdateRequestForm} from "./update-request-form";
+import {RentCreateRequestForm} from "../../../components/rent/create-request-form";
+import {RentUpdateRequestForm} from "../../../components/rent/update-request-form";
 import {roomRequestHelper} from "../../../helpers/room-request-helper";
 
 Component.registerHooks([
@@ -23,8 +23,8 @@ Component.registerHooks([
 @Component({
     template: require('./room-calendar.html'),
     components: {
-        'create-request': ManagerRentCreateRequestForm,
-        'update-request': ManagerRentUpdateRequestForm
+        'create-request': RentCreateRequestForm,
+        'update-request': RentUpdateRequestForm
     }
 })
 export class ManagerRoomCalendar extends Vue {

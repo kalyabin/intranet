@@ -24,6 +24,7 @@ import {CalendarChooser} from "./app/components/calendar-chooser";
 import {TimePicker} from "./app/components/time-picker";
 import {UserType} from "./app/service/model/user.interface";
 import {authUserStore} from "./app/store/auth-user.store";
+import {RoomSchedule} from "./app/components/rent/room-schedule";
 
 /**
  * Точка входа приложения
@@ -50,6 +51,7 @@ Vue.component('flash-notifications', FlashNotifications);
 Vue.component('manager-incoming-call-window', ManagerIncomingCallWindow);
 Vue.component('calendar-chooser', CalendarChooser);
 Vue.component('time-picker', TimePicker);
+Vue.component('room-schedule', RoomSchedule);
 
 // директивы
 Vue.directive('need-role', NeedRoleDirective);

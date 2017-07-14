@@ -1,4 +1,4 @@
-<form @submit.prevent="submit" @input="errorMessage = ''">
+<form @submit.prevent="submitUpdate" @input="errorMessage = ''">
     <loader :visible="awaitOfSubmit"></loader>
     <div class="modal-body">
         <div class="alert alert-danger" v-if="errorMessage">{{errorMessage}}</div>
@@ -20,19 +20,7 @@
         <div class="form-group">
             <label class="control-label col-md-5 col-sm-5 col-xs-12">Режим работы на {{dateFormatted}}</label>
             <div class="col-md-12">
-                <template v-if="schedule">
-                    с {{schedule.from}} по {{schedule.to}},
-                    &nbsp;перерыв:&nbsp;
-                    <template v-if="scheduleBreak">
-                        с {{scheduleBreak.from}} по {{scheduleBreak.to}}
-                    </template>
-                    <template v-else>
-                        без перерыва
-                    </template>
-                </template>
-                <template v-else>
-                    не работает
-                </template>
+                <room-schedule :room="request.room" :date="request.from"></room-schedule>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -64,7 +52,7 @@
             </div>
             <div class="clearfix"></div>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="userType == 'manager'">
             <label class="control-label col-md-5 col-sm-5 col-xs-12">Арендатор</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <span>{{request.customer.name}}</span>
@@ -72,13 +60,28 @@
             <div class="clearfix"></div>
         </div>
         <div class="form-group">
-            <label class="control-label col-md-5 col-sm-5 col-xs-12">Комментарий арендатора</label>
+            <label class="control-label col-md-5 col-sm-5 col-xs-12" v-if="userType == 'manager'">Комментарий арендатора</label>
+            <label class="control-label col-md-5 col-sm-5 col-xs-12" v-else>Комментарий</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <span>{{request.customerComment}}</span>
             </div>
             <div class="clearfix"></div>
         </div>
-        <div class="form-group" :class="{'has-error': errors.has('status')}">
+        <div class="form-group" v-if="userType == 'customer'">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Статус заявки</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{statusText}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group" v-if="userType == 'customer' && request.managerComment">
+            <label class="control-label col-md-5 col-sm-5 col-xs-12">Комментарий менеджера</label>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <span>{{request.managerComment}}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="form-group" :class="{'has-error': errors.has('status')}" v-if="userType == 'manager'">
             <label class="control-label">Статус заявки</label>
             <select class="form-control" v-model="requestInternal.status" name="status" v-validate="'required'">
                 <option v-for="status in statuses" :value="status.id">{{status.name}}</option>
@@ -87,7 +90,7 @@
                 {{errors.first('status')}}
             </p>
         </div>
-        <div class="form-group" :class="{'has-error': errors.has('managerComment')}">
+        <div class="form-group" :class="{'has-error': errors.has('managerComment')}" v-if="userType == 'manager'">
             <label class="control-label">Комментарий к статусу</label>
             <textarea v-model="requestInternal.managerComment" name="managerComment" class="form-control" v-validate="'max:200'"></textarea>
             <p class="help-block" v-if="errors.has('managerComment')">
@@ -96,6 +99,7 @@
         </div>
     </div>
     <div class="modal-footer" slot="footer">
-        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <button v-if="userType == 'customer'" type="button" @click.prevent="cancelRequest" class="btn btn-danger">Отменить заявку</button>
+        <button v-if="userType == 'manager'" type="submit" class="btn btn-primary">Сохранить</button>
     </div>
 </form>
