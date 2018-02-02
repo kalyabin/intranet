@@ -59,6 +59,7 @@ class RoomRequestRepository extends EntityRepository
                 'room' => $room,
                 'from' => $dateFrom
             ])
+            ->orderBy('r.from', 'ASC')
             ->getQuery()
             ->getResult();
     }

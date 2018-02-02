@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Symfony\Bundle\FrameworkBundle\Client;
 
 /**
  * Тестирование доступа к контроллеру
@@ -70,6 +71,8 @@ trait AccessToActionTrait
             $allowedUser = $this->fixtures->getReference($allowedUser);
 
             $this->loginAs($allowedUser, 'main');
+
+            /** @var Client $client */
             $client = static::makeClient();
 
             if (!is_null($invalidData)) {

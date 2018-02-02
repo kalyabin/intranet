@@ -31,12 +31,12 @@ class RoomRequestType extends AbstractType
             ->add('from', DateTimeType::class, [
                 'label' => 'Время начала аренды',
                 'widget' => 'single_text',
-                'format' => 'yyyy-MM-dd HH:mm',
+                'date_format' => 'yyyy-MM-dd HH:mm',
             ])
-            ->add('to', DateType::class, [
+            ->add('to', DateTimeType::class, [
                 'label' => 'Время окончания аренды',
                 'widget' => 'single_text',
-                'format' => 'yyyy-MM-dd HH:mm',
+                'date_format' => 'yyyy-MM-dd HH:mm',
             ])
             ->add('customerComment', TextareaType::class, [
                 'label' => 'Дополнительные комментарии'
