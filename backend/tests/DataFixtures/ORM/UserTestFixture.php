@@ -19,16 +19,16 @@ use UserBundle\Utils\UserManager;
  *
  * @package UserBundle\Tests\DataFixtures\ORM
  */
-class UserTestFixture extends AbstractFixture implements ContainerAwareInterface, OrderedFixtureInterface
+class UserTestFixture extends AbstractFixture implements OrderedFixtureInterface
 {
     /**
-     * @var ContainerInterface
+     * @var UserManager
      */
-    private $container;
-
-    public function setContainer(ContainerInterface $container = null)
+    private $userService;
+    
+    public function __construct(UserManager $userService)
     {
-        $this->container = $container;
+        $this->userService = $userService;
     }
 
     /**
@@ -36,9 +36,6 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
      */
     public function load(ObjectManager $manager)
     {
-        /** @var UserManager $userService */
-        $userService = $this->container->get('user.manager');
-
         // пользователи типа "арендатор" должны быть привязаны к контрагенту
         /** @var CustomerEntity $customer */
         $customer = $this->getReference('all-customer');
@@ -57,7 +54,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->setCustomer($customer)
             ->generateSalt();
-        $userService->encodeUserPassword($activeUser, $activeUser->getPassword());
+        $this->userService->encodeUserPassword($activeUser, $activeUser->getPassword());
 
         // создать неактивного пользователя с кодом подтверждения
         $customerRole = new UserRoleEntity();
@@ -73,7 +70,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->setCustomer($customer)
             ->generateSalt();
-        $userService->encodeUserPassword($inactiveUser, $inactiveUser->getPassword());
+        $this->userService->encodeUserPassword($inactiveUser, $inactiveUser->getPassword());
         $checker = new UserCheckerEntity();
         $checker
             ->setType(UserCheckerEntity::TYPE_ACTIVATION_CODE)
@@ -96,7 +93,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
             ->setUserType(UserEntity::TYPE_CUSTOMER)
             ->setCustomer($customer)
             ->generateSalt();
-        $userService->encodeUserPassword($lockedUser, $lockedUser->getPassword());
+        $this->userService->encodeUserPassword($lockedUser, $lockedUser->getPassword());
 
         // создать супер-админа
         $superadmin = new UserEntity();
@@ -111,7 +108,7 @@ class UserTestFixture extends AbstractFixture implements ContainerAwareInterface
         $role = new UserRoleEntity();
         $role->setCode('ROLE_SUPERADMIN');
         $superadmin->addRole($role);
-        $userService->encodeUserPassword($superadmin, $superadmin->getPassword());
+        $this->userService->encodeUserPassword($superadmin, $superadmin->getPassword());
 
         // создать пользователя-менеджера тикетной системы только для другой категории
         $role = new UserRoleEntity();

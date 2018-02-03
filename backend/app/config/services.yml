@@ -4,6 +4,9 @@ parameters:
     #parameter_name: value
 
 services:
+    _defaults:
+        public: true
+
     json_error_response:
         class: HttpHelperBundle\Listener\JsonErrorResponseListener
         tags:
@@ -23,6 +26,7 @@ services:
     # системный мейлер всего приложения
     mail_manager:
         class: AppBundle\Utils\MailManager
+        public: true
         arguments: [ '@mailer', '@templating', '%default_from_email%' ]
 
     # системные уведомления для пользователя в любой транспорт

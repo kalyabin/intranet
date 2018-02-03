@@ -5,7 +5,7 @@ namespace UserBundle\Utils;
 use InvalidArgumentException;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use UserBundle\Entity\UserCheckerEntity;
 use UserBundle\Entity\UserEntity;
 use UserBundle\Event\UserActivationEvent;
@@ -23,9 +23,9 @@ use UserBundle\Event\UserRememberPasswordEvent;
 class UserManager
 {
     /**
-     * @var EncoderFactoryInterface Фабрика для энкодера
+     * @var UserPasswordEncoderInterface Энкодер пароле
      */
-    protected $encoderFactory;
+    protected $passwordEncoder;
 
     /**
      * @var ObjectManager Менеджер для сущностей
@@ -40,13 +40,13 @@ class UserManager
     /**
      * Конструктор
      *
-     * @param EncoderFactoryInterface $encoderFactory Фабрика для энкодера
+     * @param UserPasswordEncoderInterface $passwordEncoder Энкодер паролей
      * @param ObjectManager $entityManager Менеджер сущностей
      * @param EventDispatcherInterface $eventDispatcher Диспатчер системных событий
      */
-    public function __construct(EncoderFactoryInterface $encoderFactory, ObjectManager $entityManager, EventDispatcherInterface $eventDispatcher)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, ObjectManager $entityManager, EventDispatcherInterface $eventDispatcher)
     {
-        $this->encoderFactory = $encoderFactory;
+        $this->passwordEncoder = $passwordEncoder;
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -59,12 +59,12 @@ class UserManager
      */
     public function encodeUserPassword(UserEntity $user, $password)
     {
-        $encoder = $this->encoderFactory->getEncoder($user);
+        $encoder = $this->passwordEncoder;
         if (empty($user->getSalt())) {
             // сгенерировать соль, если еще не сгенерирована
             $user->generateSalt();
         }
-        $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+        $user->setPassword($encoder->encodePassword($user, $password));
     }
 
     /**

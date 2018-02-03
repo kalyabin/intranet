@@ -6,6 +6,9 @@ parameters:
     rent.request_time.validator: RentBundle\Validator\RequestTimeValidator
 
 services:
+    _defaults:
+        public: true
+
     # валидатор для времени заявок
     rent.request_time.validator:
         class: '%rent.request_time.validator%'

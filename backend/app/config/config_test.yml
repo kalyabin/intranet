@@ -40,3 +40,8 @@ monolog:
     handlers:
         main:
             type: test
+
+services:
+    Tests\DataFixtures\ORM\UserTestFixture:
+        public: true
+        arguments: ['@user.manager']

@@ -48,6 +48,10 @@ class LoginControllerTest extends WebTestCase
 
         // отправить пустой POST
         $client->request('POST', $url);
+        $this->assertStatusCode(400, $client);
+        $client->request('POST', $url, [
+            '_username' => '',
+        ]);
         $this->assertStatusCode(401, $client);
         $jsonData = $this->assertIsValidJsonResponse($client->getResponse());
         $this->assertArraySubset([

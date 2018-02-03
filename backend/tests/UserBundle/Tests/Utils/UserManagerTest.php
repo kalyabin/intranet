@@ -59,7 +59,7 @@ class UserManagerTest extends WebTestCase
             UserTestFixture::class
         ])->getReferenceRepository();
 
-        $this->manager = new UserManager($container->get('security.encoder_factory'), $container->get('doctrine.orm.entity_manager'), $container->get('event_dispatcher'));
+        $this->manager = new UserManager($container->get('security.password_encoder'), $container->get('doctrine.orm.entity_manager'), $container->get('event_dispatcher'));
     }
 
     /**

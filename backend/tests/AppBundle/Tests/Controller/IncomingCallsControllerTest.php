@@ -68,14 +68,14 @@ class IncomingCallsControllerTest extends WebTestCase
         $this->assertStatusCode(401, $client);
 
         // авторзуемся с неправильным паролем
-        $user = new User('ats', 'wrong password');
+        $user = new User('ats', 'wrong password', ['ROLE_ATS']);
         $this->loginAs($user, 'ats_area');
         $client = static::makeClient();
         $client->request('POST', $url);
         $this->assertStatusCode(401, $client);
 
         // авторизуемся с правильным паролем но неправильный метод
-        $user = new User('ats', $atsPassword);
+        $user = new User('ats', $atsPassword, ['ROLE_ATS']);
         $this->loginAs($user, 'ats_area');
         $client = static::makeClient();
         $client->request('GET', $url);

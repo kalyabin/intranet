@@ -6,6 +6,7 @@ use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use HttpHelperBundle\HttpHelperBundle;
 use Liip\FunctionalTestBundle\LiipFunctionalTestBundle;
 use RentBundle\RentBundle;
+use Symfony\Bundle\WebServerBundle\WebServerBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use TicketBundle\TicketBundle;
@@ -37,6 +38,7 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+            $bundles[] = new WebServerBundle();
         }
 
         if ($this->getEnvironment() == 'test') {

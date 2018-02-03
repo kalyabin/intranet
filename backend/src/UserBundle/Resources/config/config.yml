@@ -16,6 +16,9 @@ parameters:
     user.change_email_enabled: true
 
 services:
+    _defaults:
+        public: true
+
     # прослушивать события системы безопасности (авторизация, ошибки входа)
     authentication_listener:
         class: '%authentication_listener%'
@@ -54,14 +57,12 @@ services:
     # Менеджер пользователей
     user.manager:
         class: '%user.manager%'
-        arguments:
-            ['@security.encoder_factory', '@doctrine.orm.entity_manager', '@event_dispatcher']
+        arguments: ['@security.password_encoder', '@doctrine.orm.entity_manager', '@event_dispatcher']
 
     # Авторизатор пользователей по простому логин-паролю
     user.simple_authenticator:
         class: '%user.simple_authenticator%'
-        arguments:
-            ['@security.password_encoder']
+        arguments: ['@security.password_encoder']
 
     # Контроллер регистрации
     user.registration_controller:

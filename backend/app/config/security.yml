@@ -90,6 +90,7 @@ security:
             pattern: ^/api/incoming-call
             provider: ats
             anonymous: ~
+            logout_on_user_change: true
             http_basic:
                 realm: ''
                 provider: ats
@@ -98,6 +99,7 @@ security:
             pattern: ^/
             anonymous: ~
             provider: user_provider
+            logout_on_user_change: true
             logout:
                 path: /api/logout
                 target: /

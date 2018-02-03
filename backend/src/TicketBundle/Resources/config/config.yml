@@ -7,6 +7,9 @@ parameters:
     ticket.ticket_voter: 'TicketBundle\Security\TicketVoter'
 
 services:
+    _defaults:
+        public: true
+
     # API для управления заявками и сообщениями
     ticket.manager:
         class: '%ticket.manager%'

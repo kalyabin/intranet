@@ -22,7 +22,6 @@ use UserBundle\Entity\UserEntity;
  * Управление собственными услугами арендатора: просмотр доступных, активация, деактивация
  *
  * @Route(service="customer.service_customer_controller")
- * @Security("has_role('ROLE_SERVICE_CUSTOMER')")
  *
  * @package CustomerBundle\Controller
  */
@@ -83,6 +82,7 @@ class ServiceCustomerController extends Controller
     /**
      * Получить список всех активированных услуг
      *
+     * @Security("has_role('ROLE_SERVICE_CUSTOMER')")
      * @Method({"GET"})
      * @Route("/customer/service/activated", name="service.customer.activated_list", options={"expose": true})
      *
@@ -111,6 +111,7 @@ class ServiceCustomerController extends Controller
      *     options={"expose": true},
      *     requirements={"id": "[a-zA-Z0-9_-]+"}
      * )
+     * @Security("has_role('ROLE_SERVICE_CUSTOMER')")
      *
      * @param string $id Идентификатор услуги
      * @param Request $request
@@ -184,6 +185,7 @@ class ServiceCustomerController extends Controller
      *     options={"expose": true},
      *     requirements={"id": "[a-zA-Z0-9_-]+"}
      * )
+     * @Security("has_role('ROLE_SERVICE_CUSTOMER')")
      *
      * @param string $id Идентификатор деактивируемой услуги
      *

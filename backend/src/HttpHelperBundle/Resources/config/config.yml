@@ -5,6 +5,9 @@ parameters:
   csrf_protection_token_header: 'X-CSRF-Token'
 
 services:
+  _defaults:
+      public: true
+
   # Замена POST-данных из тела JSON-запроса
   json_request_replacer:
       class: "%json_request_replacer%"

@@ -7,6 +7,9 @@ parameters:
     customer.service_notification_manager: CustomerBundle\Utils\ServiceNotificationManager
 
 services:
+    _defaults:
+        public: true
+
     # Сервис управления услугами арендатора
     customer.service_manager:
         class: '%customer.service_manager%'

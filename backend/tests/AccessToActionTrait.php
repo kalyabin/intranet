@@ -66,9 +66,9 @@ trait AccessToActionTrait
         $allowedUsers = is_array($allowedUsers) ? $allowedUsers : [$allowedUsers];
 
         $result = [];
-        foreach ($allowedUsers as $k => $allowedUser) {
+        foreach ($allowedUsers as $k => $allowedUserKey) {
             /** @var UserEntity $allowedUser */
-            $allowedUser = $this->fixtures->getReference($allowedUser);
+            $allowedUser = $this->fixtures->getReference($allowedUserKey);
 
             $this->loginAs($allowedUser, 'main');
 
