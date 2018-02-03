@@ -48,7 +48,16 @@ class RoomRequestManagerTypeTest extends FormWebTestCase
 
     public function getInvalidData()
     {
-        return [];
+        return [
+            [
+                'data' => [
+                    'status' => 'wrong status data',
+                ],
+                'errorKeys' => [
+                    'status',
+                ],
+            ]
+        ];
     }
 
     public function getValidData()
