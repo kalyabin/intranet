@@ -211,6 +211,8 @@ class DashboardControllerTest extends WebTestCase
         $this->assertArrayHasKey('change_password[password][first]', $jsonData['validationErrors']);
 
         // отправляем валидный запрос
+        $this->loginAs($user, 'main');
+        $client = static::makeClient();
         $client->request('POST', $url, [
             'change_password' => [
                 'password' => [
@@ -233,6 +235,10 @@ class DashboardControllerTest extends WebTestCase
         $this->em->clear();
         $user = $this->em->getRepository(UserEntity::class)->findOneById($user->getId());
         $this->assertNotEquals($user->getPassword(), $oldPassword);
+
+        // после изменения пароля сессия не должна сбрасываться
+        $client->request('POST', $url);
+        $this->assertStatusCode(400, $client);
     }
 
     /**
