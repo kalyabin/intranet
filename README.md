@@ -4,6 +4,7 @@
 ## Требования
 
 * PHP 7.1+
+* Composer 1.4+
 * PostgreSQL 9.4+
 * NodeJS 7.9+
 * npm 4.0+
