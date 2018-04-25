@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  database:
+    image: postgres:9.4
+    restart: always
+    ports:
+        - "54321:5432"
+    environment:
+        - POSTGRES_USER=intranet
+        - POSTGRES_PASSWORD=123
+        - POSTGRES_DB=intranet
+    volumes:
+        - ./docker/database:/var/lib/postgresql/data
+
+  database_test:
+    image: postgres:9.4
+    restart: always
+    ports:
+        - "54322:5432"
+    environment:
+        - POSTGRES_USER=intranet
+        - POSTGRES_PASSWORD=123
+        - POSTGRES_DB=intranet_test
+    volumes:
+        - ./docker/database_test:/var/lib/postgresql/data
+
+  backend:
+    build: docker/backend
+    working_dir: /backend
+    volumes:
+      - ./backend:/backend
+    expose:
+      - 8001
+    links:
+      - database
+      - database_test
+    depends_on:
+      - database
+      - database_test
