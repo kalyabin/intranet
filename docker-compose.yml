@@ -4,37 +4,67 @@ services:
   database:
     image: postgres:9.4
     restart: always
-    ports:
-        - "54321:5432"
     environment:
         - POSTGRES_USER=intranet
         - POSTGRES_PASSWORD=123
         - POSTGRES_DB=intranet
     volumes:
         - ./docker/database:/var/lib/postgresql/data
+    networks:
+        app:
+            ipv4_address: 172.16.238.10
 
   database_test:
     image: postgres:9.4
     restart: always
-    ports:
-        - "54322:5432"
     environment:
         - POSTGRES_USER=intranet
         - POSTGRES_PASSWORD=123
         - POSTGRES_DB=intranet_test
     volumes:
         - ./docker/database_test:/var/lib/postgresql/data
+    networks:
+        app:
+            ipv4_address: 172.16.238.20
 
   backend:
     build: docker/backend
     working_dir: /backend
     volumes:
-      - ./backend:/backend
+        - ./backend:/backend
+        - ./docker/backend/wait-for-postgres.sh:/wait-for-postgres.sh
+        - ./docker/backend/configure-parameters.sh:/configure-parameters.sh
+    environment:
+        - POSTGRES_DB_HOST=172.16.238.10
+        - POSTGRES_DB_NAME=intranet
+        - POSTGRES_DB_USER=intranet
+        - POSTGRES_DB_PASSWORD=123
+        - POSTGRES_DB_PORT=5432
+        - POSTGRES_DB_TEST_HOST=172.16.238.20
+        - POSTGRES_DB_TEST_NAME=intranet_test
+        - POSTGRES_DB_TEST_USER=intranet
+        - POSTGRES_DB_TEST_PASSWORD=123
+        - POSTGRES_DB_TEST_PORT=5432
     expose:
-      - 8001
+      - 8000
+    ports:
+      - 8000:8000
     links:
       - database
       - database_test
     depends_on:
       - database
       - database_test
+    networks:
+        app:
+            ipv4_address: 172.16.238.30
+
+networks:
+    app:
+        driver: bridge
+        driver_opts:
+            com.docker.network.enable_ipv6: "false"
+        ipam:
+            config:
+                - subnet: "172.16.238.0/24"
+                  gateway: "172.16.238.1"

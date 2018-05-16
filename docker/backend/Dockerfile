@@ -1,6 +1,7 @@
 FROM php:7.1-fpm
 
 RUN apt-get update && apt-get install -y \
+    postgresql-client \
     libmcrypt4 \
     libmcrypt-dev \
     libreadline-dev \
@@ -11,6 +12,9 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install mcrypt zip curl json pdo pdo_pgsql pgsql intl mbstring
+
+RUN touch /usr/local/etc/php/conf.d/custom.ini && \
+    echo "memory_limit = -1" >> /usr/local/etc/php/conf.d/custom.ini
 
 ENV PATH "/composer/vendor/bin:/composer/home/vendor/bin:$PATH"
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -24,7 +28,11 @@ EXPOSE 8001
 
 CMD cd /backend && \
     cp app/config/parameters.yml.docker app/config/parameters.yml && \
+    /bin/bash /configure-parameters.sh && \
+    /bin/bash /wait-for-postgres.sh && \
     composer install --no-interaction && \
     ./bin/symfony_requirements && \
+    ./bin/console doctrine:migrations:migrate --env=test && \
+    ./vendor/bin/phpunit --verbose && \
     ./bin/console doctrine:migrations:migrate --env=dev && \
     ./bin/console server:run

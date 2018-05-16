@@ -51,6 +51,8 @@ twig:
 doctrine:
     dbal:
         driver: pdo_pgsql
+        # todo: поддержка постоянных соединений для PostgreSQL, чтобы избежать проблемы с too many connections
+        driver_class: 'AppBundle\Db\Drivers\PgsqlDriver'
         host: '%database_host%'
         port: '%database_port%'
         dbname: '%database_name%'

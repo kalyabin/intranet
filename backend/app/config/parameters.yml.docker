@@ -2,20 +2,20 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: 127.0.0.1
-    database_port: 54321
-    database_name: intranet
-    database_user: intranet
-    database_password: 123
+    database_host: "$database_host"
+    database_port: "$database_port"
+    database_name: "$database_name"
+    database_user: "$database_user"
+    database_password: "$database_password"
     # You should uncomment this if you want to use pdo_sqlite
     #database_path: '%kernel.root_dir%/../var/data/data.sqlite'
 
     # подключение к БД для тестов
-    database_test_host: 127.0.0.1
-    database_test_port: 54322
-    database_test_name: intranet_test
-    database_test_user: intranet
-    database_test_password: 123
+    database_test_host: "$database_test_host"
+    database_test_port: "$database_test_port"
+    database_test_name: "$database_test_name"
+    database_test_user: "$database_test_user"
+    database_test_password: "$database_test_password"
 
     mailer_transport: smtp
     mailer_host: 127.0.0.1
