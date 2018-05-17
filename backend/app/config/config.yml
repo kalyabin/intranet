@@ -85,3 +85,29 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     spool: { type: memory }
+
+services:
+    AppBundle\Db\DataFixtures\Example\UserFixture:
+        public: true
+        arguments: ['@user.manager']
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\Db\DataFixtures\Example\CustomerFixture:
+        public: true
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\Db\DataFixtures\Example\RentRoomFixture:
+        public: true
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\Db\DataFixtures\Example\ServiceFixture:
+        public: true
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\Db\DataFixtures\Example\ServiceTariffFixture:
+        public: true
+        tags: ['doctrine.fixture.orm']
+
+    AppBundle\Db\DataFixtures\Example\TicketCategoryFixture:
+        public: true
+        tags: ['doctrine.fixture.orm']
