@@ -48,14 +48,12 @@ io.on('connection', (socket) => {
 app.post('/', (req, res) => {
     const data = req.body;
 
-    if (req.ip.indexOf('127.0.0.1') !== -1 && data) {
-        /**
-         * Пользователю необходимо обновить список уведомлений
-         */
-        if (data.task === 'fetchNewNotifications' && data.userId) {
-            console.log('fetch new notifications for ' + data.userId);
-            io.sockets.in('user_' + data.userId).emit('fetchNewNotifications', data.userId);
-        }
+    /**
+     * Пользователю необходимо обновить список уведомлений
+     */
+    if (data && data.task === 'fetchNewNotifications' && data.userId) {
+        console.log('fetch new notifications for ' + data.userId);
+        io.sockets.in('user_' + data.userId).emit('fetchNewNotifications', data.userId);
     }
 
     res.end();

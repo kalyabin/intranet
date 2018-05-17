@@ -17,6 +17,9 @@ parameters:
     database_test_user: "$database_test_user"
     database_test_password: "$database_test_password"
 
+    # адрес comet-сервера
+    comet_url: $comet
+
     mailer_transport: smtp
     mailer_host: 127.0.0.1
     mailer_user: ~
@@ -27,9 +30,6 @@ parameters:
 
     # e-mail отправителя для всех писем по умолчанию
     default_from_email: mail@domain.ltd
-
-    # адрес comet-сервера
-    comet_url: 'http://127.0.0.1:3001/'
 
     # реквизиты для доступа АТС к системе входящих звонков
     ats_password: 'asterisk'

@@ -10,6 +10,6 @@ export const environment = {
     reloadAuthStateInterval: 120000,
     // реквизиты подключения к comet-серверу
     comet: {
-        url: 'http://' + location.hostname + ':3001/'
+        url: location.protocol + '//' + location.hostname + ':3001/'
     }
 };

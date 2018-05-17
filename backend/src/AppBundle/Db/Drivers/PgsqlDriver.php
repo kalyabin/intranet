@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: max
- * Date: 16.05.18
- * Time: 18:05
- */
 
 namespace AppBundle\Db\Drivers;
 

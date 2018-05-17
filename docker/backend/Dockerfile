@@ -35,4 +35,4 @@ CMD cd /backend && \
     ./bin/console doctrine:migrations:migrate --env=test && \
     ./vendor/bin/phpunit --verbose && \
     ./bin/console doctrine:migrations:migrate --env=dev && \
-    ./bin/console server:run
+    ./bin/console server:run *:8000

@@ -4,6 +4,9 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require('path');
 var ENV = process.env.NODE_ENV;
 
+var backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+var cometUrl = process.env.COMET_URL || 'http://localhost:3001';
+
 module.exports = {
     entry: {
         main: [
@@ -113,14 +116,15 @@ module.exports = {
     devServer: {
         proxy: {
             '/api': {
-                target: 'http://localhost:8000',
+                target: backendUrl,
                 secure: false
             },
             '/comet': {
-                taget: 'http://localhost:3001',
+                taget: cometUrl,
                 secure: false
             }
-        }
+        },
+        disableHostCheck: true
     }
 };
 
