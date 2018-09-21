@@ -611,7 +611,7 @@ class RoomEntity implements \JsonSerializable
     {
         // формирование расписания
         $schedule = $this->getSchedule();
-        if (count($schedule) < 7) {
+        if (is_array($schedule) && count($schedule) < 7) {
             while(count($schedule) < 7) {
                 $schedule[] = [
                     'avail' => true,
