@@ -1,6 +1,8 @@
-FROM php:7.1-fpm
+FROM php:7.2-fpm
 
-RUN apt-get update && apt-get install -y \
+RUN mkdir -p /usr/share/man/man1 && \
+    mkdir -p /usr/share/man/man7 && \
+    apt-get update && apt-get install -y \
     postgresql-client \
     libmcrypt4 \
     libmcrypt-dev \
@@ -8,10 +10,14 @@ RUN apt-get update && apt-get install -y \
     libcurl3-dev \
     libicu-dev \
     libpq-dev \
-    git
+    libzip-dev \
+    zlib1g-dev \
+    git && \
+    pecl install mcrypt-1.0.1 && \
+    docker-php-ext-enable mcrypt
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-RUN docker-php-ext-install mcrypt zip curl json pdo pdo_pgsql pgsql intl mbstring
+RUN docker-php-ext-install zip curl json pdo pdo_pgsql pgsql intl mbstring
 
 RUN touch /usr/local/etc/php/conf.d/custom.ini && \
     echo "memory_limit = -1" >> /usr/local/etc/php/conf.d/custom.ini
